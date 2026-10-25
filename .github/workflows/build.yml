@@ -1,0 +1,50 @@
+name: Build and export axiom audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    env:
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Elan
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://elan.lean-lang.org/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Fetch Mathlib cache
+        run: /usr/bin/flock -x "$HOME/.lake-global.lock" lake exe cache get
+      - name: Build library and reject warnings
+        shell: bash
+        run: |
+          set -o pipefail
+          /usr/bin/flock -x "$HOME/.lake-global.lock" lake build LongRange 2>&1 | tee build.log
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          if re.search(r'\bwarning:', Path('build.log').read_text()):
+              raise SystemExit('Lean build emitted warnings')
+          PY
+      - name: Check all public export axioms
+        run: python3 scripts/check_axioms.py
+      - name: Retain build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log

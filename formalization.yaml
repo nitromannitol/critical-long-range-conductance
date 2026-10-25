@@ -1,0 +1,146 @@
+version: v0.5
+project:
+  name: LongRange
+  proposed_github_slug: critical-long-range-conductance
+  description: Quantitative homogenization for the critical long-range random conductance model.
+  authors:
+  - Ahmed Bou-Rabee
+  - Paul Dario
+  license: TODO(author)
+  github: https://github.com/nitromannitol/critical-long-range-conductance
+sources:
+- id: arXiv:2604.21143v1
+  type: paper
+  relationship: formalizes
+  location: paper/critical-long-range-rw.tex
+  sha256: 1fec0f85e16b4cfddfa9cd26884efd0b00241bf1520c7790eadf47cd4a5a1627
+  corrected_companion: paper/critical-long-range-rw-revised.tex
+  license: TODO(author)
+dependencies:
+  Lattice-Probability: 47027b49b6660ee34c323869b0c88b7eb72f1124
+  Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997
+status:
+  scope: 23 theorem exports and three complete definition exports, including produced unique H10 weak
+    solution, its continuous representative, weak scaling obstruction, quenched invariance principle,
+    uniform heat-kernel bounds and norm/kernel characterizations.
+  production_placeholder_tokens: 0
+  standalone_build: 'passed: 9099 jobs, fresh project and Lattice-Probability build directories, zero
+    warnings or errors'
+  public_axiom_audit: 'passed: all 26 public exports, only propext, Classical.choice and Quot.sound'
+  comparator: 'passed in clean release checkout: quantitative homogenization and both quenched invariance
+    principle formulations; dependency comparison, NanoDa and Lean kernel replay'
+  ci: 'Build: main pushes, pull requests and manual dispatch. Independent comparators: manual dispatch.
+    Current hosted results are linked from README badges.'
+  allowed_kernel_axioms:
+  - propext
+  - Classical.choice
+  - Quot.sound
+exports:
+- declaration: LongRange.Statements.lattice_sums
+  kind: theorem
+  module: LongRange.Statements.LatticeSums
+- declaration: LongRange.Statements.path_counting
+  kind: theorem
+  module: LongRange.Statements.PathCounting
+- declaration: LongRange.Statements.single_scale_estimate
+  kind: theorem
+  module: LongRange.Statements.SingleScale
+- declaration: LongRange.Statements.poincare
+  kind: theorem
+  module: LongRange.Statements.Poincare
+- declaration: LongRange.Statements.corrector_monotonicity
+  kind: theorem
+  module: LongRange.Statements.CorrectorMonotonicity
+- declaration: LongRange.Statements.corrector_energy_bound
+  kind: theorem
+  module: LongRange.Statements.DirichletEnergy
+- declaration: LongRange.Statements.corrector_domain_bound
+  kind: theorem
+  module: LongRange.Statements.CorrectorDomain
+- declaration: LongRange.Statements.hoeffding_infinite
+  kind: theorem
+  module: LongRange.Statements.Hoeffding
+- declaration: LongRange.Statements.mcdiarmid
+  kind: theorem
+  module: LongRange.Statements.McDiarmid
+- declaration: LongRange.Statements.quenched_invariance_principle
+  kind: theorem
+  module: LongRange.Statements.QuenchedInvariance
+- declaration: LongRange.Statements.quenched_invariance_principle_intro
+  kind: theorem
+  module: LongRange.Statements.QuenchedInvarianceIntro
+- declaration: LongRange.Statements.tightness
+  kind: theorem
+  module: LongRange.Statements.Tightness
+- declaration: LongRange.Statements.main_theorem
+  kind: theorem
+  module: LongRange.Statements.MainTheorem
+- declaration: LongRange.Statements.heatkernel_onDiagonal
+  kind: theorem
+  module: LongRange.Statements.HeatKernel
+- declaration: LongRange.Statements.heatkernel_offDiagonal
+  kind: theorem
+  module: LongRange.Statements.HeatKernelOffDiagonal
+- declaration: LongRange.Statements.aldous
+  kind: theorem
+  module: LongRange.Statements.Aldous
+- declaration: LongRange.Statements.corrector_linear_quadratic
+  kind: theorem
+  module: LongRange.Statements.CorrectorLinearQuadratic
+- declaration: LongRange.Statements.corrector_energy_lower_bound
+  kind: theorem
+  module: LongRange.Statements.CorrectorEnergyLower
+- declaration: LongRange.Statements.critical_dual_norm
+  kind: definition
+  module: LongRange.Statements.CriticalDualNorm
+- declaration: LongRange.Statements.critical_dual_characterization
+  kind: theorem
+  module: LongRange.Statements.CriticalDualCharacterization
+- declaration: LongRange.Statements.rescaled_density
+  kind: definition
+  module: LongRange.Statements.RescaledDensity
+- declaration: LongRange.Statements.rescaled_killed_density
+  kind: definition
+  module: LongRange.Statements.RescaledKilledDensity
+- declaration: LongRange.Statements.rescaled_kernel
+  kind: theorem
+  module: LongRange.Statements.RescaledKernel
+- declaration: LongRange.Statements.solenoidal_equivalence
+  kind: theorem
+  module: LongRange.Statements.SolenoidalEquivalence
+- declaration: LongRange.Statements.annulus_limit
+  kind: theorem
+  module: LongRange.Statements.AnnulusLimit
+- declaration: LongRange.Statements.weak_scaling_obstruction
+  kind: theorem
+  module: LongRange.Statements.WeakScalingObstruction
+cited_inputs:
+  namespace: LatticeProb.External
+  status: Explicit assumptions, not proved outside results
+  propositions:
+  - BillingsleySkorokhodPolish
+  - ChenKimKumagaiWangDavies
+  - ChenKimKumagaiWangNash
+  - EthierKurtzConvergenceFromFdd
+  - EthierKurtzRelativeCompactness
+  - EthierKurtzRelativeCompactnessStopping
+  - EthierKurtzTrotterKato
+  - GilbargTrudingerBoundaryRegularity
+  - GilbargTrudingerExistence
+  - GilbargTrudingerHolderExtension
+  - GilbargTrudingerSchauderEstimate
+  - GilbargTrudingerSupEstimate
+  - GilbargTrudingerWeakHomogeneousUniqueness
+  - GilbargTrudingerZeroBoundaryApproximation
+  - MuruganSaloffCoste
+  - MuruganSaloffCosteUniform
+fidelity:
+  conventions: Euclidean lattice kernel and diameter; physical epsilon*q slopes; actual variational corrector
+    and actual path-law densities.
+  correspondence: CORRESPONDENCE.md
+  paper_equality: Abstract and all three main theorem blocks are byte-identical to the original source.
+publication:
+  license: TODO(author)
+  paper_license: TODO(author)
+  release_verification: 'passed locally: clean standalone build, all 26 public export axiom checks, all
+    three independent comparator targets, source correspondence and exact dependency pins'

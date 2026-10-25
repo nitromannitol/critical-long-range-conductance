@@ -1,0 +1,97 @@
+name: Independent comparators
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: comparators-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      LEAN_NUM_THREADS: '1'
+      LAKE_JOBS: '1'
+      CARGO_BUILD_JOBS: '1'
+      GOMAXPROCS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.32.0
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.0-rc1
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.0'
+          cache: false
+      - name: Build fixed tool revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/comparator-logs/setup
+          export COMPARATOR_LOCK="$HOME/.lake-global.lock"
+          tools="$RUNNER_TEMP/comparator-tools"
+          mkdir -p "$tools"
+          fetch() {
+            git init "$tools/$1"
+            git -C "$tools/$1" remote add origin "$2"
+            git -C "$tools/$1" fetch --depth=1 origin "$3"
+            git -C "$tools/$1" checkout --detach FETCH_HEAD
+            test "$(git -C "$tools/$1" rev-parse HEAD)" = "$3"
+          }
+          fetch comparator https://github.com/leanprover/comparator \
+            575674928e239f5bc452aab72d1dd7b0f1326494
+          fetch exporter https://github.com/leanprover/lean4export \
+            4e7915201d3f9f04470d9eae002fa695f7cdc589
+          fetch nanoda https://github.com/ammkrn/nanoda_lib \
+            6ae1f0cd962f081f6c423454c5da729d841236a7
+          fetch landrun https://github.com/Zouuup/landrun \
+            811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
+          # Comparator retains its committed manifest (including its own parser dependency).
+          (cd "$tools/comparator" && /usr/bin/flock -x "$COMPARATOR_LOCK" \
+            elan run leanprover/lean4:v4.34.0-rc1 lake build comparator) \
+            2>&1 | tee .lake/comparator-logs/setup/comparator-build.log
+          (cd "$tools/exporter" && /usr/bin/flock -x "$COMPARATOR_LOCK" \
+            elan run leanprover/lean4:v4.32.0 lake build lean4export) \
+            2>&1 | tee .lake/comparator-logs/setup/exporter-build.log
+          rustup toolchain install 1.90.0 --profile minimal
+          (cd "$tools/nanoda" && cargo +1.90.0 build --release --locked --bin nanoda_bin) \
+            2>&1 | tee .lake/comparator-logs/setup/nanoda-build.log
+          (cd "$tools/landrun" && go build -o landrun ./cmd/landrun/main.go) \
+            2>&1 | tee .lake/comparator-logs/setup/landrun-build.log
+          for name in comparator exporter nanoda landrun; do
+            echo "COMPARATOR_${name^^}_DIR=$tools/$name" >> "$GITHUB_ENV"
+          done
+          echo "COMPARATOR_LOCK=$COMPARATOR_LOCK" >> "$GITHUB_ENV"
+      - name: Fetch mathlib cache and build production once
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/flock -x "$COMPARATOR_LOCK" \
+            elan run leanprover/lean4:v4.32.0 lake exe cache get \
+            2>&1 | tee .lake/comparator-logs/setup/cache.log
+          /usr/bin/flock -x "$COMPARATOR_LOCK" \
+            elan run leanprover/lean4:v4.32.0 lake build LongRange \
+            2>&1 | tee .lake/comparator-logs/setup/production-build.log
+      - name: Fresh comparisons and kernel replays, sequentially
+        run: python3 scripts/run_comparators.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: comparator-logs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .lake/comparator-logs/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,13 @@
+{
+  "challenge_module": "LongRangeAudit.QuantitativeHomogenization.Challenge",
+  "solution_module": "LongRangeAudit.QuantitativeHomogenization.Solution",
+  "theorem_names": [
+    "LongRangeAudit.QuantitativeHomogenization.main_theorem"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}

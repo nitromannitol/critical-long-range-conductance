@@ -1,0 +1,14 @@
+{
+  "challenge_module": "LongRangeAudit.QuenchedInvariance.Challenge",
+  "solution_module": "LongRangeAudit.QuenchedInvariance.Solution",
+  "theorem_names": [
+    "LongRangeAudit.QuenchedInvariance.quenched_invariance_principle",
+    "LongRangeAudit.QuenchedInvariance.quenched_invariance_principle_intro"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}

@@ -1,0 +1,274 @@
+--- critical-long-range-rw.tex
++++ critical-long-range-rw-revised.tex
+@@ -59,6 +59,114 @@
+ 	
+ 	
+ 	\maketitle
++
++% ---------------------------------------------------------------------------
++% REVISED DRAFT. This file is a locally corrected copy of arXiv:2604.21143v1
++% (original source critical-long-range-rw.tex, SHA-256 1fec0f85...a627, unchanged).
++% The abstract is unchanged. Each change is marked "% REVISED" in the source.
++% ---------------------------------------------------------------------------
++\section*{Corrections relative to arXiv:2604.21143v1}
++\begin{enumerate}
++\item[(C1)] Introduction, after (1.2): ``$\kappa_\eps \asymp |\ln\eps|$'' is replaced by
++``$\kappa_\eps \asymp 1+|\ln\eps|$''. For $\eps\in(\tfrac12,1)$ the $2d$ unit vectors give
++$\kappa_\eps\ge 2d$ while $|\ln\eps|\to0$; every later use only needs the corrected
++comparison (as already stated in Appendix~B). Formal counterparts: \texttt{LongRange.kappa\_le},
++\texttt{LongRange.le\_kappa}.
++\item[(C2)] Proof of Proposition~\ref{p.dirichlet}, Step~3: ``$|U^\eps|\asymp\eps^{-d}$'' is
++replaced by ``$|U^\eps|\le C\eps^{-d}$''. Only the upper bound is used; the lower bound fails when
++$\eps$ is large compared with $U$ (then $U^\eps$ may be empty). Formal counterpart:
++\texttt{LongRange.ncard\_latticeSet\_le}.
++\item[(C3)] Proof of Proposition~\ref{p.dirichlet}, display~\eqref{eq:upperboundsigmaSR}: the
++factor $|\ln\eps|$ is replaced by $1+|\ln\eps|$. As $\eps\uparrow1$ only nearest-neighbour
++increments satisfy $\eps\le|v|<1$, so $\Sigma_p^{\mathrm{SR}}(x+z,x)$ reduces to
++$(\E[\a]-\a(x,x+z))J(z)(p\cdot z)$, which does not vanish, while $|\ln\eps|\to0$. The influence
++bound that follows is unchanged because $(1+|\ln\eps|)/\kappa_\eps\le C$. Formal counterpart:
++\texttt{LongRange.shortCoeff\_abs\_sum\_bound} (internal to the proof of Proposition~\ref{p.dirichlet}).
++\end{enumerate}
++\noindent\emph{Confirmed gap in a proof (statement believed true).} (G1) The proof of
++Proposition~\ref{p.heatkernel.offdiag} applies \cite[Theorem~1.12]{ChenKumagaiWang2019} on
++$\Zd$ with counting measure; its all-radius hypotheses (FK and, through
++\cite[Proposition~2.1]{ChenKumagaiWang2019}, RVD) fail at radii below one, so the printed proof
++is invalid. Section~6 uses the proposition only through the displacement bound
++\eqref{e.displacement.tail}, for a fixed realization, with constants that may depend on it.
++Proposed repair of the proof only (statement and Section~6 unchanged; verified against
++arXiv:2010.05414v1, journal text not compared): Meyer truncation of the jumps at
++$\rho=\gamma|x-y|$, the comparison $p^\rho_t\le e^{C_\rho t}p_t$, the Davies-type bound of
++Chen--Kim--Kumagai--Wang (J.~Funct.\ Anal.\ 281 (2021) 109074), Theorem~4.4 with Example~4.3,
++fed by the Nash inequality of their Proposition~3.1(ii) and the on-diagonal profile
++$[t(1+\log(1+t))]^{-d/2}$ of Proposition~\ref{p.heatkernel}, a tent test function, and the
++Duhamel/Meyer comparison. The repair is written out in Appendix~\ref{sec:heatkernel} (proof of
++Proposition~\ref{p.heatkernel.offdiag}). Formal counterpart: \texttt{LongRange.Statements.heatkernel\_offDiagonal}
++(provider \texttt{LongRange.unitHeat\_offDiagonal\_uniform}), with the cited results of
++\cite{MuruganSaloffCoste2015} and Chen--Kim--Kumagai--Wang as explicit hypotheses.
++
++\noindent\emph{Constant dependence clarified; statements unchanged.} (O2)
++Propositions~\ref{p.heatkernel} and~\ref{p.heatkernel.offdiag} retain the original
++constant $C=C(d,\lambda)$, uniformly over all admissible conductances.
++In the proof of \cite[Theorem~1.1]{MuruganSaloffCoste2015}, the kernel dependence
++is through its jump-comparison constant. The fixed lattice, volume and scale
++profiles and a common jump-comparison constant therefore give one heat-kernel
++constant for every admissible conductance field. The proof below uses a common
++uniformization rate and states this dependence explicitly. No weaker
++configuration-dependent formulation is substituted for either proposition.
++
++\noindent\emph{Audit concern (not a confirmed error).} (O3) Proof of
++Proposition~\ref{p.corrector.domain}: ``for $\eps > 1/2$ the bound holds trivially since $U^\eps$ has
++$O(1)$ points'' is not an argument (the energy sums over all edges touching $U^\eps$, and the affine
++part has a logarithmically divergent second moment). The bound is true: the proof of
++Proposition~\ref{p.dirichlet} gives, for every $\eps \in (0,1)$, the estimate with $|\ln\eps|$ replaced
++by $\kappa_\eps$, from which both propositions follow using $\kappa_\eps \ge c(1+|\ln\eps|)$.
++
++\noindent\emph{Audit concern (not a confirmed error).} (O4) Proof of Theorem~\ref{main.thm}, Step~5:
++Proposition~\ref{p.corrector.domain} is applied to the cubes $V_m^{\widehat\eps_m}$ with a constant
++claimed uniform in $m$ because their diameters are bounded; the proposition as stated has
++$C = C(d,\lambda,U)$ for one $U$. Choosing $\widehat\eps_m = w_U 3^{-m}$ ($w_U$ the side of the smallest
++cube containing a translate of $U$) makes $V_m^{\widehat\eps_m}$ one fixed cube, so the stated
++proposition suffices.
++
++\noindent\emph{Citation refinement.} (R1) Proof of Theorem~\ref{main.thm}, first paragraph: the
++constants ``depending only on $\mu, d, \lambda, \sigma, U$ and $\|f\|_{C^{0,\sigma}}$'' follow from
++\cite{GilbargTrudinger2001}, Theorems~6.19 (regularity), 6.6 (Schauder estimate) and 3.7 (maximum
++principle), and the extension $\widetilde u_\mu$ from Lemma~6.37 of the same book (in place of the
++uncited Stein extension theorem); these results are stated for $d \ge 2$. In dimension $d = 1$ the
++corresponding facts are elementary (ODE on an interval) and are proved directly.
++
++\noindent\emph{Stopping-time convention and citation clarified.} (O5)
++The finite-horizon Aldous criterion uses stopping times for the natural
++filtration of the corresponding process. Its vector-valued, finite-horizon form
++follows from the stopping-time compactness criterion in
++\cite[Chapter~3, Theorem~8.6(c) and Remark~8.7(b)]{EthierKurtz1986}, together with
++finite-horizon Skorokhod complete metrizability
++\cite[Theorems~12.1 and 12.2]{Billingsley1999}. The adapters retain the terminal
++value and the full sequence of laws. This specifies the intended filtration
++without changing the criterion's two conditions. Initial laws, including time
++zero, are included in the finite-dimensional convergence argument.
++
++\noindent\emph{Simplified route (adopted).} (A1) Section~\ref{sec:convergence} can be argued
++without the Euler approximation and without the boundary continuity of (O6). For a ball $B_R$, the
++killed generators act on $L^2(B_R)$ and $\ell^2(B_R \cap \eps\Zd)$, compared through cell averages.
++Theorem~\ref{main.thm}, applied to smooth compactly supported data on a countable dense set, gives
++convergence of the killed resolvents on one full-probability event for all $L^2(B_R)$ data and all
++integers $R \ge 1$. The Trotter--Kato theorem for varying spaces~\cite[Theorem~1.6.1]{EthierKurtz1986}
++then gives uniform convergence of the killed semigroups on bounded time intervals, and a backward
++recursion through bounded multipliers gives convergence of the killed finite-dimensional expectations
++against the killed Brownian motion; the killing is removed as $R \to \infty$ since the exit probability of
++a ball before a fixed time vanishes. Together with relative compactness
++of the laws on $D([0,\infty);\Rd)$ (from the displacement estimate~\eqref{e.displacement.tail} and
++\cite[Chapter~3, Theorem~8.6]{EthierKurtz1986}), this identifies the limit by
++\cite[Chapter~3, Theorem~7.8]{EthierKurtz1986}. Proposition~\ref{p.tightness} likewise follows from this
++relative compactness: the expected increments across the time $T$ are uniformly small by the
++displacement estimate, so no limit law has a fixed jump at $T$; restriction to $[0,T]$ is continuous at
++paths without a jump at $T$, so the restricted laws are relatively compact, hence tight because $D([0,T];\Rd)$
++is Polish~\cite[Theorems~12.1 and 12.2]{Billingsley1999}.
++
++\noindent\emph{Audit concern (not a confirmed error).} (O6) Proof of Theorem~\ref{t.qip}: the
++continuity up to the boundary of $P^U_t h$ for $h \in C(\overline U)$ and $t > 0$ (killed Brownian
++motion on a ball) is attributed to the Feller property in \cite[Section~4.2]{EthierKurtz1986}; that
++section concerns semigroups on $C_0$ and does not by itself give this boundary regularity, which holds
++for balls by the regularity of their boundary points.
++% ---------------------------------------------------------------------------
++
+ 	
+ 	\section{Introduction}
+ 	
+@@ -94,7 +202,7 @@
+ 		\a\left(\frac{x}{\eps}, \frac{x+z}{\eps}\right)
+ 		\frac{h(x+z) - h(x)}{|z|^{d+2}}\,,
+ 	\end{equation}
+-	where $\kappa_\eps \asymp \left| \ln\eps \right|$ normalizes the logarithmically divergent second moment (see~\eqref{e.kappaeps} for the precise definition).
++	where $\kappa_\eps \asymp 1 + \left| \ln\eps \right|$ normalizes the logarithmically divergent second moment (see~\eqref{e.kappaeps} for the precise definition). % REVISED: see correction list
+ 	
+ 	\begin{assumptionU}\label{a.U}
+ 		Let $d \ge 1$ be an integer, let $\lambda \in (0,1]$, and let $\a = \{\a(x,y)\}_{x \ne y}$ be i.i.d.\ symmetric random conductances indexed by unordered edges, satisfying $\a(x,y) = \a(y,x)$ and $\lambda \le \a(x,y) \le \lambda^{-1}$.
+@@ -475,8 +583,10 @@
+ 	
+ 	\subsubsection{Aldous criterion} \label{sec:aldouscriterion}
+ 	
+-	\begin{proposition}[Aldous' criterion for tightness {\cite[Theorem~16.10]{Billingsley1999}}]
++	\begin{proposition}[Aldous' criterion for tightness]
+ 		Let $T > 0$, and let $\{X^n\}$ be a sequence of c\`adl\`ag $\Rd$-valued processes on $[0,T]$.
++		% REVISED (O5): specify the natural stopping filtration.
++		Stopping times below are taken for the natural filtration $\sigma(X^n_s:0\le s\le t)$ of the corresponding process.
+ 		If the following two conditions hold, then $\{X^n\}$ is tight in $D([0,T]; \Rd)$:
+ 		\begin{enumerate}
+ 			\item For every $t \in [0,T]$, the family of laws of $\{X^n_t\}$ is tight in $\Rd$.
+@@ -687,7 +797,7 @@
+ 		F_\eps(p) \coloneqq \frac{\eps^{3d+2}}{\kappa_\eps} \sum_{\substack{x \in U^\eps \\ |z| = \eps}} \Sigma_p(x+z,x)^2.
+ 		\]
+ 		By~\eqref{eq:defnepsstep2}, it suffices to bound $F_\eps(p)$.
+-		Using $|\Sigma_p(x+z,x)| \le \mathcal{O}_2(C|p|\eps^{-d-1})$ and~\eqref{eq:upperboundO2norm}, and noting that $|U^\eps| \asymp \eps^{-d}$, we obtain
++		Using $|\Sigma_p(x+z,x)| \le \mathcal{O}_2(C|p|\eps^{-d-1})$ and~\eqref{eq:upperboundO2norm}, and noting that $|U^\eps| \le C\eps^{-d}$, we obtain % REVISED: see correction list
+ 		\begin{equation} \label{eq:expectationF}
+ 			\E[F_\eps(p)] \le \frac{C\eps^{3d+2}}{\kappa_\eps} \cdot \eps^{-d} \cdot C|p|^2\eps^{-2d-2} \le \frac{C|p|^2}{\kappa_\eps} \le \frac{C|p|^2}{|\ln\eps|}\,.
+ 		\end{equation}
+@@ -711,7 +821,7 @@
+ 		
+ 		For the short-range part, Lemma~\ref{l.path} and Proposition~\ref{sumesonthelattice} (with $\alpha = d$) imply
+ 		\begin{equation} \label{eq:upperboundsigmaSR}
+-			|\Sigma_p^{\mathrm{SR}}(x+z,x)| \le C|p|\eps^{-d-1}|\ln\eps|.
++			|\Sigma_p^{\mathrm{SR}}(x+z,x)| \le C|p|\eps^{-d-1}(1+|\ln\eps|). % REVISED: see correction list
+ 		\end{equation}
+ 		For an edge $e$, write $\delta_{\a(e)} G$ for the supremum of $|G(\a) - G(\a')|$ over conductance configurations $\a,\a'$ differing only on $e$.
+ 		For $\eps \le |v| < 1$, changing the conductance $\a((u+v)/\eps, u/\eps)$ changes $\Sigma_p^{\mathrm{SR}}(x+z,x)$ by at most
+@@ -1754,9 +1864,10 @@
+ 	\end{proposition}
+ 	
+ 	\begin{proof}
+-		The total jump rate $\Lambda_* \coloneqq \sup_{x \in \Zd}\sum_{z \in \Zd \setminus \{0\}}\a(x,x{+}z)|z|^{-(d+2)}$ is finite and depends only on $d$ and $\lambda$.
++		% REVISED (O2): use one dominating rate for every conductance field.
++		Set $\Lambda_* \coloneqq \lambda^{-1}\sum_{z \in \Zd \setminus \{0\}}|z|^{-(d+2)}$. This finite positive number bounds every total jump rate and depends only on $d$ and $\lambda$.
+ 		The lazy uniformization $\widetilde K \coloneqq I + (2\Lambda_*)^{-1}L$ is a symmetric Markov kernel with $\widetilde K(x,x) \ge 1/2$ and $\widetilde K(x,y) \asymp |x-y|^{-(d+2)}$ for $x \ne y$.
+-		By~\cite[Theorem~1.1]{MuruganSaloffCoste2015} (applied on $\Zd$ with counting measure, volume growth $V(r) \asymp (1+r)^d$, and critical index $\beta = \gamma = 2$), together with the Cauchy--Schwarz inequality $\widetilde K^n(x,y) \le (\widetilde K^{2\lfloor n/2\rfloor}(x,x)\widetilde K^{2\lceil n/2\rceil}(y,y))^{1/2}$,
++		By~\cite[Theorem~1.1]{MuruganSaloffCoste2015} (applied on $\Zd$ with counting measure, volume growth $V(r) \asymp (1+r)^d$, and critical index $\beta = \gamma = 2$), with the constant dependence given by its proof and a jump-comparison constant depending only on $d$ and $\lambda$, together with the Cauchy--Schwarz inequality $\widetilde K^n(x,y) \le (\widetilde K^{2\lfloor n/2\rfloor}(x,x)\widetilde K^{2\lceil n/2\rceil}(y,y))^{1/2}$,
+ 		\[
+ 		\widetilde K^n(x,y) \le \frac{C}{\bigl(1 + n\log(2{+}n)\bigr)^{d/2}} \qquad (n \ge 0,\ x \text{ and } y \in \Zd)\,.
+ 		\]
+@@ -1764,7 +1875,8 @@
+ 	\end{proof}
+ 	
+ 	The on-diagonal bound gives no spatial decay.
+-	The following off-diagonal estimate is a consequence of the general framework of Chen, Kumagai, and Wang~\cite[Theorem~1.12]{ChenKumagaiWang2019}, applied with scale function $\phi(r) = r^2/\log(2{+}r)$.
++	% REVISED (G1): the printed derivation from \cite[Theorem~1.12]{ChenKumagaiWang2019} is replaced by a truncation argument.
++	The following off-diagonal estimate follows from a truncation of the long jumps and the Davies-type bound of Chen, Kim, Kumagai and Wang~\cite{ChenKimKumagaiWang2021}.
+ 	
+ 	\begin{proposition}[Off-diagonal heat kernel bound {\cite[Theorem~1.12]{ChenKumagaiWang2019}}]
+ 		\label{p.heatkernel.offdiag}
+@@ -1777,38 +1889,49 @@
+ 	\end{proposition}
+ 	
+ 	\begin{proof}
+-		The on-diagonal bound~\eqref{e.hk.upper} gives the first term in the minimum.
+-		For the spatial tail, we apply~\cite[Theorem~1.12]{ChenKumagaiWang2019} with $\phi_j = \phi_c = \phi$, where $\phi(r) \coloneqq r^2/\log(2{+}r)$.
+-		In our setting ($\Zd$ with counting measure, $V(x,r) \coloneqq |B(x,r) \cap \Zd| \asymp (1+r)^d$), the implication from (5) to (1) in their theorem gives the upper heat kernel estimate
+-		\[
+-		p_t(x,y) \le C\left(\frac{1}{V(x,\phi^{-1}(t))} \wedge \frac{t}{V(x,|x-y|)\phi(|x-y|)}\right)
+-		\]
+-		provided that three conditions are satisfied:
+-		\begin{enumerate}
+-			\item[\textup{(i)}] \emph{On-diagonal bound:} $p_t(x,x) \le C/V(x,\phi^{-1}(t))$ for every $t > 0$ and every $x \in \Zd$.
+-			\item[\textup{(ii)}] \emph{Jump kernel upper bound:} $\a(x,y)|x{-}y|^{-(d+2)} \le C/(V(x,|x-y|)\phi(|x-y|))$ for every $x \ne y$ in $\Zd$.
+-			\item[\textup{(iii)}] \emph{Cutoff Sobolev inequality:} for every $x_0 \in \Zd$ and every $R > 0$ and $r > 0$, there exists a cutoff function $\varphi$ for $B(x_0,R) \subset B(x_0,R{+}r)$ such that for every $f \colon \Zd \to \R$,
+-			\[
+-			\sum_{x \in \Zd}f(x)^2\Gamma(\varphi)(x) \le C_1\mathcal{E}_U(f,f) + \frac{C_2}{\phi(r)}\sum_{x \in \Zd}f(x)^2\,,
+-			\]
+-			where $\Gamma(\varphi)(x) \coloneqq \sum_{\substack{y \in \Zd \\ y \ne x}}\a(x,y)|x{-}y|^{-(d+2)}(\varphi(x) - \varphi(y))^2$ is the carr\'e du champ and $\mathcal{E}_U(f,f)$ is the Dirichlet form restricted to the annulus $U = B(x_0,R{+}r) \setminus B(x_0,R)$.
+-		\end{enumerate}
+-		Since $\phi_j = \phi_c = \phi$, \cite[Remark~1.16(ii)]{ChenKumagaiWang2019} shows that $\mathrm{UHK}(\phi,\phi)$ reduces to the pure-jump estimate $p_t(x,y) \le C(V(x,\phi^{-1}(t))^{-1} \wedge t/(V(x,|x-y|)\phi(|x-y|)))$.
+-		Since $\phi^{-1}(t) \asymp \sqrt{t\log(2{+}t)}$, we have $V(x,\phi^{-1}(t))^{-1} \asymp (1 + t\log(2+t))^{-d/2}$; together with $V(x,r)\phi(r) \asymp (1+r)^d r^2 / \log(2{+}r)$, this is equivalent to~\eqref{e.hk.offdiag}.
+-		We now verify each condition.
+-		
+-		Condition~\textup{(i)} is Proposition~\ref{p.heatkernel}; the on-diagonal bound implies FK$(\phi)$ by~\cite[Proposition~2.1]{ChenKumagaiWang2019}, since~$\Zd$ satisfies volume~doubling.
+-		For condition~\textup{(ii)}, since $\a(x,y) \le \lambda^{-1}$ and $\log(2{+}r) \ge 1$,
+-		\[
+-		\a(x,y)|x{-}y|^{-(d+2)} \le \frac{C\log(2{+}|x-y|)}{|x-y|^{d+2}} \le \frac{C}{V(x,|x-y|)\phi(|x-y|)}\,.
+-		\]
+-		For condition~\textup{(iii)}, take $\varphi(x) \coloneqq (1 - (|x - x_0| - R)^+/r)^+$.
+-		Then $|\varphi(x) - \varphi(y)| \le \min(1, |x{-}y|/r)$, so splitting the carr\'e du champ at $|z| = r$ gives
+-		\[
+-		\Gamma(\varphi)(x) \le \frac{C}{r^2}\sum_{\substack{z \in \Zd \\ 0 < |z| \le r}}|z|^{-d} + C\sum_{\substack{z \in \Zd \\ |z| > r}}|z|^{-(d+2)} \le \frac{C\log(2{+}r)}{r^2} = \frac{C}{\phi(r)}\,,
+-		\]
+-		by shell counting ($\sum_{\substack{z \in \Zd \\ 0 < |z| \le r}}|z|^{-d} \le C\log(2{+}r)$ and $\sum_{\substack{z \in \Zd \\ |z| > r}}|z|^{-(d+2)} \le Cr^{-2}$).
+-		The cutoff Sobolev inequality follows with $C_1 = 0$, since the carr\'e du champ is bounded pointwise by $C/\phi(r)$.
++		% REVISED (G1): repaired proof. The printed proof applied \cite[Theorem~1.12]{ChenKumagaiWang2019}, whose all-radius
++		% hypotheses (FK, and RVD through its Proposition~2.1) fail on $\Zd$ at radii below one.
++		The on-diagonal bound~\eqref{e.hk.upper} gives the first term in the minimum. For the spatial term fix $x \ne y$, set $r \coloneqq |x-y| \ge 1$,
++		$\kappa \coloneqq d/2 + 2$, $\gamma \coloneqq 1/(3\kappa)$ and $\rho \coloneqq \gamma r$, and let $p^\rho_t$ be the heat kernel of the generator $L^\rho$
++		obtained from $L$ by deleting the jumps of length $|z| > \rho$ (uniformized at the same total rate). With
++		$C_\rho \coloneqq \sup_x \sum_{|z|>\rho}\a(x,x{+}z)|z|^{-(d+2)}$, so that $C_\rho \le C\rho^{-2}$ for $\rho \ge 1$, the Meyer comparisons are
++		\[
++		p^\rho_t(x,y) \le e^{C_\rho t}\,p_t(x,y)\,, \qquad
++		p_t(x,y) \le p^\rho_t(x,y) + \lambda^{-1}\max(1,\rho)^{-(d+2)}\,t\,,
++		\]
++		the first by expanding the uniformized semigroups and dominating the deleted jumps by the holding mass, the second by Duhamel's formula
++		and the symmetry of $\a$.
++
++		\emph{Case $\rho < 1$.} Then $L^\rho$ has no off-diagonal jumps, so $p^\rho_t(x,y) = 0$ and $p_t(x,y) \le \lambda^{-1}t \le Ct/r^{d+2}$.
++
++		\emph{Case $\rho \ge 1$: a Davies bound for $p^\rho$.} Let $\phi_*(t) \coloneqq [t(1+\log(1+t))]^{-d/2}$. Since
++		$(1+t\log(2+t))^{-d/2} \le 3^{d/2}\phi_*(t)$, the first comparison and~\eqref{e.hk.upper} give $p^\rho_t(x,y) \le K\phi_*(t)e^{C_\rho t}$ with $K$
++		independent of $\rho$. By \cite[Proposition~3.1(ii)]{ChenKimKumagaiWang2021} this yields, for every finitely supported $f$ with $\|f\|_1 \le 1$,
++		the Nash inequality $\theta(\|f\|_2^2) \le \mathcal{E}^\rho(f,f) + C_\rho\|f\|_2^2$ for the explicit profile $\theta \coloneqq \alpha/(-T')$,
++		$T(s) \coloneqq \psi(s^{-2/d})$, $\psi(u) \coloneqq u/(1+\log(1+u))$, $\alpha \coloneqq (4e^2K^{2/d})^{-1}$; its inverse-tail profile
++		$\phi_N \coloneqq T^{-1}(\alpha\,\cdot)$ satisfies $2^{-d}\phi_*(\alpha\,\cdot) \le \phi_N \le \phi_*(\alpha\,\cdot)$, and $\theta$, $\phi_N$ satisfy the
++		comparison and product conditions of \cite[Theorem~4.4]{ChenKimKumagaiWang2021} with witnesses depending only on $d$. Theorem~4.4 with
++		Example~4.3 of \cite{ChenKimKumagaiWang2021} (with $\epsilon = 1$) then gives, for every finitely supported $\psi$,
++		\[
++		p^\rho_t(x,y) \le A\,\phi_N(at)\,e^{C_\rho t}\exp\bigl(-|\psi(y)-\psi(x)| + 2\Lambda_\rho(\psi)^2 t\bigr)\,,
++		\]
++		where $A,a$ depend only on $d$ and $\Lambda_\rho(\psi)^2$ is the Davies functional of $L^\rho$. For the tent
++		$\psi(z) \coloneqq (\sigma/\rho)\,(r - ||z-x| - r|)^+$ with $\sigma \ge 0$ we have $\psi(x) = 0$, $\psi(y) = \sigma/\gamma$ and, from
++		$(e^b-1)^2 \le b^2e^{2|b|}$ and $\sum_{0<|u|\le\rho}|u|^{-d} \le C(1+\log\rho)$, $\Lambda_\rho(\psi)^2 \le C\sigma^2e^{2\sigma}(1+\log\rho)\rho^{-2}$. Hence
++		\[
++		p^\rho_t(x,y) \le C\phi_*(t)\,e^{C_\rho t}\exp\bigl(-\sigma/\gamma + C\sigma^2e^{2\sigma}(1+\log\rho)\,t\rho^{-2}\bigr)\,.
++		\]
++
++		\emph{Case $\rho \ge 1$, $t \ge \tau_\rho \coloneqq \rho^2/(1+\log\rho)$.} Since $\tau_\rho\log(2+\tau_\rho) \ge c\rho^2$, \eqref{e.hk.upper} gives
++		$p_t(x,y) \le C\rho^{-d} \le Ct\log(2+r)/r^{d+2}$, because $\tau_\rho\log(2+r) \ge cr^2$.
++
++		\emph{Case $\rho \ge 1$, $0 < t < \tau_\rho$.} Put $w \coloneqq t(1+\log\rho)/\rho^2 \in (0,1)$ and $\sigma \coloneqq \tfrac13\log(1/w)$. Then
++		$\sigma/\gamma = \kappa\log(1/w)$, $\sigma^2e^{2\sigma}w = \sigma^2e^{-\sigma} \le 4e^{-2}$ and $C_\rho t \le C$, so $p^\rho_t(x,y) \le C\phi_*(t)\,w^\kappa$.
++		Since $\kappa - 1 - d/2 = 1$, $\phi_*(t)w^{\kappa-1}\rho^d = w\,[(1+\log\rho)/(1+\log(1+t))]^{d/2} \le C$ (treat $t \ge \rho^{1/2}$ and
++		$t < \rho^{1/2}$ separately), whence $p^\rho_t(x,y) \le Cw\rho^{-d} = Ct(1+\log\rho)/\rho^{d+2} \le Ct\log(2+r)/r^{d+2}$. The second comparison
++		adds at most $\lambda^{-1}\gamma^{-(d+2)}t\,r^{-(d+2)}$.
++
++		Combining the cases with~\eqref{e.hk.upper} gives~\eqref{e.hk.offdiag}. The constant depends on that of~\eqref{e.hk.upper} (see (O2)).
+ 	\end{proof}
+ 	
+ 	\begin{remark}
+@@ -1906,6 +2029,12 @@
+ 		\emph{Heat kernel estimates for general symmetric pure jump Dirichlet forms},
+ 		Ann.\ Sc.\ Norm.\ Super.\ Pisa Cl.\ Sci.\ (5) \textbf{23} (2022), 1091--1140.
+ 		
++		% REVISED (G1): reference used by the repaired proof of Proposition B.2.
++		\bibitem{ChenKimKumagaiWang2021}
++		Z.-Q.~Chen, P.~Kim, T.~Kumagai, and J.~Wang,
++		\emph{Heat kernel upper bounds for symmetric Markov semigroups},
++		J.\ Funct.\ Anal.\ \textbf{281} (2021), no.~4, 109074.
++		
+ 		\bibitem{ChenKumagaiWang2020}
+ 		X.~Chen, T.~Kumagai, and J.~Wang,
+ 		\emph{Random conductance models with stable-like jumps: heat kernel estimates and Harnack inequalities},

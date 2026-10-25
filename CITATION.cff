@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: If you use this formalization, please cite it as below.
+title: 'Critical long-range conductance: a Lean 4 formalization'
+abstract: A Lean 4 and Mathlib formalization of quantitative homogenization and the quenched invariance
+  principle for the critical long-range random conductance model, with 23 theorem exports and three
+  complete definition exports. The main theorem produces the unique H10 weak solution and its continuous
+  representative. Results retain explicit cited-input hypotheses; the 16 cited propositions are
+  assumptions, not proofs of the outside papers.
+type: software
+authors:
+- family-names: Bou-Rabee
+  given-names: Ahmed
+- family-names: Dario
+  given-names: Paul
+keywords:
+- Lean
+- mathlib
+- formal verification
+- random conductance model
+- stochastic homogenization
+- long-range random walk
+references:
+- type: article
+  title: Quantitative homogenization for the critical long-range random conductance model
+  authors:
+  - family-names: Bou-Rabee
+    given-names: Ahmed
+  - family-names: Dario
+    given-names: Paul
+  url: https://arxiv.org/abs/2604.21143
+  identifiers:
+  - type: other
+    value: arXiv:2604.21143
+  notes: The paper formalized here, arXiv:2604.21143v1. Original and corrected source are included
+    in paper/.

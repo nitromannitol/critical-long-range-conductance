@@ -19,6 +19,7 @@ keywords:
 - random conductance model
 - stochastic homogenization
 - long-range random walk
+license: Apache-2.0
 references:
 - type: article
   title: Quantitative homogenization for the critical long-range random conductance model

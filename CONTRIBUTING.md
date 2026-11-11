@@ -6,4 +6,4 @@ Changes to theorem statements or genuine definition bodies require mathematical 
 
 Use the pinned dependencies. Run the library build and export axiom check before proposing
 changes, and update CORRESPONDENCE.md when source-facing exports change.
-The publication license is unresolved; see README.md.
+The Lean code is licensed under the Apache License 2.0; see LICENSE and README.md.

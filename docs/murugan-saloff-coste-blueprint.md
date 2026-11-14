@@ -69,8 +69,10 @@ former chooses its constant after the kernel and the latter before the kernel;
 Their file SHA-256 values are respectively
 `5fd8decdd6b7aca538eba1d813d02990d0e51866259e5b1a3008b60f280765db` and
 `11de94beb287009bc7d20269bad156002098d86f5bfb21718c2dafa7251c9574`.
-The independent CLRC vocabulary proposition and `SolutionBridge.lean:79` are
-also conditional; the bridge proves an implication, not the cited input.
+The independent CLRC proposition at
+`LongRangeAudit/QuenchedInvariance/Vocabulary/MuruganSaloffCoste.lean:28`
+and `LongRangeAudit/QuenchedInvariance/SolutionBridge.lean:79` are also
+conditional; the bridge proves an implication, not the cited input.
 
 `LongRange/HeatKernel/UniformOnDiagonal.lean:146–185` calls the conditional
 lattice specialization and uses only `(hbound' n).2`. Its result feeds
@@ -82,7 +84,15 @@ its upper part; that branch feeds truncated/off-diagonal estimates, walk
 tightness and quenched invariance. The uniform theorem also specializes at
 `UniformOnDiagonal.lean:255`. Independently check **every** literal, uniform,
 and independent-vocabulary consumer presently threading `hMSC` when successor
-adapters are installed. Other named inputs to those consumers remain their own
+adapters are installed. The consumer-composition audit also covers
+`LongRange/HeatKernel/{Bounds,OffDiagonal,Truncated}.lean`,
+`LongRange/Walk/{Compactness,DisplacementTail,Increments,InvariancePrinciple,Marginals,Tightness}.lean`,
+`LongRange/Statements/{QuenchedInvariance,QuenchedInvarianceIntro,Tightness}.lean`,
+and `LongRangeAudit/QuenchedInvariance/{Challenge,Solution,SolutionBridge,Vocabulary}.lean`
+plus `Vocabulary/{ChenKimKumagaiWang,MuruganSaloffCoste}.lean` under that audit
+directory. Follow each affected declaration through its callers and audit
+successor composition and preserved hypotheses, including the exports listed
+above. Other named inputs to those consumers remain their own
 obligations; this upper estimate does not close them. No current consumer
 identified here requires the resistance or lower-bound programme.
 
@@ -91,23 +101,32 @@ Permitted mathematical inputs and their actual status:
 | Input | Status and role |
 |---|---|
 | Markov row sum, symmetry, and the displayed two-sided jump comparison for the variable kernel | Exactly the target premises; the comparison includes the diagonal. |
-| Pinned lattice definitions and lemmas: counting mass, distance, volume and inverse-scale comparison, reference Gaussian estimates | Proved source declarations; inspect their imported closures and axiom sets before relying on them. `lattice_evenKernelSup_zero` is already proved at `Uniform.lean:90–96`, unconditionally in `k`. |
-| `unitRates_density_profile_uniform`, `densityPower_one_eq`, `kernelPow_le_sqrt_diag_half`, `poisson_average_profile_le` | Existing proofs used by the conditional continuous-time assembly; the assembly still depends on the open upper estimate. |
+| Pinned lattice definitions and lemmas | Counting mass `Lattice.lean:76`, distance `LatticeVolume.lean:54`, profile `Lattice.lean:26`, inverse-scale comparison `CriticalVolume.lean:13`, reference Gaussian upper `LatticeDistance.lean:20` and lower `LatticeGaussianLower.lean:1196`. These are proved source declarations; audit their imported closures and axiom sets before relying on them. `lattice_evenKernelSup_zero` is proved at `External/MuruganSaloffCosteUniform.lean:92`, unconditionally in `k`. |
+| Continuous-time assembly ingredients | `LongRange/HeatKernel/UniformOnDiagonal.lean:26` (`unitRates_density_profile_uniform`); LP `Analysis/KernelPowerBridge.lean:32` (`densityPower_one_eq`), `KernelPowersCS.lean:179` (`kernelPow_le_sqrt_diag_half`), and `PoissonProfile.lean:192` (`poisson_average_profile_le`). Existing proofs; audit closures. The assembly still depends on the open upper estimate. |
 | Fixed reference-kernel upper estimate from MSC preprint Theorem 3.3, pp. 15–17 | Written for a fixed admissible kernel, **not proved in Lean**; its assumptions and every external dependency must be formalized and audited. It is not an additional premise of the target. |
 | The reference-kernel construction, uniform energy comparison, holding bound, operator/spectral estimates, Nash inversion and scalar recursion | Mathematical route sketched below; these are **open Lean obligations**, not allowed assumptions. |
 | Mathlib and pinned LP results with matching statements and audited closures | Reuse when available. LP's regular-variation Potter result assumes antitonicity and does not directly establish the general MSC scale theorem. `Network/Variational.lean` and `Graph/Nash.lean` are possible infrastructure, not verified matches. |
 
-The Armstrong repository survey identifies no matching MSC result; its closest
-Nash upper theorem concerns a continuum local PDE, not this discrete long-range
-kernel. No exhaustive nonexistence claim is made.
+The dependency survey `work/dl/ARMSTRONG-MATCH.md:82–86` identifies no matching
+MSC result; its closest Nash upper theorem, `Ch5NashStatements/NashUpper.lean:16` in
+EllipticRegularityLean, concerns a continuum local PDE, not this
+discrete long-range kernel. No exhaustive nonexistence claim is made.
 
 ## Source route and remaining boundaries
 
 Preprint pp. 2–4 give the standing assumptions, density conventions and the
 fixed-kernel theorem; pp. 9–10 give Lemmas 2.2–2.4, p. 11 Proposition 2.5,
 pp. 12–13 Proposition 2.1, pp. 13–14 Lemma 3.1, pp. 14–15 Theorem 3.2,
-and pp. 15–17 Theorem 3.3. External regular-variation and Nash/operator inputs
-used there remain open until proved and audited. A source-to-Lean account must
+and pp. 15–17 Theorem 3.3. External regular-variation inputs include Bingham,
+Goldie and Teugels,
+*Regular Variation* (1987), preprint reference [8], especially the results cited
+in Lemma 3.1. For the Nash-to-ultracontractivity step Theorem 3.3 cites Coulhon,
+*Ultracontractivity and Nash Type Inequalities* (1996), [9, Proposition IV.1],
+or Pittet and Saloff-Coste, *A survey on the relationships between volume
+growth, isoperimetry and the behavior of simple random walk on Cayley graphs*,
+[17, Theorem 2.2.1] (listed as in preparation in the preprint). These external
+regular-variation and Nash/operator inputs remain open until proved and audited.
+A source-to-Lean account must
 also justify countable operator domains and `ENNReal`/real conversions.
 
 At the end of the proof of Theorem 3.2 (p. 15), positivity of `K²` alone is
@@ -138,16 +157,18 @@ proof, and the fixed-kernel source estimate is still open.
 | Fixed lattice reference kernel and MSC fixed-kernel upper estimate | XL | Summability/normalization, applicability of MSC, its source and external inputs; no upper estimate is currently available as an unconditional Lean input. |
 | Counting-space operators and energy comparison | L/XL | Domains, contractions, symmetric energy, spectral/functional-calculus and density conversions; prove uniform holding and comparison from the displayed premises. |
 | Super-Poincaré, logarithmic Nash and recursion | L/XL | Obtain fixed-kernel super-Poincaré, quantitative inverse estimates and scalar iteration with constants uniform in the variable kernel. Split into exact bounded statements before allocation. |
-| Consumer assembly and audits | L | Adapt both upper-only consumer branches and the independent vocabulary under the freeze workflow; preserve all other premises, check all actual consumers, builds and axiom closure. Split into bounded statements after interfaces are approved. |
+| Consumer assembly and audits | L | Adapt both upper-only consumer branches and the independent vocabulary under the freeze workflow; preserve all other premises and check all consumers enumerated above, successor composition, builds and axiom closure. Split into bounded statements after interfaces are approved. |
 
 ## Next bounded leaf
 
-**Owner:** c2, subject to the LP owner's allocation and a dedicated LP worktree.
+**Owner:** subject to the LP owner's allocation and a dedicated LP worktree.
 **Size:** S. **Proposed file:**
 `LatticeProb/Graph/LongRangeKernel/CriticalHolding.lean` (new, not a frozen
 statement file). **Source:** pinned `Uniform.lean:69–77`,
-`Lattice.lean:26,76`, `CriticalScale.lean:18`, and MSC preprint p. 15,
-lines around the diagonal `(J_φ)` argument. This leaf extracts the exact
+`Graph/LongRangeKernel/Lattice.lean:26`, `CriticalScale.lean:18`,
+Mathlib `Combinatorics/SimpleGraph/Metric.lean:234` (`SimpleGraph.dist_self` at
+the pinned Mathlib revision), and MSC preprint p. 15, lines around the diagonal
+`(J_φ)` argument. This leaf extracts the exact
 holding lower bound already implicit in the selected comparison:
 
 ```lean
@@ -165,11 +186,34 @@ The graph-distance diagonal and definitions of the two profiles are proved
 inputs; the displayed comparison is exactly a target premise. Neither a Markov
 nor symmetry premise is needed for this leaf. It is a small component, not the
 energy comparison or the uniform upper theorem. **Acceptance:** compile the
-new file in the allocated LP worktree using the prescribed LP lane, check
+new file in the allocated LP worktree using the compile route below, check
 `#print axioms` of the exact declaration for only `propext`,
 `Classical.choice`, and `Quot.sound`, and independently compare binders and
 profile normalization against the pinned target. Do not mark the source theorem
 proved on this leaf's acceptance.
+
+**Compile setup for the leaf.** Base the allocated dedicated LP worktree on
+`origin/longrange-homogenization` commit
+`47027b49b6660ee34c323869b0c88b7eb72f1124` (the CLRC pin). This base has the
+`LatticeProb/Graph/LongRangeKernel/` imports; LP main and the current LP
+`idla/phase2` mirror do not. Its `lean-toolchain` is `leanprover/lean4:v4.32.0`
+and its manifest pins Mathlib at `81a5d257c8e410db227a6665ed08f64fea08e997`.
+After owner allocation and approved worktree setup, provision the pinned cache
+without copying another `.lake`. Let `LP_WORKTREE` denote that worktree and use
+the local `lbuild` wrapper for the following sequence:
+
+```sh
+lbuild "$LP_WORKTREE" exe cache get
+lbuild "$LP_WORKTREE" build LatticeProb.External.MuruganSaloffCosteUniform
+lbuild "$LP_WORKTREE" env lean LatticeProb/Graph/LongRangeKernel/CriticalHolding.lean
+lbuild "$LP_WORKTREE" build LatticeProb.Graph.LongRangeKernel.CriticalHolding
+lbuild "$LP_WORKTREE" env lean path/to/uncommitted-axioms-check.lean
+```
+
+The final scratch imports the built new module and prints axioms for the exact
+leaf declaration. This is a proposed route, not a completed build or an
+authorization to change the pin. The `wlc lp` lane targets the separate
+`idla/phase2` mirror and cannot compile this leaf as currently configured.
 
 Blueprint acceptance is a document review only. Source completion separately
 requires exact successor and consumer composition, clean builds, independent

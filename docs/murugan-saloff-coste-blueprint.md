@@ -101,16 +101,16 @@ Permitted mathematical inputs and their actual status:
 | Input | Status and role |
 |---|---|
 | Markov row sum, symmetry, and the displayed two-sided jump comparison for the variable kernel | Exactly the target premises; the comparison includes the diagonal. |
-| Pinned lattice definitions and lemmas | Counting mass `Lattice.lean:76`, distance `LatticeVolume.lean:54`, profile `Lattice.lean:26`, inverse-scale comparison `CriticalVolume.lean:13`, reference Gaussian upper `LatticeDistance.lean:20` and lower `LatticeGaussianLower.lean:1196`. These are proved source declarations; audit their imported closures and axiom sets before relying on them. `lattice_evenKernelSup_zero` is proved at `External/MuruganSaloffCosteUniform.lean:92`, unconditionally in `k`. |
+| Pinned lattice definitions and lemmas | Counting mass `Graph/LongRangeKernel/Lattice.lean:76`, distance `LatticeVolume.lean:54`, profile `Graph/LongRangeKernel/Lattice.lean:26`, inverse-scale comparison `CriticalVolume.lean:13`, reference Gaussian upper `LatticeDistance.lean:20` and lower `LatticeGaussianLower.lean:1196`. These are proved source declarations; audit their imported closures and axiom sets before relying on them. `lattice_evenKernelSup_zero` is proved at `External/MuruganSaloffCosteUniform.lean:92`, unconditionally in `k`. |
 | Continuous-time assembly ingredients | `LongRange/HeatKernel/UniformOnDiagonal.lean:26` (`unitRates_density_profile_uniform`); LP `Analysis/KernelPowerBridge.lean:32` (`densityPower_one_eq`), `KernelPowersCS.lean:179` (`kernelPow_le_sqrt_diag_half`), and `PoissonProfile.lean:192` (`poisson_average_profile_le`). Existing proofs; audit closures. The assembly still depends on the open upper estimate. |
 | Fixed reference-kernel upper estimate from MSC preprint Theorem 3.3, pp. 15–17 | Written for a fixed admissible kernel, **not proved in Lean**; its assumptions and every external dependency must be formalized and audited. It is not an additional premise of the target. |
 | The reference-kernel construction, uniform energy comparison, holding bound, operator/spectral estimates, Nash inversion and scalar recursion | Mathematical route sketched below; these are **open Lean obligations**, not allowed assumptions. |
 | Mathlib and pinned LP results with matching statements and audited closures | Reuse when available. LP's regular-variation Potter result assumes antitonicity and does not directly establish the general MSC scale theorem. `Network/Variational.lean` and `Graph/Nash.lean` are possible infrastructure, not verified matches. |
 
-The dependency survey `work/dl/ARMSTRONG-MATCH.md:82–86` identifies no matching
-MSC result; its closest Nash upper theorem, `Ch5NashStatements/NashUpper.lean:16` in
-EllipticRegularityLean, concerns a continuum local PDE, not this
-discrete long-range kernel. No exhaustive nonexistence claim is made.
+No matching MSC result has been identified. The closest Nash upper theorem
+found, `nashAronsonUpper` at `Ch5NashStatements/NashUpper.lean:16` in
+EllipticRegularityLean (commit `1e29da0`), concerns a continuum local PDE, not
+this discrete long-range kernel. No exhaustive nonexistence claim is made.
 
 ## Source route and remaining boundaries
 
@@ -196,24 +196,22 @@ proved on this leaf's acceptance.
 `origin/longrange-homogenization` commit
 `47027b49b6660ee34c323869b0c88b7eb72f1124` (the CLRC pin). This base has the
 `LatticeProb/Graph/LongRangeKernel/` imports; LP main and the current LP
-`idla/phase2` mirror do not. Its `lean-toolchain` is `leanprover/lean4:v4.32.0`
+`idla/phase2` branch do not. Its `lean-toolchain` is `leanprover/lean4:v4.32.0`
 and its manifest pins Mathlib at `81a5d257c8e410db227a6665ed08f64fea08e997`.
-After owner allocation and approved worktree setup, provision the pinned cache
-without copying another `.lake`. Let `LP_WORKTREE` denote that worktree and use
-the local `lbuild` wrapper for the following sequence:
+After owner allocation and approved worktree setup, run the following sequence
+from the root of that worktree:
 
 ```sh
-lbuild "$LP_WORKTREE" exe cache get
-lbuild "$LP_WORKTREE" build LatticeProb.External.MuruganSaloffCosteUniform
-lbuild "$LP_WORKTREE" env lean LatticeProb/Graph/LongRangeKernel/CriticalHolding.lean
-lbuild "$LP_WORKTREE" build LatticeProb.Graph.LongRangeKernel.CriticalHolding
-lbuild "$LP_WORKTREE" env lean path/to/uncommitted-axioms-check.lean
+lake exe cache get
+lake build LatticeProb.External.MuruganSaloffCosteUniform
+lake env lean LatticeProb/Graph/LongRangeKernel/CriticalHolding.lean
+lake build LatticeProb.Graph.LongRangeKernel.CriticalHolding
+lake env lean path/to/uncommitted-axioms-check.lean
 ```
 
 The final scratch imports the built new module and prints axioms for the exact
 leaf declaration. This is a proposed route, not a completed build or an
-authorization to change the pin. The `wlc lp` lane targets the separate
-`idla/phase2` mirror and cannot compile this leaf as currently configured.
+authorization to change the pin.
 
 Blueprint acceptance is a document review only. Source completion separately
 requires exact successor and consumer composition, clean builds, independent

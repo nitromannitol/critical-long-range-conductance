@@ -6,7 +6,7 @@ project:
   authors:
   - Ahmed Bou-Rabee
   - Paul Dario
-  license: TODO(author)
+  license: Apache-2.0
   github: https://github.com/nitromannitol/critical-long-range-conductance
 sources:
 - id: arXiv:2604.21143v1
@@ -140,7 +140,7 @@ fidelity:
   correspondence: CORRESPONDENCE.md
   paper_equality: Abstract and all three main theorem blocks are byte-identical to the original source.
 publication:
-  license: TODO(author)
+  license: Apache-2.0
   paper_license: TODO(author)
   release_verification: 'passed locally: clean standalone build, all 26 public export axiom checks, all
     three independent comparator targets, source correspondence and exact dependency pins'

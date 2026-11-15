@@ -65,5 +65,5 @@ an exact changes record. Its abstract and three main theorem statements are unch
 The [corrected article PDF](paper/critical-long-range-rw-revised.pdf) is included.
 See [CITATION.cff](CITATION.cff) for citation data.
 
-A publication license has not yet been selected for the software or paper source.
-No software license grant is asserted by this repository.
+The Lean code is licensed under the Apache License 2.0; see [LICENSE](LICENSE). A license
+for the paper source in [paper/](paper/) has not yet been selected.

@@ -295,6 +295,22 @@ theorem measurable_continuumHeat_time {d : ℕ} (hd : 1 ≤ d) {f : (Fin d → �
     exact (continuousAt_const.congr he.symm).continuousWithinAt
   · exact (hasDerivAt_continuumHeat hd hf hfc hp x).continuousAt.continuousWithinAt
 
+/-- The coordinate derivative of the lattice error is measurable in time. -/
+theorem measurable_latticeHeat_error_derivative_time {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    (q : Site d) :
+    Measurable (fun t => generator ε a (latticeHeat ε a f t) q -
+      restrict ε (continuumHeat (contOp d f) t) q) := by
+  have hm (q : Site d) : Measurable (fun t => latticeHeat ε a f t q) :=
+    (show Differentiable ℝ (fun t => latticeHeat ε a f t q) from fun t =>
+      (hasDerivAt_latticeHeat hd hε hlam ha hfc t q).differentiableAt).continuous.measurable
+  apply Measurable.sub
+  · exact measurable_generator ε (fun _ : ℝ => a) (fun _ => measurable_const)
+      (fun t => latticeHeat ε a f t) hm q
+  · exact measurable_continuumHeat_time hd (contDiff_contOp hf) (hasCompactSupport_contOp hf hfc)
+      (physical ε q)
+
 /-- The time-integrated forcing field has Gaussian tails. -/
 theorem sampled_forcing_integral_isOq {d : ℕ} (hd : 1 ≤ d)
     {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
@@ -396,6 +412,99 @@ theorem intervalIntegrable_energy_of_uniform_l2_bounds {d : ℕ} (ε : ℝ) (w w
       _ ≤ _ := mul_le_mul_of_nonneg_left (hbound t ht) (abs_nonneg _)
   exact ⟨(intervalIntegrable_iff_integrableOn_Icc_of_le hT).mpr hi, hiq,
     (intervalIntegrable_iff_integrableOn_Icc_of_le hT).mpr hinner⟩
+
+/-- The generator is additive on square-summable lattice functions. -/
+theorem generator_sub_of_memL2 {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {u v : Site d → ℝ} (hu : MemL2 u) (hv : MemL2 v) (q : Site d) :
+    generator ε a (fun x => u x - v x) q = generator ε a u q - generator ε a v q := by
+  have hm (w : Site d → ℝ) (hw : MemL2 w) : Memℓp w 2 := by
+    apply memℓp_gen
+    simpa [MemL2, Real.norm_eq_abs, Real.rpow_two] using hw
+  let U : lp (fun _ : Site d => ℝ) 2 := ⟨u, hm u hu⟩
+  let V : lp (fun _ : Site d => ℝ) 2 := ⟨v, hm v hv⟩
+  have h := congrArg (fun z : lp (fun _ : Site d => ℝ) 2 => z q)
+    ((generatorL2 hd hε hlam ha).map_sub U V)
+  change generator ε a (fun x => u x - v x) q = generator ε a u q - generator ε a v q at h
+  exact h
+
+/-- The square sum of a difference is controlled by the two square sums. -/
+theorem tsum_sq_sub_le {d : ℕ} {u v : Site d → ℝ} (hu : MemL2 u) (hv : MemL2 v) :
+    (∑' q, (u q - v q) ^ 2) ≤ 2 * ((∑' q, u q ^ 2) + ∑' q, v q ^ 2) := by
+  have h := Summable.tsum_le_tsum (fun q : Site d => show (u q - v q) ^ 2 ≤
+      2 * (u q ^ 2 + v q ^ 2) by nlinarith [sq_nonneg (u q + v q)])
+    (memL2_sub hu hv) ((hu.add hv).mul_left 2)
+  simpa only [tsum_mul_left, hu.tsum_add hv] using h
+
+/-- The error and its time derivative have uniform square-sum bounds. -/
+theorem exists_latticeHeat_error_uniform_l2_bounds {d : ℕ} (hd : 1 ≤ d) {ε lam T : ℝ} (hε : 0 < ε) (hε1 : ε ≤ 1)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f) :
+    ∃ R S : ℝ, ∀ t ∈ Icc 0 T,
+      (∑' q, (latticeHeat ε a f t q - restrict ε (continuumHeat f t) q) ^ 2) ≤ R ∧
+      (∑' q, (generator ε a (latticeHeat ε a f t) q -
+        restrict ε (continuumHeat (contOp d f) t) q) ^ 2) ≤ S := by
+  obtain ⟨R, S, hRS⟩ := exists_latticeHeat_uniform_l2_bounds hd hε hlam ha hfc T
+  obtain ⟨P, hP⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1 hf.continuous hfc
+  obtain ⟨Q, hQ⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1
+    (contDiff_contOp hf).continuous (hasCompactSupport_contOp hf hfc)
+  refine ⟨2 * (R + P), 2 * (S + Q), fun t ht => ⟨?_, ?_⟩⟩
+  · have h := tsum_sq_sub_le (memL2_latticeHeat hd hε hlam ha hfc t) (hP t ht.1).1
+    nlinarith [(hRS t ht).1, (hP t ht.1).2]
+  · have h := tsum_sq_sub_le (memL2_generator hd hε hlam ha
+      (memL2_latticeHeat hd hε hlam ha hfc t)) (hQ t ht.1).1
+    nlinarith [(hRS t ht).2, (hQ t ht.1).2]
+
+/-- The lattice-error energy summands are integrable on bounded time intervals. -/
+theorem intervalIntegrable_latticeHeat_error_energy {d : ℕ} (hd : 1 ≤ d) {ε lam T : ℝ} (hε : 0 < ε) (hε1 : ε ≤ 1)
+    (hlam : 0 < lam) (hT : 0 ≤ T) {a : Edge d → ℝ}
+    (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f) :
+    let w := fun t q => latticeHeat ε a f t q - restrict ε (continuumHeat f t) q
+    let w' := fun t q => generator ε a (latticeHeat ε a f t) q -
+      restrict ε (continuumHeat (contOp d f) t) q
+    IntervalIntegrable (fun t => ∑' q, |2 * w t q * w' t q|) volume 0 T ∧
+      (∀ q, IntervalIntegrable (fun t => 2 * w t q * w' t q) volume 0 T) ∧
+      IntervalIntegrable (fun t => 2 * latticeInner ε (w t) (w' t)) volume 0 T := by
+  dsimp only
+  obtain ⟨R, S, hRS⟩ := exists_latticeHeat_error_uniform_l2_bounds hd hε hε1 hlam ha hf hfc
+  obtain ⟨P, hP⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1 hf.continuous hfc
+  obtain ⟨Q, hQ⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1
+    (contDiff_contOp hf).continuous (hasCompactSupport_contOp hf hfc)
+  apply intervalIntegrable_energy_of_uniform_l2_bounds ε _ _ hT
+  · intro q
+    apply Measurable.sub
+    · exact (show Differentiable ℝ (fun t => latticeHeat ε a f t q) from fun t =>
+        (hasDerivAt_latticeHeat hd hε hlam ha hfc t q).differentiableAt).continuous.measurable
+    · exact measurable_continuumHeat_time hd hf hfc (physical ε q)
+  · intro q
+    exact measurable_latticeHeat_error_derivative_time hd hε hlam ha hf hfc q
+  · intro t ht
+    exact memL2_sub (memL2_latticeHeat hd hε hlam ha hfc t) (hP t ht.1).1
+  · intro t ht
+    exact memL2_sub (memL2_generator hd hε hlam ha
+      (memL2_latticeHeat hd hε hlam ha hfc t)) (hQ t ht.1).1
+  · intro t ht
+    exact (hRS t ht).1
+  · intro t ht
+    exact (hRS t ht).2
+
+/-- The lattice error satisfies the mean and random forcing decomposition. -/
+theorem latticeHeat_error_evolution {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hε1 : ε ≤ 1)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    {t : ℝ} (ht : 0 ≤ t) (q : Site d) :
+    generator ε a (latticeHeat ε a f t) q - restrict ε (continuumHeat (contOp d f) t) q =
+      generator ε a (fun q => latticeHeat ε a f t q - restrict ε (continuumHeat f t) q) q -
+        (contOp d (continuumHeat f t) (physical ε q) -
+          meanGenerator ε (restrict ε (continuumHeat f t)) q) -
+        (meanGenerator ε (restrict ε (continuumHeat f t)) q -
+          generator ε a (restrict ε (continuumHeat f t)) q) := by
+  obtain ⟨P, hP⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1 hf.continuous hfc
+  rw [generator_sub_of_memL2 hd hε hlam ha (memL2_latticeHeat hd hε hlam ha hfc t)
+    (hP t ht).1, contOp_continuumHeat hd hf hfc ht]
+  unfold LongRangeHeat.restrict
+  ring
 
 /-- The lattice energy estimate under uniform square-summability bounds. -/
 theorem sSup_latticeNorm_le_of_uniform_l2_forcing {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ}

@@ -1,19 +1,20 @@
-import LongRangeHeat.Forcing
+import LongRangeHeat.SampledForcing
 
 /-!
 # The telescoping identity (3.2) and Proposition 3.2
 
 Statements of the telescoping identity (3.2) along the canonical paths `γ_{x,z}`, of the count
 of the translates of `γ_{0,z}` crossing a given edge (which makes the sums (3.3) finite), and of
-Proposition 3.2 (`prop:forcing`) of the heat-kernel version for a square-summable function `g`
-with an increment bound `‖g(· + w) - g‖ ≤ K min(|εw|, 1)` in place of the sampled solution
-`ū_s`.
+Proposition 3.2 (`prop:forcing`) of the heat-kernel version, first for a square-summable function
+`g` with an increment bound `‖g(· + w) - g‖ ≤ K min(|εw|, 1)` and then for the sampled solution
+`ū_s = restrict ε (continuumHeat f s)`.
 -/
 
 namespace LongRangeHeat.Statements
 
 open LatticeProb LatticeProb.Euclidean.Lattice
 open LongRange (generator kappa Edge)
+open scoped ContDiff
 
 /-- **The telescoping identity (3.2).** For `ε ≠ 0`, every `v : εℤ^d → ℝ` and all
 `x, z ∈ εℤ^d` (here `z = εw`), `v(x + z) - v(x) = ε ∑_{(y,i) ∈ γ_{x,z}} sgn(z_i) D_i v(y)`. -/
@@ -50,5 +51,25 @@ theorem forcing_representation_of_increment {d : ℕ} (hd : 1 ≤ d) {lam : ℝ}
           (kappa d ε)⁻¹ * ∑ i, latticeInner ε (forcingField ε a g i) (discreteDeriv ε i v)| ≤
           C * K / kappa d ε * latticeNorm ε v :=
   LongRangeHeat.forcing_representation_of_increment hd hlam
+
+/-- **Proposition 3.2** (`prop:forcing`, representation of the random term). For
+`f ∈ C_c^∞(ℝ^d)` there is `C = C(d, λ, f)` such that for every `ε ∈ (0, 1/2)`, every realization
+`a` of the conductances with values in `[λ, λ⁻¹]`, every `s ≥ 0` and every `v ∈ L²(εℤ^d)`,
+`|⟨(L̄ - L^ε) ū_s, v⟩ - κ_ε⁻¹ ⟨G(s, ·), D v⟩| ≤ (C / κ_ε) ‖v‖`, where `G(s, ·)` is the field
+(3.3); `(L̄ - L^ε) ū_s` and the components of `G(s, ·)` lie in `L²(εℤ^d)`. -/
+theorem forcing_representation {d : ℕ} (hd : 1 ≤ d) {f : (Fin d → ℝ) → ℝ}
+    (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f) {lam : ℝ} (hlam : lam ∈ Set.Ioc (0 : ℝ) 1) :
+    ∃ C : ℝ, ∀ ε ∈ Set.Ioo (0 : ℝ) (1 / 2), ∀ a : Edge d → ℝ,
+      (∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) → ∀ s : ℝ, 0 ≤ s →
+      MemL2 (fun q => meanGenerator ε (restrict ε (continuumHeat f s)) q -
+        generator ε a (restrict ε (continuumHeat f s)) q) ∧
+      (∀ i, MemL2 (forcingField ε a (restrict ε (continuumHeat f s)) i)) ∧
+      ∀ v : Site d → ℝ, MemL2 v →
+        |latticeInner ε (fun q => meanGenerator ε (restrict ε (continuumHeat f s)) q -
+            generator ε a (restrict ε (continuumHeat f s)) q) v -
+          (kappa d ε)⁻¹ * ∑ i, latticeInner ε
+            (forcingField ε a (restrict ε (continuumHeat f s)) i) (discreteDeriv ε i v)| ≤
+          C / kappa d ε * latticeNorm ε v :=
+  LongRangeHeat.forcing_representation_sampled hd hf hfc hlam
 
 end LongRangeHeat.Statements

@@ -8,6 +8,7 @@ import LongRangeHeat.Forcing
 import LongRangeHeat.Statements.Forcing
 import LongRangeHeat.GaussianTails
 import LongRangeHeat.Statements.GaussianTails
+import LongRangeHeat.SampledForcing
 import LongRangeHeat.Continuum
 import LongRangeHeat.Sampling
 import LongRangeHeat.Statements.Sampling

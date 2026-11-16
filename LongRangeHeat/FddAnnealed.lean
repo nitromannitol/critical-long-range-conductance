@@ -79,6 +79,65 @@ theorem integral_quenchedLaw_pathProd (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) {
 
 end Quenched
 
+section Annealed
+
+variable {d : ℕ}
+
+/-- The quenched expectation of a measurable observable of the path is a measurable function of
+the environment. -/
+theorem measurable_integral_quenchedLaw (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) {lam : ℝ}
+    (hlam : 0 < lam) {Ω : Type*} [MeasurableSpace Ω] (a : Ω → Edge d → ℝ)
+    (ha : ∀ r e, lam ≤ a r e ∧ a r e ≤ lam⁻¹) (hma : ∀ e, Measurable fun r => a r e)
+    {f : PathSpace d → ℝ} (hf : Measurable f) :
+    Measurable fun r =>
+      ∫ X, f X ∂(quenchedLaw hd hε hlam (a r) (ha r) 0 : Measure (PathSpace d)) := by
+  let κ : Kernel Ω (PathSpace d) :=
+    ⟨fun r => (quenchedLaw hd hε hlam (a r) (ha r) 0 : Measure (PathSpace d)),
+      measurable_quenchedLaw hd hε hlam a ha hma 0⟩
+  exact (hf.stronglyMeasurable.integral_kernel (κ := κ)).measurable
+
+/-- The product of the observations, averaged over the environment, is the annealed expectation. -/
+theorem integral_annealedLaw_pathProd (hd : 1 ≤ d) {Ω : Type} [MeasurableSpace Ω]
+    (P : Measure Ω) {lam : ℝ} (a : Ω → Edge d → ℝ) (hP : ConductanceLaw P lam a) {ε : ℝ}
+    (hε : 0 < ε) {k : ℕ} (t : Fin k → ℝ≥0) (ht : Monotone t) {g : Fin k → (Fin d → ℝ) → ℝ}
+    (hgc : ∀ i, Continuous (g i)) {M : ℝ} (hM : 0 ≤ M) (hg : ∀ i x, |g i x| ≤ M) :
+    ∫ X, pathProd t g X ∂(annealedLaw hd P a hP hε : Measure (PathSpace d)) =
+      ∫ r, chainExp (walkRates hd hε hP.lam_mem.1 (a r) (hP.bounds r)) k (timeIncr t)
+        (fun i => restrict ε (g i)) 0 ∂P := by
+  have := hP.isProbabilityMeasure
+  have hmeas := measurable_pathProd t hgc
+  have hann : (annealedLaw hd P a hP hε : Measure (PathSpace d)) =
+      P.bind fun r => (quenchedLaw hd hε hP.lam_mem.1 (a r) (hP.bounds r) 0 :
+        Measure (PathSpace d)) := rfl
+  have hint : Integrable (pathProd t g)
+      (annealedLaw hd P a hP hε : Measure (PathSpace d)) :=
+    Integrable.of_bound hmeas.aestronglyMeasurable (M ^ k)
+      (Eventually.of_forall fun X => by simpa using abs_pathProd_le t hg X)
+  rw [hann] at hint ⊢
+  rw [integral_bind_of_integrable P _ (measurable_quenchedLaw hd hε hP.lam_mem.1 a hP.bounds
+    hP.measurable 0) hint]
+  exact integral_congr_ae (Eventually.of_forall fun r =>
+    integral_quenchedLaw_pathProd hd hε hP.lam_mem.1 (a r) (hP.bounds r) t ht hgc hM hg)
+
+/-- The quenched expectation of a product of observations is a measurable function of the
+environment. -/
+theorem measurable_chainExp_env (hd : 1 ≤ d) {Ω : Type*} [MeasurableSpace Ω] {lam : ℝ}
+    (a : Ω → Edge d → ℝ) (ha : ∀ r e, lam ≤ a r e ∧ a r e ≤ lam⁻¹)
+    (hlam : 0 < lam) (hma : ∀ e, Measurable fun r => a r e) {ε : ℝ} (hε : 0 < ε) {k : ℕ}
+    (t : Fin k → ℝ≥0) (ht : Monotone t) {g : Fin k → (Fin d → ℝ) → ℝ}
+    (hgc : ∀ i, Continuous (g i)) {M : ℝ} (hM : 0 ≤ M) (hg : ∀ i x, |g i x| ≤ M) :
+    Measurable fun r => chainExp (walkRates hd hε hlam (a r) (ha r)) k (timeIncr t)
+        (fun i => restrict ε (g i)) 0 := by
+  have h := measurable_integral_quenchedLaw hd hε hlam a ha hma (measurable_pathProd t hgc)
+  have heq : (fun r => chainExp (walkRates hd hε hlam (a r) (ha r)) k (timeIncr t)
+      (fun i => restrict ε (g i)) 0) = fun r =>
+      ∫ X, pathProd t g X ∂(quenchedLaw hd hε hlam (a r) (ha r) 0 : Measure (PathSpace d)) :=
+    funext fun r => (integral_quenchedLaw_pathProd hd hε hlam (a r) (ha r) t ht hgc hM hg).symm
+  rw [heq]
+  exact h
+
+end Annealed
+
 end
 
 end LongRangeHeat

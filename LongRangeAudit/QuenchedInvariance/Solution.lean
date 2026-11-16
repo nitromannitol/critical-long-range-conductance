@@ -2,8 +2,8 @@ import LongRangeAudit.QuenchedInvariance.SolutionBridge
 
 namespace LongRangeAudit.QuenchedInvariance
 noncomputable section
-open Filter MeasureTheory LongRange LatticeProb LatticeProb.Euclidean.Lattice
-open LatticeProb.Cadlag.HalfLine
+open Filter MeasureTheory _root_.LongRangeAudit.QuenchedInvariance.LongRange _root_.LongRangeAudit.QuenchedInvariance.LatticeProb _root_.LongRangeAudit.QuenchedInvariance.LatticeProb.Euclidean.Lattice
+open _root_.LongRangeAudit.QuenchedInvariance.LatticeProb.Cadlag.HalfLine
 open scoped ENNReal Topology
 
 -- Use the same independently defined Borel instance as the Challenge.
@@ -37,7 +37,7 @@ theorem quenched_invariance_principle
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -49,7 +49,7 @@ theorem quenched_invariance_principle
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable))  := by
+              F))  := by
   exact _root_.LongRange.quenched_invariance_principle_of_cited h619 h66 h37 h637 h614
     (trotterKato hTK) hRC hFdd (muruganSaloffCoste hMSC)
     (chenKimKumagaiWangNash hNash) (chenKimKumagaiWangDavies hDavies)
@@ -84,7 +84,7 @@ theorem quenched_invariance_principle_intro
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -96,7 +96,7 @@ theorem quenched_invariance_principle_intro
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable))  := by
+              F))  := by
   exact _root_.LongRange.quenched_invariance_principle_intro_of_cited h619 h66 h37 h637 h614
     (trotterKato hTK) hRC hFdd (muruganSaloffCoste hMSC)
     (chenKimKumagaiWangNash hNash) (chenKimKumagaiWangDavies hDavies)

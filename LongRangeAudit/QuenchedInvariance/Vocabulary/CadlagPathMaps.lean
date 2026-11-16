@@ -58,8 +58,8 @@ end D
 /-- Every regular jump history is càdlàg after an arbitrary map of its states. -/
 theorem isCadlag_position (h : JumpChain.RegularHistory S) (ι : S → E) :
     IsCadlag (fun t => ι (h.position t)) := by
-  letI : TopologicalSpace S := ⊥
-  letI : DiscreteTopology S := discreteTopology_bot S
+  let : TopologicalSpace S := ⊥
+  let : DiscreteTopology S := discreteTopology_bot S
   have hι : Continuous ι := continuous_of_discreteTopology
   constructor
   · intro t

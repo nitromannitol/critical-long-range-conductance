@@ -20,7 +20,7 @@ theorem cellCube_eq_pi (ε : ℝ) (q : Site d) :
     cellCube ε q = Set.pi Set.univ
       (fun i => Set.Ico (physical ε q i - ε / 2) (physical ε q i + ε / 2)) := by
   ext y
-  simp only [cellCube, Set.mem_setOf_eq, Set.mem_pi, Set.mem_univ, Set.mem_Ico,
+  simp only [cellCube, Set.mem_ofPred_eq, Set.mem_pi, Set.mem_univ, Set.mem_Ico,
     forall_const]
 
 /-- Full cells are Lebesgue measurable. -/

@@ -58,7 +58,7 @@ theorem p_eq_add (rates : BoundedRates S) (i j : S) :
   by_cases h : j = i
   · subst j
     simp only [p, ite_true, rates.q_self, zero_div, add_zero]
-  · simp only [p, if_neg h, zero_add]
+  · simp only [p, ite_eq_right h, zero_add]
 
 /-- A row of the uniformized transition matrix sums to one. -/
 theorem hasSum_p (rates : BoundedRates S) (i : S) : HasSum (rates.p i) 1 := by

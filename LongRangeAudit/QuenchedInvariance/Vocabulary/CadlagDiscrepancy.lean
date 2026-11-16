@@ -45,7 +45,7 @@ theorem discrepancy_eq_iSup_rat (x y : D E) (l : LambdaPrime) (u : Time) :
             U ∩ Ioi t ∈ 𝓝[>] t)
       obtain ⟨s, hs⟩ := hS.inter_open_nonempty (U ∩ Ioi t) (hU.inter isOpen_Ioi) hne
       exact ⟨s, hs.1.1, hs.2, hs.1.2⟩
-    letI := hn
+    let := hn
     have hsub : S ∩ Ioi t ⊆ Ici t := fun s hs =>
       (show t < s from hs.2).le
     have hx := ((x.2.stop u).1 t).mono hsub
@@ -80,9 +80,9 @@ theorem measurable_discrepancy (x y : D E) (l : LambdaPrime) :
   intro u hu
   by_contra hnot
   have ha : ContinuousAt (fun u => x.1 (min u (r : ℝ).toNNReal)) u := by
-    simpa only [mem_union, mem_setOf_eq, not_or, not_not] using (not_or.mp hnot).1
+    simpa only [mem_union, mem_ofPred_eq, not_or, not_not] using (not_or.mp hnot).1
   have hb : ContinuousAt (fun u => y.1 (min u (l (r : ℝ).toNNReal))) u := by
-    simpa only [mem_union, mem_setOf_eq, not_or, not_not] using (not_or.mp hnot).2
+    simpa only [mem_union, mem_ofPred_eq, not_or, not_not] using (not_or.mp hnot).2
   apply hu
   simpa only [ContinuousAt, q, min_comm] using (ha.edist hb).min continuousAt_const
 

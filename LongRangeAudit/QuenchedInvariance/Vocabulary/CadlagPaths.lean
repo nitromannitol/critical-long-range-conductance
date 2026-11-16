@@ -99,7 +99,7 @@ theorem IsCadlag.countable_oscillationSet (hx : IsCadlag x)
     {ε : ℝ} (hε : 0 < ε) : (oscillationSet x ε).Countable := by
   suffices h : ∀ t ∈ oscillationSet x ε,
       𝓝[oscillationSet x ε ∩ Ioi t] t = ⊥ by
-    exact (countable_setOf_isolated_right_within
+    exact (countable_setOfPred_isolated_right_within
       (s := oscillationSet x ε)).mono (by
         intro t ht
         exact ⟨ht, h t ht⟩)
@@ -155,7 +155,7 @@ theorem IsCadlag.eq_of_eqOn_dense (hx : IsCadlag x) (hy : IsCadlag y)
       exact Filter.nonempty_of_mem hm
     obtain ⟨s, hs⟩ := hS.inter_open_nonempty (U ∩ Ioi t) (hU.inter isOpen_Ioi) hne
     exact ⟨s, hs.1.1, hs.2, hs.1.2⟩
-  letI := hn
+  let := hn
   have hsub : S ∩ Ioi t ⊆ Ici t := by
     intro s hs
     exact (show t < s from hs.2).le

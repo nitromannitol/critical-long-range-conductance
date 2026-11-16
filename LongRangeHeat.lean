@@ -17,3 +17,4 @@ import LongRangeHeat.MeanOperator
 import LongRangeHeat.Statements.MeanOperator
 import LongRangeHeat.HeatKernelBounds
 import LongRangeHeat.Statements.HeatKernelBounds
+import LongRangeHeat.WalkSemigroup

@@ -15,3 +15,5 @@ import LongRangeHeat.Statements.Sampling
 import LongRangeHeat.SecondMoment
 import LongRangeHeat.MeanOperator
 import LongRangeHeat.Statements.MeanOperator
+import LongRangeHeat.HeatKernelBounds
+import LongRangeHeat.Statements.HeatKernelBounds

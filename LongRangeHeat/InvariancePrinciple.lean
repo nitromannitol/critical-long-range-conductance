@@ -1,6 +1,7 @@
 import LongRangeHeat.Aldous
 import LongRange.Support.Prob.Cadlag.HalfLine.FddAssembly
 import LongRange.Support.Prob.Cadlag.HalfLine.AldousHalfLine
+import LatticeProb.Prob.BrownianPathSpace
 
 /-!
 # The annealed invariance principle: assembly
@@ -284,6 +285,64 @@ theorem annealed_invariance_of_fdd
   simpa only [LatticeProb.productTest_apply] using h
 
 end Annealed
+
+section Brownian
+
+/-- The continuous path `t ↦ s W_t` of a Brownian path `W`, as an element of the Skorokhod
+space. -/
+def scaledBrownianPath (s : ℝ) (w : BrownianPath d) : PathSpace d :=
+  D.ofContinuous ⟨fun t => s • w t, w.continuous.const_smul s⟩
+
+theorem measurable_scaledBrownianPath (s : ℝ) : Measurable (scaledBrownianPath (d := d) s) := by
+  apply measurable_iff_measurable_eval.mpr
+  intro t
+  change Measurable (fun w : BrownianPath d => s • w t)
+  exact ((continuous_eval_const t : Continuous fun w : BrownianPath d => w t).measurable).const_smul s
+
+/-- The joint law of the evaluations of `s W` is the law of the corresponding evaluations of the
+Brownian path. -/
+theorem jointLaw_map_scaledBrownianPath (B : ProbabilityMeasure (BrownianPath d)) (s : ℝ)
+    {k : ℕ} (ts : Fin k → ℝ≥0) :
+    jointLaw (B.map (scaledBrownianPath s)) ts =
+      B.map (fun w : BrownianPath d => fun j => s • w (ts j)) := by
+  apply Subtype.ext
+  change Measure.map _ (Measure.map _ (B : Measure (BrownianPath d))) = Measure.map _ _
+  rw [Measure.map_map (measurable_pi_iff.mpr fun j => measurable_eval (ts j))
+    (measurable_scaledBrownianPath s)]
+  rfl
+
+variable {hd : 1 ≤ d} {Ω : Type} [MeasurableSpace Ω] {P : Measure Ω} {lam : ℝ}
+  {a : Ω → Edge d → ℝ}
+
+/-- **The annealed invariance principle from finite-dimensional convergence.** If, along every
+sequence `ε_n → 0` in `(0, 1/2)`, the finite-dimensional marginals of the annealed laws at
+strictly increasing positive times converge weakly to those of `s W`, then the annealed laws
+converge weakly, as `ε → 0` in `(0, 1/2)`, to the law of `s W`. -/
+theorem annealed_invariance_of_brownian_fdd
+    (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
+    (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
+    (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)
+    (hEK : LatticeProb.External.EthierKurtzRelativeCompactnessStopping)
+    (hFdd : LatticeProb.External.EthierKurtzConvergenceFromFdd)
+    (hP : ConductanceLaw P lam a) (B : ProbabilityMeasure (BrownianPath d)) (s : ℝ)
+    (hfdd : ∀ (ε : ℕ → ℝ) (hε : ∀ n, ε n ∈ Set.Ioo (0 : ℝ) (1 / 2)), Tendsto ε atTop (𝓝 0) →
+      ∀ {k : ℕ} (ts : Fin k → ℝ≥0), StrictMono ts → (∀ j, 0 < ts j) →
+        Tendsto (fun n => (annealedLaw hd P a hP (hε n).1).map
+          (fun X : PathSpace d => fun j => X.1 (ts j))) atTop
+          (𝓝 (B.map (fun w : BrownianPath d => fun j => s • w (ts j))))) :
+    Tendsto (fun ε : Set.Ioo (0 : ℝ) (1 / 2) => annealedLaw hd P a hP ε.2.1)
+      (Filter.comap Subtype.val (𝓝 0)) (𝓝 (B.map (scaledBrownianPath s))) := by
+  rw [Filter.tendsto_iff_seq_tendsto]
+  intro ε hε0
+  have hε0' : Tendsto (fun n => ((ε n : Set.Ioo (0 : ℝ) (1 / 2)) : ℝ)) atTop (𝓝 0) :=
+    Filter.tendsto_comap_iff.1 hε0
+  exact annealed_invariance_of_fdd (hP := hP) hMSC hNash hDavies hEK hFdd
+    (fun n => (ε n).2) hε0' (B.map (scaledBrownianPath s))
+    (fun {k} ts hts hpos => by
+      rw [jointLaw_map_scaledBrownianPath]
+      exact hfdd (fun n => (ε n : ℝ)) (fun n => (ε n).2) hε0' ts hts hpos)
+
+end Brownian
 
 end
 

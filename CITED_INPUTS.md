@@ -1,7 +1,8 @@
 # Explicit cited propositions
 
-These 16 proposition definitions live in `LatticeProb.External` at the pinned
-Lattice-Probability revision `47027b49b6660ee34c323869b0c88b7eb72f1124`.
+These 16 proposition definitions are in the `LatticeProb.External` namespace. The
+support modules carried from Lattice-Probability revision
+`47027b49b6660ee34c323869b0c88b7eb72f1124` and the current dependency supply their sources.
 They are explicit hypotheses wherever used. Their statements are formalized; the cited
 results themselves remain unproved inputs. The paper's applications are proved.
 

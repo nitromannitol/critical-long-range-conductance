@@ -2,6 +2,7 @@ import LongRangeHeat.Defs
 import LongRangeHeat.Dirichlet
 import LongRange.Appendix.LatticeCount
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
+import Mathlib.Analysis.Normed.Lp.lpSpace
 
 /-!
 # Lattice heat series
@@ -351,6 +352,73 @@ theorem latticeHeat_bounded_on_interval {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ}
     _ ≤ _ := mul_le_mul_of_nonneg_left
       (Real.exp_le_exp.mpr (mul_le_mul_of_nonneg_right (by simpa [abs_of_nonneg ht.1] using ht.2) hK))
       (norm_nonneg _)
+
+private theorem memℓp_of_memL2 {d : ℕ} {f : Site d → ℝ} (hf : MemL2 f) : Memℓp f 2 := by
+  apply memℓp_gen
+  simpa [MemL2, Real.norm_eq_abs, Real.rpow_two] using hf
+
+private theorem memL2_of_memℓp {d : ℕ} {f : Site d → ℝ} (hf : Memℓp f 2) : MemL2 f := by
+  have h := hf.summable (by norm_num)
+  simpa [MemL2, Real.norm_eq_abs, Real.rpow_two] using h
+
+private theorem lp_norm_sq_eq {d : ℕ} (f : lp (fun _ : Site d => ℝ) 2) :
+    ‖f‖ ^ 2 = ∑' q, f q ^ 2 := by
+  have h := lp.norm_rpow_eq_tsum (p := (2 : ENNReal)) (by norm_num) f
+  simpa [Real.norm_eq_abs, Real.rpow_two] using h
+
+/-- The lattice heat series is square summable for compactly supported initial data. -/
+theorem memL2_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) :
+    MemL2 (latticeHeat ε a f t) := by
+  let K : ℝ := 2 * |ε ^ d / kappa d ε| * lam⁻¹ *
+    ∑' w : Site d, jumpKernel (physical ε w)
+  have hK : 0 ≤ K := by
+    dsimp [K]
+    exact mul_nonneg (mul_nonneg (mul_nonneg (by positivity) (abs_nonneg _))
+      (inv_nonneg.mpr hlam.le)) (tsum_nonneg fun w => jumpKernel_nonneg _)
+  let V (n : ℕ) : lp (fun _ : Site d => ℝ) 2 :=
+    ⟨(generator ε a)^[n] (restrict ε f),
+      memℓp_of_memL2 (memL2_generator_iterate hd hε hlam ha (memL2_restrict hε hf) n)⟩
+  have hV : ∀ n, ‖V n‖ ≤ ‖V 0‖ * K ^ n := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      have hs : ‖V (n + 1)‖ ^ 2 ≤ (K * ‖V n‖) ^ 2 := by
+        rw [lp_norm_sq_eq, mul_pow, lp_norm_sq_eq]
+        simpa [V, K, Function.iterate_succ_apply'] using
+          tsum_sq_generator_le hd hε hlam ha
+            (memL2_generator_iterate hd hε hlam ha (memL2_restrict hε hf) n)
+      have hb : ‖V (n + 1)‖ ≤ K * ‖V n‖ :=
+        (sq_le_sq₀ (norm_nonneg _) (mul_nonneg hK (norm_nonneg _))).mp hs
+      calc
+        _ ≤ K * ‖V n‖ := hb
+        _ ≤ K * (‖V 0‖ * K ^ n) := mul_le_mul_of_nonneg_left ih hK
+        _ = _ := by rw [pow_succ]; ring
+  let H (n : ℕ) : lp (fun _ : Site d => ℝ) 2 := (t ^ n / (n.factorial : ℝ)) • V n
+  have hH : Summable H := by
+    apply Summable.of_norm_bounded ((Real.summable_pow_div_factorial (|t| * K)).mul_left ‖V 0‖)
+    intro n
+    change ‖(t ^ n / (n.factorial : ℝ)) • V n‖ ≤ _
+    rw [norm_smul, Real.norm_eq_abs, abs_div, abs_pow,
+      abs_of_nonneg (show (0 : ℝ) ≤ (n.factorial : ℝ) from Nat.cast_nonneg _)]
+    calc
+      _ ≤ (|t| ^ n / (n.factorial : ℝ)) * (‖V 0‖ * K ^ n) :=
+        mul_le_mul_of_nonneg_left (hV n) (by positivity)
+      _ = _ := by rw [mul_pow]; ring
+  let v := ∑' n, H n
+  have hv : (v : Site d → ℝ) = latticeHeat ε a f t := by
+    funext q
+    have h := (lp.evalCLM ℝ (fun _ : Site d => ℝ) 2 q).hasSum hH.hasSum
+    have hh : HasSum (fun n : ℕ => t ^ n / (n.factorial : ℝ) *
+        (generator ε a)^[n] (restrict ε f) q) (v q) := by
+      change HasSum (fun n : ℕ => t ^ n / (n.factorial : ℝ) *
+        (generator ε a)^[n] (restrict ε f) q) (v q) at h
+      exact h
+    exact hh.tsum_eq.symm
+  rw [← hv]
+  exact memL2_of_memℓp (lp.memℓp v)
 
 end
 

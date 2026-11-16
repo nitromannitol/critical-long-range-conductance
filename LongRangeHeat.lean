@@ -1,3 +1,7 @@
 import LongRangeHeat.Defs
+import LongRangeHeat.Dirichlet
+import LongRangeHeat.Statements.Dirichlet
+import LongRangeHeat.StochasticO
+import LongRangeHeat.Statements.StochasticO
 import LongRangeHeat.LatticeSemigroup
 import LongRangeHeat.Energy

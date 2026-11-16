@@ -29,3 +29,4 @@ import LongRangeHeat.WalkPointwise
 import LongRangeHeat.FddStep
 import LongRangeHeat.MainTheorem
 import LongRangeHeat.Statements.MainTheorem
+import LongRangeHeat.FddChain

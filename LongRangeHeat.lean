@@ -26,4 +26,6 @@ import LongRangeHeat.QuenchedMeasurable
 import LongRangeHeat.Aldous
 import LongRangeHeat.Statements.Aldous
 import LongRangeHeat.WalkPointwise
+import LongRangeHeat.FddStep
 import LongRangeHeat.MainTheorem
+import LongRangeHeat.Statements.MainTheorem

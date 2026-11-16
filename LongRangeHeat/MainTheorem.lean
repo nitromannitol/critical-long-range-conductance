@@ -2,6 +2,7 @@ import LongRangeHeat.Energy
 import LongRangeHeat.LatticeSemigroup
 import LongRangeHeat.GaussianTails
 import LongRangeHeat.SampledForcing
+import LongRangeHeat.MeanOperator
 
 /-!
 # Bounds for the heat-equation homogenization estimate
@@ -686,5 +687,257 @@ theorem isOq_of_energy_bound {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) 
   convert hh using 1
   dsimp [R]
   ring
+
+/-- The deterministic energy estimate for the lattice and continuum heat solutions. -/
+theorem latticeHeat_error_energy_bound {d : ℕ} (hd : 1 ≤ d)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    {lam : ℝ} (hlam : lam ∈ Ioc (0 : ℝ) 1) :
+    ∃ A₁ A₂ : ℝ, 0 ≤ A₁ ∧ 0 ≤ A₂ ∧
+      ∀ ε ∈ Ioo (0 : ℝ) (1 / 2), ∀ a : Edge d → ℝ,
+      (∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) → ∀ T : ℝ, 0 ≤ T →
+      (∀ t ∈ Icc 0 T, IntervalIntegrable (fun s =>
+        (Real.sqrt (∑ i, latticeNormSq ε
+          (forcingField ε a (restrict ε (continuumHeat f s)) i))) ^ 2) volume 0 t) →
+      sSup ((fun t => latticeNorm ε (fun q => latticeHeat ε a f t q -
+        restrict ε (continuumHeat f t) q)) '' Icc 0 T) ≤
+      2 * ((A₁ + A₂) / kappa d ε) * T +
+        Real.sqrt (2 * (1 / (4 * (lam / 2) * kappa d ε)) * ∫ s in (0 : ℝ)..T,
+          (Real.sqrt (∑ i, latticeNormSq ε
+            (forcingField ε a (restrict ε (continuumHeat f s)) i))) ^ 2) := by
+  obtain ⟨C₁, hC₁⟩ := mean_operator_consistency hd hf hfc
+  obtain ⟨C₂, hC₂⟩ := forcing_representation_sampled hd hf hfc hlam
+  refine ⟨max C₁ 0, max C₂ 0, le_max_right _ _, le_max_right _ _, ?_⟩
+  intro ε hε a ha T hT hGi
+  have hε1 : ε ≤ 1 := by linarith [hε.2]
+  have hκ : 0 < kappa d ε := LongRangeHeat.kappa_pos hd hε.1 hε1
+  let w : ℝ → Site d → ℝ := fun t q => latticeHeat ε a f t q - restrict ε (continuumHeat f t) q
+  let w' : ℝ → Site d → ℝ := fun t q => generator ε a (latticeHeat ε a f t) q -
+    restrict ε (continuumHeat (contOp d f) t) q
+  let p : ℝ → Site d → ℝ := fun t q => contOp d (continuumHeat f t) (physical ε q) -
+    meanGenerator ε (restrict ε (continuumHeat f t)) q
+  let r : ℝ → Site d → ℝ := fun t q => meanGenerator ε (restrict ε (continuumHeat f t)) q -
+    generator ε a (restrict ε (continuumHeat f t)) q
+  let G : ℝ → ℝ := fun t => Real.sqrt (∑ i, latticeNormSq ε
+    (forcingField ε a (restrict ε (continuumHeat f t)) i))
+  have hp : ∀ t ∈ Icc 0 T, MemL2 (p t) ∧ latticeNorm ε (p t) ≤ C₁ / kappa d ε := by
+    intro t ht
+    simpa only [p, derivWithin_continuumHeat hd hf hfc ht.1] using hC₁ ε hε t ht.1
+  obtain ⟨P, hP⟩ := exists_sampledHeat_uniform_l2_bound hd hε.1 hε1 hf.continuous hfc
+  obtain ⟨Q, hQ⟩ := exists_sampledHeat_uniform_l2_bound hd hε.1 hε1
+    (contDiff_contOp hf).continuous (hasCompactSupport_contOp hf hfc)
+  have hw : ∀ t ∈ Icc 0 T, MemL2 (w t) := fun t ht =>
+    memL2_sub (memL2_latticeHeat hd hε.1 hlam.1 ha hfc t) (hP t ht.1).1
+  have hw' : ∀ t ∈ Icc 0 T, MemL2 (w' t) := fun t ht =>
+    memL2_sub (memL2_generator hd hε.1 hlam.1 ha
+      (memL2_latticeHeat hd hε.1 hlam.1 ha hfc t)) (hQ t ht.1).1
+  have hi := intervalIntegrable_latticeHeat_error_energy hd hε.1 hε1 hlam.1 hT ha hf hfc
+  have hsub : ∀ t ∈ Icc 0 T, uIcc 0 t ⊆ uIcc 0 T := by
+    intro t ht
+    rw [uIcc_of_le ht.1, uIcc_of_le hT]
+    exact fun s hs => ⟨hs.1, hs.2.trans ht.2⟩
+  have hw0 : w 0 = 0 := by
+    funext q
+    simp [w, latticeHeat_zero, continuumHeat_zero]
+  apply sSup_latticeNorm_le_of_forcing_coordinates hd hε.1 hlam.1 ha hκ w w' p r G
+    hT (le_max_right _ _) (le_max_right _ _) hw0 (bddAbove_latticeHeat_error hd hε.1 hε1 hlam.1 ha hf hfc) hw hw'
+  · intro q
+    exact (continuousOn_latticeHeat_error hd hε.1 hlam.1 ha hf hfc q).mono fun t ht => ht.1
+  · intro q t ht
+    simpa only [w, w', restrict, contOp_continuumHeat hd hf hfc ht.1.le] using
+      hasDerivAt_latticeHeat_error hd hε.1 hlam.1 ha hf hfc ht.1 q
+  · intro t ht q
+    exact (hi.2.1 q).mono_set (hsub t ht)
+  · intro t ht
+    exact hi.1.mono_set (hsub t ht)
+  · intro t ht
+    exact hi.2.2.mono_set (hsub t ht)
+  · exact hGi
+  · intro t ht
+    exact ⟨(hp t ht).1, (hC₂ ε hε a ha t ht.1).1⟩
+  · intro t ht q
+    exact latticeHeat_error_evolution hd hε.1 hε1 hlam.1 ha hf hfc ht.1 q
+  · intro t ht
+    calc
+      |latticeInner ε (p t) (w t)| ≤ latticeNorm ε (p t) * latticeNorm ε (w t) :=
+        abs_latticeInner_le hε.1.le (hp t ht).1 (hw t ht)
+      _ ≤ (C₁ / kappa d ε) * latticeNorm ε (w t) :=
+        mul_le_mul_of_nonneg_right (hp t ht).2 (Real.sqrt_nonneg _)
+      _ ≤ (max C₁ 0 / kappa d ε) * latticeNorm ε (w t) := by
+        exact mul_le_mul_of_nonneg_right
+          (div_le_div_of_nonneg_right (le_max_left _ _) hκ.le) (Real.sqrt_nonneg _)
+  · intro t ht
+    obtain ⟨hr, hF, hrep⟩ := hC₂ ε hε a ha t ht.1
+    have h := forcing_pair_le_of_representation hε.1.le hκ hr (hw t ht)
+      (fun i => forcingField ε a (restrict ε (continuumHeat f t)) i) hF (hrep (w t) (hw t ht))
+    calc
+      _ ≤ C₂ / kappa d ε * latticeNorm ε (w t) +
+          G t * Real.sqrt (gradNormSq ε (w t)) / kappa d ε := h
+      _ ≤ max C₂ 0 / kappa d ε * latticeNorm ε (w t) +
+          G t * Real.sqrt (gradNormSq ε (w t)) / kappa d ε := by
+        have hle : C₂ / kappa d ε * latticeNorm ε (w t) ≤
+            max C₂ 0 / kappa d ε * latticeNorm ε (w t) :=
+          mul_le_mul_of_nonneg_right (div_le_div_of_nonneg_right (le_max_left _ _) hκ.le)
+            (Real.sqrt_nonneg _)
+        linarith
+
+/-- Gaussian control of the lattice error using the energy estimate. -/
+theorem latticeHeat_error_isOq {d : ℕ} (hd : 1 ≤ d)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    {lam : ℝ} (hlam : lam ∈ Ioc (0 : ℝ) 1) :
+    ∃ A₁ A₂ C : ℝ, 0 ≤ A₁ ∧ 0 ≤ A₂ ∧ 0 < C ∧
+      ∀ (Ω : Type) [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ),
+      ConductanceLaw P lam a → ∀ ε ∈ Ioo (0 : ℝ) (1 / 2), ∀ T : ℝ, 0 < T →
+      IsOq P 2 (fun r => sSup ((fun t => latticeNorm ε
+        (fun q => latticeHeat ε (a r) f t q - restrict ε (continuumHeat f t) q)) '' Icc 0 T))
+        (2 * (2 * ((A₁ + A₂) / kappa d ε) * T) +
+          3 * Real.sqrt (2 * (1 / (4 * (lam / 2) * kappa d ε))) * Real.sqrt (T * C ^ 2)) := by
+  obtain ⟨A₁, A₂, hA₁, hA₂, henergy⟩ := latticeHeat_error_energy_bound hd hf hfc hlam
+  obtain ⟨C, hC, htail⟩ := forcingField_gaussian_tails_sampled hd hf hfc hlam
+  obtain ⟨D, hD, hint⟩ := sampled_forcing_integral_isOq hd hf hfc hlam
+  refine ⟨A₁, A₂, C, hA₁, hA₂, hC, ?_⟩
+  intro Ω _ P a hA ε hε T hT
+  let : IsProbabilityMeasure P := hA.isProbabilityMeasure
+  have hε1 : ε ≤ 1 := by linarith [hε.2]
+  have hκ : 0 < kappa d ε := LongRangeHeat.kappa_pos hd hε.1 hε1
+  let H : ℝ → Ω → ℝ := fun s r => Real.sqrt (∑ i, latticeNormSq ε
+    (forcingField ε (a r) (restrict ε (continuumHeat f s)) i))
+  let Y : Ω → ℝ := fun r => sSup ((fun t => latticeNorm ε
+    (fun q => latticeHeat ε (a r) f t q - restrict ε (continuumHeat f t) q)) '' Icc 0 T)
+  let b : ℝ := Real.sqrt (2 * (1 / (4 * (lam / 2) * kappa d ε)))
+  have hlampos : 0 < lam := hlam.1
+  have hb : 0 < b := Real.sqrt_pos.mpr (by positivity)
+  have hm : Measurable (Function.uncurry H) :=
+    measurable_forcingFieldNorm ε a hA.measurable
+      (fun s => restrict ε (continuumHeat f s))
+      (fun q => measurable_continuumHeat_time hd hf hfc (physical ε q))
+  have hYm : AEMeasurable Y P := (measurable_latticeHeat_error_sup hd hε.1 hε1 hlam.1 hT.le
+    a hA.measurable hA.bounds hf hfc).aemeasurable
+  have hO : ∀ s ∈ Icc 0 T, IsOq P 2 (H s) C := fun s hs =>
+    (htail Ω P a hA ε hε s hs.1).2
+  have hbound : ∀ᵐ r ∂P, Y r ≤ 2 * ((A₁ + A₂) / kappa d ε) * T +
+      b * Real.sqrt (∫ s in (0 : ℝ)..T, H s r ^ 2) := by
+    filter_upwards [(hint Ω P a hA ε hε T hT).1] with r hr
+    have hGi : ∀ t ∈ Icc 0 T, IntervalIntegrable (fun s => H s r ^ 2) volume 0 t := by
+      intro t ht
+      apply (intervalIntegrable_iff_integrableOn_Icc_of_le ht.1).mpr
+      exact hr.mono_set (Icc_subset_Icc le_rfl ht.2)
+    have he := henergy ε hε (a r) (hA.bounds r) T hT.le hGi
+    simpa only [Y, H, b, Real.sqrt_mul (show 0 ≤ 2 * (1 / (4 * (lam / 2) * kappa d ε)) by positivity)] using he
+  exact (isOq_of_energy_bound P (fun _ _ => Real.sqrt_nonneg _) hm hT hC
+    (by positivity : 0 ≤ 2 * ((A₁ + A₂) / kappa d ε) * T) hb hYm hO hbound).2
+
+/-- Comparison of the energy scale with the logarithmic homogenization scale. -/
+theorem energy_scale_le {A C lam κ c L T : ℝ} (hA : 0 ≤ A) (hC : 0 ≤ C)
+    (hlam : 0 < lam) (hκ : 1 ≤ κ) (hc : 0 < c) (hL : 0 < L)
+    (hκlog : c * L ≤ κ) (hT : 0 ≤ T) :
+    2 * (2 * (A / κ) * T) +
+      3 * Real.sqrt (2 * (1 / (4 * (lam / 2) * κ))) * Real.sqrt (T * C ^ 2) ≤
+    ((4 * A + 3 * C / Real.sqrt lam) / Real.sqrt c) * (1 + T) / Real.sqrt L := by
+  have hk : 0 < κ := by linarith
+  have hsk : 0 < Real.sqrt κ := Real.sqrt_pos.mpr hk
+  have hsl : 0 < Real.sqrt lam := Real.sqrt_pos.mpr hlam
+  have hsc : 0 < Real.sqrt c := Real.sqrt_pos.mpr hc
+  have hsL : 0 < Real.sqrt L := Real.sqrt_pos.mpr hL
+  have hsk1 : 1 ≤ Real.sqrt κ := Real.one_le_sqrt.mpr hκ
+  have hsksq : Real.sqrt κ ^ 2 = κ := Real.sq_sqrt hk.le
+  have hsk_le : Real.sqrt κ ≤ κ := by nlinarith
+  have hst : Real.sqrt T ≤ 1 + T := by
+    have := Real.sq_sqrt hT
+    have := Real.sqrt_nonneg T
+    nlinarith [sq_nonneg (Real.sqrt T - 1)]
+  have hscl : Real.sqrt c * Real.sqrt L ≤ Real.sqrt κ := by
+    rw [← Real.sqrt_mul hc.le]
+    exact Real.sqrt_le_sqrt hκlog
+  have hfirst : T / κ ≤ (1 + T) / Real.sqrt κ := by
+    apply (div_le_div_iff₀ hk hsk).2
+    nlinarith [mul_nonneg hT (sub_nonneg.mpr hsk_le)]
+  have hsecond : Real.sqrt T / Real.sqrt κ ≤ (1 + T) / Real.sqrt κ :=
+    div_le_div_of_nonneg_right hst hsk.le
+  have hscale : (1 + T) / Real.sqrt κ ≤ (1 + T) / (Real.sqrt c * Real.sqrt L) :=
+    div_le_div_of_nonneg_left (by linarith) (mul_pos hsc hsL) hscl
+  have hb : Real.sqrt (2 * (1 / (4 * (lam / 2) * κ))) =
+      1 / (Real.sqrt lam * Real.sqrt κ) := by
+    have heq : 2 * (1 / (4 * (lam / 2) * κ)) = 1 / (lam * κ) := by
+      field_simp; ring
+    rw [heq, Real.sqrt_div (by norm_num), Real.sqrt_one, Real.sqrt_mul hlam.le]
+  rw [hb, Real.sqrt_mul hT, Real.sqrt_sq hC]
+  have hleft : 2 * (2 * (A / κ) * T) +
+      3 * (1 / (Real.sqrt lam * Real.sqrt κ)) * (Real.sqrt T * C) ≤
+      (4 * A + 3 * C / Real.sqrt lam) * ((1 + T) / Real.sqrt κ) := by
+    have hfirst' := mul_le_mul_of_nonneg_left hfirst (show 0 ≤ 4 * A by positivity)
+    have hsecond' := mul_le_mul_of_nonneg_left hsecond (show 0 ≤ 3 * C / Real.sqrt lam by positivity)
+    have heq₁ : 2 * (2 * (A / κ) * T) = (4 * A) * (T / κ) := by ring
+    have heq₂ : 3 * (1 / (Real.sqrt lam * Real.sqrt κ)) * (Real.sqrt T * C) =
+        (3 * C / Real.sqrt lam) * (Real.sqrt T / Real.sqrt κ) := by ring
+    rw [heq₁, heq₂, add_mul]
+    linarith
+  calc
+    _ ≤ (4 * A + 3 * C / Real.sqrt lam) * ((1 + T) / Real.sqrt κ) := hleft
+    _ ≤ (4 * A + 3 * C / Real.sqrt lam) * ((1 + T) / (Real.sqrt c * Real.sqrt L)) :=
+      mul_le_mul_of_nonneg_left hscale (by positivity)
+    _ = _ := by ring
+
+/-- Quantitative homogenization of the lattice heat solution. -/
+theorem latticeHeat_homogenization {d : ℕ} (hd : 1 ≤ d)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    {lam : ℝ} (hlam : lam ∈ Ioc (0 : ℝ) 1) :
+    ∃ C > 0, ∀ (Ω : Type) [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ),
+      ConductanceLaw P lam a → ∀ T : ℝ, 0 ≤ T → ∀ ε ∈ Ioo (0 : ℝ) (1 / 2),
+      (∀ r, BddAbove ((fun t => latticeNorm ε (fun q => latticeHeat ε (a r) f t q -
+        restrict ε (continuumHeat f t) q)) '' Icc 0 T) ∧
+        ∀ t ∈ Icc 0 T, MemL2 (fun q => latticeHeat ε (a r) f t q -
+          restrict ε (continuumHeat f t) q)) ∧
+      IsOq P 2 (fun r => sSup ((fun t => latticeNorm ε
+        (fun q => latticeHeat ε (a r) f t q - restrict ε (continuumHeat f t) q)) '' Icc 0 T))
+        (C * (1 + T) / Real.sqrt |Real.log ε|) := by
+  obtain ⟨A₁, A₂, C, hA₁, hA₂, hC, hO⟩ := latticeHeat_error_isOq hd hf hfc hlam
+  obtain ⟨c, hc, hκlog⟩ := exists_mul_abs_log_le_kappa hd
+  let K : ℝ := (4 * (A₁ + A₂) + 3 * C / Real.sqrt lam) / Real.sqrt c + 1
+  have hlampos : 0 < lam := hlam.1
+  have hsc : 0 < Real.sqrt c := Real.sqrt_pos.mpr hc
+  have hK : 0 < K := by dsimp [K]; positivity
+  refine ⟨K, hK, ?_⟩
+  intro Ω _ P a hA T hT ε hε
+  let : IsProbabilityMeasure P := hA.isProbabilityMeasure
+  have hε1 : ε ≤ 1 := by linarith [hε.2]
+  have hlog : 0 < |Real.log ε| := abs_pos.mpr (ne_of_lt (Real.log_neg hε.1 (by linarith [hε.2])))
+  have hslog : 0 < Real.sqrt |Real.log ε| := Real.sqrt_pos.mpr hlog
+  have hκ : 1 ≤ kappa d ε := by
+    have hd' : (1 : ℝ) ≤ d := by exact_mod_cast hd
+    have hh := two_mul_le_kappa (d := d) (show ε ∈ Ioo (0 : ℝ) 1 from ⟨hε.1, by linarith [hε.2]⟩)
+    linarith
+  obtain ⟨P₀, hP₀⟩ := exists_sampledHeat_uniform_l2_bound hd hε.1 hε1 hf.continuous hfc
+  refine ⟨fun r => ⟨bddAbove_latticeHeat_error hd hε.1 hε1 hlam.1 (hA.bounds r) hf hfc,
+    fun t ht => memL2_sub (memL2_latticeHeat hd hε.1 hlam.1 (hA.bounds r) hfc t)
+      (hP₀ t ht.1).1⟩, ?_⟩
+  by_cases hT0 : T = 0
+  · subst T
+    have hzero : (fun r => sSup ((fun t => latticeNorm ε
+        (fun q => latticeHeat ε (a r) f t q - restrict ε (continuumHeat f t) q)) '' Icc 0 0)) =
+        (fun _ : Ω => (0 : ℝ)) := by
+      funext r
+      simp [latticeHeat_zero, continuumHeat_zero, latticeNorm, latticeNormSq]
+    rw [hzero]
+    have hscale : 0 < K * (1 + (0 : ℝ)) / Real.sqrt |Real.log ε| := by positivity
+    have hconst := isOq_const (P := P) (q := 2) (by decide) (half_pos hscale)
+    have hconst' : IsOq P 2 (fun _ : Ω => (K * (1 + (0 : ℝ)) / Real.sqrt |Real.log ε|) / 2)
+        (K * (1 + (0 : ℝ)) / Real.sqrt |Real.log ε|) := by
+      convert hconst using 1; ring
+    exact isOq_of_ae_le P hscale aemeasurable_const
+      (Filter.Eventually.of_forall fun _ => (half_pos hscale).le) hconst'
+  · have hTpos : 0 < T := lt_of_le_of_ne hT (Ne.symm hT0)
+    have hs : 0 < 2 * (2 * ((A₁ + A₂) / kappa d ε) * T) +
+        3 * Real.sqrt (2 * (1 / (4 * (lam / 2) * kappa d ε))) * Real.sqrt (T * C ^ 2) := by
+      have hk : 0 < kappa d ε := by linarith
+      have hroot : 0 < Real.sqrt (2 * (1 / (4 * (lam / 2) * kappa d ε))) := Real.sqrt_pos.mpr (by positivity)
+      have hroot' : 0 < Real.sqrt (T * C ^ 2) := Real.sqrt_pos.mpr (by positivity)
+      positivity
+    apply (hO Ω P a hA ε hε T hTpos).mono hs
+    have hcomp := energy_scale_le (add_nonneg hA₁ hA₂) hC.le hlampos hκ hc hlog (hκlog ε hε) hT
+    apply hcomp.trans
+    apply div_le_div_of_nonneg_right _ hslog.le
+    apply mul_le_mul_of_nonneg_right _ (by linarith)
+    dsimp [K]
+    linarith
 
 end LongRangeHeat

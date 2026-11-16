@@ -3,6 +3,7 @@ import LongRangeHeat.Dirichlet
 import LongRange.Appendix.LatticeCount
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Analysis.Normed.Lp.lpSpace
+import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Lattice heat series
@@ -512,6 +513,63 @@ theorem memL2_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
     exact hh.tsum_eq.symm
   rw [← hv]
   exact memL2_of_memℓp (lp.memℓp v)
+
+/-- The lattice heat series solves the lattice heat equation at every site. -/
+theorem hasDerivAt_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) (q : Site d) :
+    HasDerivAt (fun s => latticeHeat ε a f s q)
+      (generator ε a (latticeHeat ε a f t) q) t := by
+  let V : lp (fun _ : Site d => ℝ) 2 := ⟨restrict ε f, memℓp_of_memL2 (memL2_restrict hε hf)⟩
+  let A := generatorL2 hd hε hlam ha
+  have hpow : ∀ n : ℕ, ⇑((A ^ n) V) = (generator ε a)^[n] (restrict ε f) := by
+    intro n
+    induction n with
+    | zero => simp [V]
+    | succ n ih =>
+      funext x
+      rw [pow_succ', mul_apply_eq_comp, Function.iterate_succ_apply']
+      change generator ε a ((A ^ n) V) x = _
+      rw [ih]
+  have hscaled (s : ℝ) : ∀ n : ℕ, (s • A) ^ n = s ^ n • A ^ n := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [pow_succ', ih, pow_succ', pow_succ']
+      ext y
+      simp only [mul_apply_eq_comp, smul_apply, map_smul, mul_smul]
+      simp only [smul_smul, mul_comm]
+  have hseries (s : ℝ) (x : Site d) :
+      latticeHeat ε a f s x = (NormedSpace.exp (s • A) V) x := by
+    have h0 := NormedSpace.exp_series_hasSum_exp' (𝕂 := ℝ) (s • A)
+    have h1 := (ContinuousLinearMap.apply ℝ (lp (fun _ : Site d => ℝ) 2) V).hasSum h0
+    have h2 := (lp.evalCLM ℝ (fun _ : Site d => ℝ) 2 x).hasSum h1
+    have h3 : HasSum (fun n : ℕ => s ^ n / (n.factorial : ℝ) *
+        (generator ε a)^[n] (restrict ε f) x) ((NormedSpace.exp (s • A) V) x) := by
+      convert h2 using 1
+      · funext n
+        change s ^ n / (n.factorial : ℝ) *
+          (generator ε a)^[n] (restrict ε f) x =
+          (((n.factorial : ℝ)⁻¹ • ((s • A) ^ n)) V) x
+        rw [hscaled]
+        simp only [smul_apply, lp.coeFn_smul, Pi.smul_apply, smul_eq_mul]
+        rw [hpow]
+        ring
+      · rfl
+    exact h3.tsum_eq
+  have hd' := (hasDerivAt_exp_smul_const' A t).clm_apply (hasDerivAt_const t V)
+  have hd'' := (lp.evalCLM ℝ (fun _ : Site d => ℝ) 2 q).hasFDerivAt.comp_hasDerivAt t hd'
+  convert hd'' using 1
+  · funext s
+    exact hseries s q
+  · simp only [map_zero, add_zero, mul_apply_eq_comp]
+    change generator ε a (latticeHeat ε a f t) q =
+      (A ((NormedSpace.exp (t • A)) V)) q
+    rw [generatorL2_apply]
+    congr 1
+    funext x
+    exact hseries t x
 
 end
 

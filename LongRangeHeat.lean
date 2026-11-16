@@ -1,1 +1,3 @@
 import LongRangeHeat.Defs
+import LongRangeHeat.Dirichlet
+import LongRangeHeat.Statements.Dirichlet

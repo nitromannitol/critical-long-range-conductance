@@ -1,5 +1,6 @@
 import LongRangeHeat.Dirichlet
 import Mathlib.Analysis.InnerProductSpace.l2Space
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
@@ -11,7 +12,7 @@ These inequalities close the supremum estimate obtained by integrating the energ
 
 namespace LongRangeHeat
 
-open LatticeProb LongRange
+open LatticeProb LongRange MeasureTheory Filter
 open scoped InnerProductSpace Interval
 
 /-- A quadratic estimate gives the bound used at the end of the energy argument. -/
@@ -287,5 +288,61 @@ theorem sSup_latticeNorm_le_of_forcing {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (
   have hp := lattice_energy_identity hd hε hlam ha hw (hs t ht).1 (hs t ht).2 (hode t ht)
   rw [add_div, add_mul]
   linarith
+
+/-- Integrating the coordinate derivatives gives the lattice squared-norm identity. -/
+theorem latticeNormSq_sub_eq_integral_of_coordinates {d : ℕ} (ε : ℝ) (w w' : ℝ → Site d → ℝ) {a b : ℝ} (hab : a ≤ b)
+    (hw : ∀ t ∈ Set.Icc a b, MemL2 (w t))
+    (hw' : ∀ t ∈ Set.Icc a b, MemL2 (w' t))
+    (hc : ∀ q, ContinuousOn (fun t => w t q) (Set.Icc a b))
+    (hd : ∀ q t, t ∈ Set.Ioo a b → HasDerivAt (fun s => w s q) (w' t q) t)
+    (hci : ∀ q, IntervalIntegrable (fun t => 2 * w t q * w' t q) volume a b)
+    (habs : IntervalIntegrable (fun t => ∑' q, |2 * w t q * w' t q|) volume a b) :
+    latticeNormSq ε (w b) - latticeNormSq ε (w a) =
+      ∫ t in a..b, 2 * latticeInner ε (w t) (w' t) := by
+  have hs : ∀ t ∈ Set.Icc a b, Summable (fun q => 2 * w t q * w' t q) := by
+    intro t ht
+    have h := (summable_mul_of_memL2 (hw t ht) (hw' t ht)).mul_left 2
+    simpa only [mul_assoc] using h
+  have hcoord (q : Site d) :
+      (∫ t in a..b, 2 * w t q * w' t q) = w b q ^ 2 - w a q ^ 2 := by
+    apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hab ((hc q).pow 2) _ (hci q)
+    intro t ht
+    change HasDerivAt (fun t => w t q ^ 2) (2 * w t q * w' t q) t
+    simpa only [Real.norm_eq_abs, sq_abs, Real.inner_apply, mul_assoc] using (hd q t ht).norm_sq
+  have hsum := intervalIntegral.hasSum_integral_of_dominated_convergence
+    (fun q t => |2 * w t q * w' t q|)
+    (fun q => (hci q).def'.1)
+    (fun q => Eventually.of_forall fun t _ => le_of_eq (Real.norm_eq_abs _))
+    (Eventually.of_forall fun t ht => by
+      have ht' : t ∈ Set.Icc a b := by
+        rw [Set.uIoc_of_le hab] at ht
+        exact ⟨ht.1.le, ht.2⟩
+      simpa only [Real.norm_eq_abs] using (hs t ht').norm)
+    habs
+    (Eventually.of_forall fun t ht => by
+      have ht' : t ∈ Set.Icc a b := by
+        rw [Set.uIoc_of_le hab] at ht
+        exact ⟨ht.1.le, ht.2⟩
+      exact (hs t ht').hasSum)
+  have htotal : (∑' q, (w b q ^ 2 - w a q ^ 2)) =
+      ∫ t in a..b, ∑' q, 2 * w t q * w' t q := by
+    convert hsum.tsum_eq using 1
+    apply tsum_congr
+    intro q
+    exact (hcoord q).symm
+  rw [(hw b ⟨hab, le_rfl⟩).tsum_sub (hw a ⟨le_rfl, hab⟩)] at htotal
+  unfold latticeNormSq
+  calc
+    _ = ε ^ d * ((∑' q, w b q ^ 2) - (∑' q, w a q ^ 2)) := by ring
+    _ = ε ^ d * (∫ t in a..b, ∑' q, 2 * w t q * w' t q) := by rw [htotal]
+    _ = ∫ t in a..b, 2 * latticeInner ε (w t) (w' t) := by
+      have heq : (fun t => 2 * latticeInner ε (w t) (w' t)) =
+          fun t => ε ^ d * ∑' q, 2 * w t q * w' t q := by
+        funext t
+        unfold latticeInner
+        simp_rw [mul_assoc]
+        rw [tsum_mul_left]
+        ring
+      rw [heq, intervalIntegral.integral_const_mul]
 
 end LongRangeHeat

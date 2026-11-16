@@ -112,4 +112,40 @@ theorem sSup_norm_le_of_energy_inequality {E : Type*} [NormedAddCommGroup E]
   dsimp [S] at *
   nlinarith
 
+/-- Coercivity and the forcing bound yield the integrated supremum estimate. -/
+theorem sSup_norm_le_of_coercive_energy {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (w w' : ℝ → E) (G D B : ℝ → ℝ)
+    {T A c κ : ℝ} (hT : 0 ≤ T) (hA : 0 ≤ A) (hc : 0 < c) (hκ : 0 < κ)
+    (hw0 : w 0 = 0)
+    (hb : BddAbove ((fun t => ‖w t‖) '' Set.Icc 0 T))
+    (hd : ∀ t ∈ Set.Icc 0 T, HasDerivAt w (w' t) t)
+    (hdi : ∀ t ∈ Set.Icc 0 T,
+      IntervalIntegrable (fun s => 2 * ⟪w s, w' s⟫_ℝ) MeasureTheory.volume 0 t)
+    (hGi : ∀ t ∈ Set.Icc 0 T,
+      IntervalIntegrable (fun s => G s ^ 2) MeasureTheory.volume 0 t)
+    (hcoercive : ∀ t ∈ Set.Icc 0 T, c / κ * D t ^ 2 ≤ B t)
+    (henergy : ∀ t ∈ Set.Icc 0 T,
+      ⟪w t, w' t⟫_ℝ + B t ≤ A / κ * ‖w t‖ + G t * D t / κ) :
+    sSup ((fun t => ‖w t‖) '' Set.Icc 0 T) ≤
+      2 * (A / κ) * T +
+        Real.sqrt (2 * (1 / (4 * c * κ)) * ∫ s in (0 : ℝ)..T, G s ^ 2) := by
+  have hQ : 0 ≤ ∫ s in (0 : ℝ)..T, G s ^ 2 :=
+    intervalIntegral.integral_nonneg_of_forall hT (fun _ => sq_nonneg _)
+  have hG : ∀ t ∈ Set.Icc 0 T,
+      (∫ s in (0 : ℝ)..t, G s ^ 2) ≤ ∫ s in (0 : ℝ)..T, G s ^ 2 := by
+    intro t ht
+    exact intervalIntegral.integral_mono_interval le_rfl ht.1 ht.2
+      (Filter.Eventually.of_forall fun _ => sq_nonneg _) (hGi T ⟨hT, le_rfl⟩)
+  apply sSup_norm_le_of_energy_inequality w w' (fun t => G t ^ 2)
+    hT (div_nonneg hA hκ.le) (by positivity) hQ hw0 hb hd hdi hGi hG
+  intro t ht
+  have hsup : ‖w t‖ ≤ sSup ((fun t => ‖w t‖) '' Set.Icc 0 T) :=
+    le_csSup hb ⟨t, ht, rfl⟩
+  have hmul := mul_le_mul_of_nonneg_left hsup (div_nonneg hA hκ.le)
+  have hforce := forcing_le_coercive_add (G := G t) hc hκ (hcoercive t ht)
+  have he := henergy t ht
+  have heq : 1 / (4 * c * κ) * G t ^ 2 = G t ^ 2 / (4 * c * κ) := by ring
+  rw [heq]
+  linarith
+
 end LongRangeHeat

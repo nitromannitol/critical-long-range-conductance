@@ -1,5 +1,6 @@
 import LongRangeHeat.Defs
 import LongRangeHeat.Dirichlet
+import LongRange.Appendix.LatticeCount
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 
 /-!
@@ -22,6 +23,22 @@ theorem latticeHeat_zero {d : ℕ} (ε : ℝ) (a : LongRange.Edge d → ℝ)
   · intro n hn
     simp [hn]
 
+/-- A compactly supported function restricts to a square-summable lattice function. -/
+theorem memL2_restrict {d : ℕ} {ε : ℝ} (hε : 0 < ε)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) : MemL2 (restrict ε f) := by
+  classical
+  let S := latticeSet ε (tsupport f)
+  have hS : S.Finite := latticeSet_finite hε hf.isCompact.isBounded
+  unfold MemL2
+  apply summable_of_ne_finset_zero (s := hS.toFinset)
+  intro q hq
+  have hnot : physical ε q ∉ tsupport f := by
+    simpa [S, latticeSet] using hq
+  have hfq : f (physical ε q) = 0 := by
+    by_contra h
+    exact hnot (subset_tsupport f h)
+  simp [restrict, hfq]
+
 /-- A geometric bound on the iterates implies convergence of the lattice heat series. -/
 theorem summable_latticeHeat_of_iterate_bound {d : ℕ} (ε : ℝ)
     (a : LongRange.Edge d → ℝ) (f : (Fin d → ℝ) → ℝ) (t : ℝ) (q : LatticeProb.Site d)
@@ -43,6 +60,17 @@ theorem summable_latticeHeat_of_iterate_bound {d : ℕ} (ε : ℝ)
 noncomputable section
 
 variable {d : ℕ}
+
+/-- Every generator iterate of square-summable data is square summable. -/
+theorem memL2_generator_iterate {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ}
+    (hε : 0 < ε) (hlam : 0 < lam) {a : Edge d → ℝ}
+    (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) {v : Site d → ℝ}
+    (hv : MemL2 v) (n : ℕ) : MemL2 ((generator ε a)^[n] v) := by
+  induction n with
+  | zero => simpa using hv
+  | succ n ih =>
+    rw [Function.iterate_succ_apply']
+    exact memL2_generator hd hε hlam ha ih
 
 /-- The generator is bounded uniformly in the lattice site on bounded functions. -/
 theorem abs_generator_le {d : ℕ} (hd : 1 ≤ d) {ε lam M : ℝ}

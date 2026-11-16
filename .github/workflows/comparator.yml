@@ -84,7 +84,7 @@ jobs:
             elan run leanprover/lean4:v4.35.0-rc2 lake exe cache get \
             2>&1 | tee .lake/comparator-logs/setup/cache.log
           /usr/bin/flock -x "$COMPARATOR_LOCK" \
-            elan run leanprover/lean4:v4.35.0-rc2 lake build LongRange \
+            elan run leanprover/lean4:v4.35.0-rc2 lake build LongRange LongRangeHeat \
             2>&1 | tee .lake/comparator-logs/setup/production-build.log
       - name: Fresh comparisons and kernel replays, sequentially
         run: python3 scripts/run_comparators.py

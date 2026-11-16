@@ -33,11 +33,12 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          /usr/bin/flock -x "$HOME/.lake-global.lock" lake build LongRange 2>&1 | tee build.log
+          /usr/bin/flock -x "$HOME/.lake-global.lock" lake build LongRange LongRangeHeat 2>&1 | tee build.log
           python3 - <<'PY'
           from pathlib import Path
           import re
-          if re.search(r'^warning: (?:.*/)?(?:LongRange|LongRangeHeat|LongRangeAudit)/',
+          if re.search(r'^warning: (?:.*/)?(?:LongRange|LongRangeHeat|LongRangeAudit)/|'
+                       r'^(?:.*/)?(?:LongRange|LongRangeHeat|LongRangeAudit)/.*:\d+:\d+: warning:',
                        Path('build.log').read_text(), re.MULTILINE):
               raise SystemExit('Lean build emitted warnings')
           PY

@@ -21,8 +21,16 @@ lean_lib «LongRange» where
 
 /-- The heat-kernel version: quantitative homogenization of the heat equation and the annealed
 invariance principle. -/
+@[default_target]
 lean_lib «LongRangeHeat» where
   globs := #[.andSubmodules `LongRangeHeat]
+  leanOptions := #[
+    ⟨`autoImplicit, false⟩,
+    ⟨`relaxedAutoImplicit, false⟩
+  ]
+
+lean_lib «LongRangeAudit» where
+  globs := #[.submodules `LongRangeAudit]
   leanOptions := #[
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩

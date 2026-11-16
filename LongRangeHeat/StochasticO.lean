@@ -230,10 +230,9 @@ theorem isOq_tsum [IsProbabilityMeasure P] {ι : Type*} [Countable ι] {q : ℕ}
 
 /-! ### Integrals -/
 
-/-- Integrals: for a jointly measurable family `X(s) ≥ 0`, `s ∈ [0, T]`, with `X(s) ≤ 𝒪_q(A)`
-for every `s ∈ [0, T]`, almost every realization `s ↦ X(s)` is integrable on `[0, T]` and
-`∫_0^T X(s) ds ≤ 𝒪_q(T A)`. -/
-theorem isOq_intervalIntegral [IsProbabilityMeasure P] {q : ℕ} (hq : q ≠ 0)
+/-- Integrals for a family that is jointly measurable on `ℝ × Ω`; see `isOq_intervalIntegral`
+for the version that only asks joint measurability on `[0, T] × Ω`. -/
+theorem isOq_intervalIntegral_of_measurable [IsProbabilityMeasure P] {q : ℕ} (hq : q ≠ 0)
     {X : ℝ → Ω → ℝ} (hXm : Measurable (Function.uncurry X)) {T A : ℝ} (hT : 0 < T)
     (hA : 0 < A) (hX : ∀ s ∈ Icc 0 T, ∀ ω, 0 ≤ X s ω)
     (h : ∀ s ∈ Icc 0 T, IsOq P q (X s) A) :
@@ -325,6 +324,50 @@ theorem isOq_intervalIntegral [IsProbabilityMeasure P] {q : ℕ} (hq : q ≠ 0)
       _ = 2 := by
           rw [mul_left_comm, ← ENNReal.ofReal_mul (inv_nonneg.mpr hT.le),
             inv_mul_cancel₀ hT.ne', ENNReal.ofReal_one, mul_one]
+
+/-- Integrals: for a family `X(s) ≥ 0`, `s ∈ [0, T]`, that is jointly measurable on `[0, T] × Ω`,
+with `X(s) ≤ 𝒪_q(A)` for every `s ∈ [0, T]`, almost every realization `s ↦ X(s)` is integrable on
+`[0, T]` and `∫_0^T X(s) ds ≤ 𝒪_q(T A)`. -/
+theorem isOq_intervalIntegral [IsProbabilityMeasure P] {q : ℕ} (hq : q ≠ 0)
+    {X : ℝ → Ω → ℝ} {T A : ℝ} (hXm : Measurable fun p : Icc 0 T × Ω => X p.1 p.2) (hT : 0 < T)
+    (hA : 0 < A) (hX : ∀ s ∈ Icc 0 T, ∀ ω, 0 ≤ X s ω)
+    (h : ∀ s ∈ Icc 0 T, IsOq P q (X s) A) :
+    (∀ᵐ ω ∂P, IntegrableOn (fun s => X s ω) (Icc 0 T)) ∧
+      IsOq P q (fun ω => ∫ s in (0)..T, X s ω) (T * A) := by
+  classical
+  set Y : ℝ → Ω → ℝ := fun s ω => if s ∈ Icc (0 : ℝ) T then X s ω else 0 with hY
+  have hYm : Measurable (Function.uncurry Y) := by
+    let S : Set (ℝ × Ω) := {p | p.1 ∈ Icc (0 : ℝ) T}
+    have hS : MeasurableSet S := measurableSet_Icc.preimage measurable_fst
+    have hF : Measurable fun b : S => X b.1.1 b.1.2 :=
+      hXm.comp (((measurable_fst.comp measurable_subtype_coe).subtype_mk (h := fun b => b.2)).prodMk
+        (measurable_snd.comp measurable_subtype_coe))
+    have h0 : Measurable fun _ : (Sᶜ : Set (ℝ × Ω)) => (0 : ℝ) := measurable_const
+    have key := hF.dite h0 hS
+    convert key using 1
+    funext p
+    by_cases hp : p.1 ∈ Icc (0 : ℝ) T
+    · have hp' : p ∈ S := hp
+      rw [dite_eq_left hp']
+      exact ite_eq_left hp
+    · have hp' : p ∉ S := hp
+      rw [dite_eq_right hp']
+      exact ite_eq_right hp
+  have hYX : ∀ s ∈ Icc (0 : ℝ) T, Y s = X s := fun s hs => by
+    funext ω
+    exact ite_eq_left hs
+  obtain ⟨hint, hO⟩ := isOq_intervalIntegral_of_measurable hq hYm hT hA
+    (fun s hs ω => by rw [hYX s hs]; exact hX s hs ω)
+    (fun s hs => by rw [hYX s hs]; exact h s hs)
+  refine ⟨hint.mono fun ω hω => hω.congr_fun (fun s hs => congrFun (hYX s hs) ω)
+    measurableSet_Icc, ?_⟩
+  have hint_eq : (fun ω => ∫ s in (0)..T, X s ω) = fun ω => ∫ s in (0)..T, Y s ω := by
+    funext ω
+    refine intervalIntegral.integral_congr fun s hs => ?_
+    rw [uIcc_of_le hT.le] at hs
+    exact (congrFun (hYX s hs) ω).symm
+  rw [hint_eq]
+  exact hO
 
 end
 

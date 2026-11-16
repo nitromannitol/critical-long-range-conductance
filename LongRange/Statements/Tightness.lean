@@ -26,7 +26,7 @@ theorem LongRange.Statements.tightness
     (μ : Set.Ioo (0 : ℝ) 1 → Measure (Site d)) [∀ ε, IsProbabilityMeasure (μ ε)]
     (hμ : IsTightMeasureSet {Measure.map (walkEmbed ε.1) (μ ε) | (ε : Set.Ioo (0 : ℝ) 1)}) :
     IsTightMeasureSet {(((pathLaw (walkRates hd ε.2.1 hlam a ha) (μ ε) (walkEmbed ε)).map
-      (measurable_restrict T).aemeasurable :
+      (LatticeProb.Cadlag.HalfLine.restrict T) :
         ProbabilityMeasure (LatticeProb.Cadlag.D T (EuclideanSpace ℝ (Fin d)))) :
           Measure (LatticeProb.Cadlag.D T (EuclideanSpace ℝ (Fin d)))) | ε} :=
 

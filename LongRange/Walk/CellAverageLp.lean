@@ -1,6 +1,6 @@
 import LongRange.Walk.CellAverage
 import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 
 /-!
 # Cell averages on square-integrable equivalence classes
@@ -32,11 +32,11 @@ theorem memLp_latticeMeasure {ε : ℝ} (hε : 0 < ε)
     MemLp g 2 (latticeMeasure ε U) := by
   classical
   have hs := latticeSet_finite hε hb
-  haveI : IsFiniteMeasure (Measure.count.restrict (latticeSet ε U)) :=
+  have : IsFiniteMeasure (Measure.count.restrict (latticeSet ε U)) :=
     ⟨by
       simp only [Measure.restrict_apply_univ, Measure.count_apply_finite _ hs]
       exact ENNReal.natCast_lt_top _⟩
-  haveI : IsFiniteMeasure (latticeMeasure ε U) :=
+  have : IsFiniteMeasure (latticeMeasure ε U) :=
     ⟨by
       rw [latticeMeasure, Measure.smul_apply, smul_eq_mul]
       exact ENNReal.mul_lt_top ENNReal.ofReal_lt_top (measure_lt_top _ _)⟩
@@ -79,7 +79,7 @@ theorem cellAverage_add {ε : ℝ} {U : Set (Fin d → ℝ)} (hU : MeasurableSet
   have hv : volume (cellCube ε q) ≠ ⊤ := by
     rw [cellCube_eq_pi, Real.volume_pi_Ico]
     exact ENNReal.prod_ne_top (fun _ _ => ENNReal.ofReal_ne_top)
-  haveI : IsFiniteMeasure (volume.restrict (cellCube ε q)) :=
+  have : IsFiniteMeasure (volume.restrict (cellCube ε q)) :=
     ⟨by simpa only [Measure.restrict_apply_univ] using hv.lt_top⟩
   simp only [cellAverage, Set.indicator_add', Pi.add_apply,
     integral_add ((hi.restrict _).integrable (by norm_num))
@@ -247,7 +247,7 @@ theorem tendsto_cellAverage_sub_sample_of_uniformContinuous
       rw [dist_eq_norm]
       exact (TaylorHolder.norm_le_radius _).trans_lt
         ((radius_sub_physical_le hε.1.1 q hy).trans_lt hε.2)
-    letI := (latticeSet_finite hε.1.1 hb).fintype
+    let := (latticeSet_finite hε.1.1 hb).fintype
     have hsq (q : Site d) :
         (cellAverage ε U F q - F (physical ε q)) ^ 2 ≤ η ^ 2 := by
       simpa only [sq_abs] using

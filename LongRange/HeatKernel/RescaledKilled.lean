@@ -1,5 +1,5 @@
 import LongRange.HeatKernel.Rescaled
-import LatticeProb.Prob.JumpChain.InitialKilling
+import LongRange.Support.Prob.JumpChain.InitialKilling
 
 /-!
 # The killed rescaled heat kernel
@@ -40,7 +40,7 @@ theorem rescaledKilledDensity_eq_position_mass (hd : 1 ≤ d) {ε lam : ℝ}
         ∀ s ≤ t, physical ε (h.position s) ∈ U} =
       {h | h.position t = y ∧ ∀ s ≤ t, h.position s ∈ latticeSet ε U} := by
     ext h
-    simp only [latticeSet, Set.mem_setOf_eq, (physical_injective hε.1).eq_iff]
+    simp only [latticeSet, Set.mem_ofPred_eq, (physical_injective hε.1).eq_iff]
   rw [hevent, rescaledKilledDensity,
     JumpChain.BoundedRates.initialKilledKernel_eq_position_mass]
 
@@ -51,8 +51,9 @@ theorem rescaledKilledDensity_eq_zero_of_not_mem (hd : 1 ≤ d) {ε lam : ℝ}
     (t : ℝ≥0) (x y : Site d) (hx : physical ε x ∉ U) :
     rescaledKilledDensity hd hε hlam a ha U t x y = 0 := by
   classical
+  have hx' : x ∉ latticeSet ε U := hx
   simp only [rescaledKilledDensity, JumpChain.BoundedRates.initialKilledKernel,
-    latticeSet, Set.mem_setOf_eq, if_neg hx, mul_zero]
+    ite_eq_right hx', mul_zero]
 
 /-- Inside the domain the density uses the original arrival-filtered surviving series. -/
 theorem rescaledKilledDensity_of_mem (hd : 1 ≤ d) {ε lam : ℝ}
@@ -62,8 +63,9 @@ theorem rescaledKilledDensity_of_mem (hd : 1 ≤ d) {ε lam : ℝ}
     rescaledKilledDensity hd hε hlam a ha U t x y = (ε ^ d)⁻¹ *
       (walkRates hd hε.1 hlam a ha).killedKernel (latticeSet ε U) t x y := by
   classical
+  have hx' : x ∈ latticeSet ε U := hx
   simp only [rescaledKilledDensity, JumpChain.BoundedRates.initialKilledKernel,
-    latticeSet, Set.mem_setOf_eq, if_pos hx]
+    ite_eq_left hx']
 
 /-- At time zero the density is the physical Dirac mass restricted to the domain. -/
 theorem rescaledKilledDensity_zero (hd : 1 ≤ d) {ε lam : ℝ}
@@ -74,7 +76,7 @@ theorem rescaledKilledDensity_zero (hd : 1 ≤ d) {ε lam : ℝ}
       (if physical ε x ∈ U then (if x = y then 1 else 0) else 0) := by
   classical
   simp only [rescaledKilledDensity, JumpChain.BoundedRates.initialKilledKernel_zero,
-    latticeSet, Set.mem_setOf_eq]
+    latticeSet, Set.mem_ofPred_eq]
   split_ifs <;> rfl
 
 /-- Killing decreases the actual physical-volume density. -/

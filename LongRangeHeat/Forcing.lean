@@ -347,7 +347,7 @@ theorem abs_forcing_long_le (hd : 1 ≤ d) {ε lam K Cext : ℝ} (hε : 0 < ε) 
     · exact jumpKernel_nonneg _
     · exact le_rfl
   have hEs : Summable E :=
-    (summable_jumpKernel hd hε).of_nonneg_of_le hE0 hEJ
+    (summable_jumpKernel_of_one_le hd hε).of_nonneg_of_le hE0 hEJ
   have hEC : ∀ w, E w ≤ (if 1 ≤ radius (physical ε w) then
       radius (physical ε w) ^ (-((d : ℝ) + 2)) else 0) := by
     intro w

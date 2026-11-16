@@ -160,8 +160,7 @@ theorem initialLaw_eq_map_cellIndex (ε : ℝ) (g : (Fin d → ℝ) → ℝ) (h�
 def initialDensityEuclidean (g : (Fin d → ℝ) → ℝ) (hg : Integrable g volume)
     (hg0 : ∀ᵐ y ∂volume, 0 ≤ g y) (hg1 : ∫ y, g y = 1) :
     ProbabilityMeasure (EuclideanSpace ℝ (Fin d)) :=
-  (initialDensity g hg hg0 hg1).map
-    (PiLp.continuous_toLp (p := (2 : ENNReal)) (fun _ : Fin d => ℝ)).measurable.aemeasurable
+  (initialDensity g hg hg0 hg1).map (WithLp.toLp 2)
 
 /-- Selecting cell centers converges pointwise in the Euclidean metric. -/
 theorem tendsto_walkEmbed_cellIndex (y : Fin d → ℝ) :
@@ -186,7 +185,7 @@ theorem tendsto_initialLaw (g : (Fin d → ℝ) → ℝ) (hg : Integrable g volu
     Tendsto
       (fun ε : {ε : ℝ // ε ∈ Set.Ioo (0 : ℝ) 1} =>
         (initialLaw ε.val g ε.property.1 hg hg0 hg1).map
-          (measurable_of_countable (walkEmbed ε.val)).aemeasurable)
+          (walkEmbed ε.val))
       (Filter.comap Subtype.val (𝓝[Set.Ioo (0 : ℝ) 1] 0))
       (𝓝 (initialDensityEuclidean g hg hg0 hg1)) := by
   apply ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr
@@ -215,7 +214,7 @@ theorem tendsto_initialLaw (g : (Fin d → ℝ) → ℝ) (hg : Integrable g volu
     exact Measure.map_map (measurable_of_countable _) (measurable_cellIndex _ _)
   have htest (ε : {ε : ℝ // ε ∈ Set.Ioo (0 : ℝ) 1}) :
       (∫ x, f x ∂((initialLaw ε.val g ε.property.1 hg hg0 hg1).map
-        (measurable_of_countable (walkEmbed ε.val)).aemeasurable :
+        (walkEmbed ε.val) :
           Measure (EuclideanSpace ℝ (Fin d)))) =
       ∫ y, f (walkEmbed ε.val (cellIndex ε.val ε.property.1 y)) ∂μ := by
     change (∫ x, f x ∂Measure.map (walkEmbed ε.val)

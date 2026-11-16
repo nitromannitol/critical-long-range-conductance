@@ -137,7 +137,7 @@ theorem second_moment_normalized {d : ℕ} (hd : 1 ≤ d) {ε : ℝ}
       if i = j then 1 / (d : ℝ) else 0 := by
   by_cases hij : i = j
   · subst j
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     simp_rw [mul_assoc, ← pow_two]
     have hr := kappa_eq_radial_sum (d := d) hε.1
     rw [LatticeSums.radial_sum_eq hε.1 i] at hr
@@ -151,7 +151,7 @@ theorem second_moment_normalized {d : ℕ} (hd : 1 ≤ d) {ε : ℝ}
           (ε ^ d * ((d : ℝ) * ∑ q ∈ unitBallIndices d ε,
             jumpKernel (physical ε q) * physical ε q i ^ 2)) / kappa d ε := by ring
       _ = 1 := by rw [← hr, div_self hk]
-  · rw [if_neg hij, LatticeSums.mixed_sum_eq_zero hε.1 hij, mul_zero]
+  · rw [ite_eq_right hij, LatticeSums.mixed_sum_eq_zero hε.1 hij, mul_zero]
 
 end
 end LongRange

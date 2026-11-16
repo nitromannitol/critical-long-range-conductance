@@ -1,5 +1,5 @@
 import LongRange.Walk.DisplacementTail
-import LatticeProb.Prob.JumpChain.IncrementBound
+import LongRange.Support.Prob.JumpChain.IncrementBound
 
 /-!
 # Truncated increments of the rescaled walk

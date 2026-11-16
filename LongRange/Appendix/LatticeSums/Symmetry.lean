@@ -133,7 +133,7 @@ lemma mixed_sum_eq_zero {d : ℕ} {ε : ℝ} (hε : 0 < ε) {i j : Fin d} (hij :
     apply Finset.sum_congr rfl
     intro q _
     rw [hk]
-    simp only [physical, reflect, ite_true, if_neg hij.symm, Int.cast_neg]
+    simp only [physical, reflect, ite_true, ite_eq_right hij.symm, Int.cast_neg]
     ring
   linarith
 

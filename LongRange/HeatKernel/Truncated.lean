@@ -1,7 +1,7 @@
 import LongRange.HeatKernel.Tent
 import LongRange.HeatKernel.OnDiagonal
-import LatticeProb.Prob.JumpChain.Truncation
-import LatticeProb.Prob.JumpChain.Duhamel
+import LongRange.Support.Prob.JumpChain.Truncation
+import LongRange.Support.Prob.JumpChain.Duhamel
 
 /-!
 # Bounds for the truncated unit walk
@@ -141,8 +141,8 @@ theorem removed_intensity_le (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam) :
         (if radius (physical 1 (y - x)) ≤ ρ then unitRate a x y else 0) ≤ _
       dsimp [f]
       by_cases ht : radius (physical 1 (y - x)) ≤ ρ
-      · rw [if_pos ht, if_neg (not_lt.mpr ht), sub_self, mul_zero]
-      · rw [if_neg ht, if_pos (lt_of_not_ge ht), sub_zero]
+      · rw [ite_eq_left ht, ite_eq_right (not_lt.mpr ht), sub_self, mul_zero]
+      · rw [ite_eq_right ht, ite_eq_left (lt_of_not_ge ht), sub_zero]
         exact unitRate_le hlam ha x y
     _ = lam⁻¹ * ∑' z, f z := by
       rw [tsum_mul_left]
@@ -178,7 +178,7 @@ theorem truncRates_q_eq_zero_of_lt_one (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < la
   change (if radius (physical 1 (y - x)) ≤ ρ then unitRate a x y else 0) = 0
   by_cases hn : y - x = 0
   · simp only [unitRate, hn, dite_true, ite_self]
-  · exact if_neg (not_le.mpr (hρ.trans_le (lattice_radius_ge_one hn)))
+  · exact ite_eq_right (not_le.mpr (hρ.trans_le (lattice_radius_ge_one hn)))
 
 /-- Below lattice spacing the uniformized matrix is the identity. -/
 theorem truncRates_p_of_lt_one (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
@@ -202,14 +202,14 @@ theorem truncHeat_zero_of_lt_one (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
     induction n generalizing i j with
     | zero =>
       by_cases hij : i = j
-      · simp only [kernelPow, if_pos hij]
-      · simp only [kernelPow, if_neg hij]
+      · simp only [kernelPow, ite_eq_left hij]
+      · simp only [kernelPow, ite_eq_right hij]
     | succ n ih =>
       simp only [kernelPow, kernelComp, ih,
         truncRates_p_of_lt_one hd hlam a ha hρ1, ite_mul, one_mul, zero_mul,
         tsum_ite_eq', eq_comm]
   rw [JumpChain.BoundedRates.transitionKernel_real_singleton_eq_kernelPow]
-  simp only [hp, if_neg hxy, mul_zero, tsum_zero]
+  simp only [hp, ite_eq_right hxy, mul_zero, tsum_zero]
 
 /-- Positivity comparison transfers unit heat decay to the truncated walk. -/
 theorem truncHeat_onDiagonal (hMSC : LatticeProb.External.MuruganSaloffCoste) (hd : 1 ≤ d)

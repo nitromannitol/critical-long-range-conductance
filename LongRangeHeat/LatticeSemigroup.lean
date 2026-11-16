@@ -84,7 +84,7 @@ theorem abs_generator_le {d : ℕ} (hd : 1 ≤ d) {ε lam M : ℝ}
       (2 * |ε ^ d / LongRange.kappa d ε| * lam⁻¹ *
         ∑' w : LatticeProb.Site d, LongRange.jumpKernel (physical ε w)) * M := by
   let J := fun w : LatticeProb.Site d => LongRange.jumpKernel (physical ε w)
-  have ht := (summable_jumpKernel hd hε).mul_left (lam⁻¹ * (2 * M))
+  have ht := (summable_jumpKernel_of_one_le hd hε).mul_left (lam⁻¹ * (2 * M))
   have hj : ∀ w, 0 ≤ J w := fun w => jumpKernel_nonneg _
   have hbound : ∀ w : LatticeProb.Site d,
       |if hw : w = 0 then 0 else
@@ -123,7 +123,7 @@ theorem tsum_sq_generator_le (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam 
         ∑' w : Site d, jumpKernel (physical ε w)) ^ 2 * ∑' q, f q ^ 2 := by
   set S := ∑' w : Site d, jumpKernel (physical ε w)
   have hE := summable_jumpKernel_mul_increment_sq hd hε hf
-  have hJs := summable_jumpKernel hd hε
+  have hJs := summable_jumpKernel_of_one_le hd hε
   have hI : 0 ≤ lam⁻¹ := inv_nonneg.mpr hlam.le
   have hbound : ∀ q, generator ε a f q ^ 2 ≤ (ε ^ d / kappa d ε) ^ 2 *
       (lam⁻¹ ^ 2 * S * ∑' w, jumpKernel (physical ε w) * (f (q + w) - f q) ^ 2) := by
@@ -373,7 +373,7 @@ private theorem summable_generator_of_bounded {d : ℕ} (hd : 1 ≤ d) {ε lam :
     {v : Site d → ℝ} {M : ℝ} (hM : 0 ≤ M) (hv : ∀ q, |v q| ≤ M) (q : Site d) :
     Summable (fun w : Site d => if hw : w = 0 then 0 else
       a (edgeAdd q w hw) * (v (q + w) - v q) * jumpKernel (physical ε w)) := by
-  apply ((summable_jumpKernel hd hε).mul_left (lam⁻¹ * (2 * M))).of_norm_bounded
+  apply ((summable_jumpKernel_of_one_le hd hε).mul_left (lam⁻¹ * (2 * M))).of_norm_bounded
   intro w
   have hj := jumpKernel_nonneg (physical ε w)
   by_cases hw : w = 0

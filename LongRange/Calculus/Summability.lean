@@ -114,8 +114,7 @@ theorem exists_bound_of_finite_support {h : Site d → ℝ}
   · rw [hq, abs_zero]
     exact Finset.sum_nonneg (fun _ _ => abs_nonneg _)
   · exact Finset.single_le_sum (s := hh.toFinset) (f := fun q => |h q|)
-      (fun _ _ => abs_nonneg _) (by
-      simpa only [Set.Finite.mem_toFinset, Function.mem_support] using hq)
+      (fun _ _ => abs_nonneg _) ((Set.Finite.mem_toFinset hh).2 hq)
 
 /-- The linear slope is evaluated at the physical increment `εw`. -/
 theorem linearFn_add (ε : ℝ) (p : Fin d → ℝ) (q w : Site d) :

@@ -51,7 +51,7 @@ theorem kappa_nonneg {ε : ℝ} (hε : 0 ≤ ε) : 0 ≤ kappa d ε :=
     (Finset.sum_nonneg fun _ _ => inv_nonneg.mpr (pow_nonneg (radius_nonneg _) _))
 
 /-- The scaled jump kernel `w ↦ J(εw)` is summable over the integer sites. -/
-theorem summable_jumpKernel (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) :
+theorem summable_jumpKernel_of_one_le (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) :
     Summable fun w : Site d => jumpKernel (physical ε w) := by
   have herr := (LatticeProb.Euclidean.Summability.euclidean_radial_error_summable d
     hd).mul_left (ε ^ (d + 2))⁻¹
@@ -166,7 +166,7 @@ theorem edgeAdd_reverse (q w : Site d) (hw : w ≠ 0) :
 theorem summable_jumpKernel_mul_sq (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) {f : Site d → ℝ}
     (hf : MemL2 f) :
     Summable fun p : Site d × Site d => jumpKernel (physical ε p.2) * f p.1 ^ 2 :=
-  (hf.mul_of_nonneg (summable_jumpKernel hd hε) (fun q => sq_nonneg (f q))
+  (hf.mul_of_nonneg (summable_jumpKernel_of_one_le hd hε) (fun q => sq_nonneg (f q))
     (fun _ => jumpKernel_nonneg _)).congr fun _ => mul_comm _ _
 
 /-- The series `∑_{q, w} J(εw) f(q + w)²` converges for square-summable `f`. -/
@@ -287,7 +287,7 @@ theorem memL2_generator (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 <
     MemL2 (generator ε a f) := by
   set S := ∑' w : Site d, jumpKernel (physical ε w)
   have hE := summable_jumpKernel_mul_increment_sq hd hε hf
-  have hJs := summable_jumpKernel hd hε
+  have hJs := summable_jumpKernel_of_one_le hd hε
   have hI : 0 ≤ lam⁻¹ := inv_nonneg.mpr hlam.le
   have hbound : ∀ q, generator ε a f q ^ 2 ≤ (ε ^ d / kappa d ε) ^ 2 *
       (lam⁻¹ ^ 2 * S * ∑' w, jumpKernel (physical ε w) * (f (q + w) - f q) ^ 2) := by

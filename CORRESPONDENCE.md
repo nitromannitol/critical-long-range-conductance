@@ -73,7 +73,7 @@ Names below are in `LongRangeHeat.Statements`. A pending entry has no statement 
 
 | Paper result | Lean declaration |
 | --- | --- |
-| Theorem 1.1 | Pending |
+| Theorem 1.1 | `main_theorem` |
 | Theorem 1.2 | Pending |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |

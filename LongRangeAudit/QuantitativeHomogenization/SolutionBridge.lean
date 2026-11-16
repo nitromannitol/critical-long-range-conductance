@@ -12,7 +12,7 @@ namespace LongRangeAudit.QuantitativeHomogenization
 
 noncomputable section
 open MeasureTheory
-open LatticeProb LatticeProb.Elliptic LatticeProb.Elliptic.WeakDirichlet
+open _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb.Elliptic _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb.Elliptic.WeakDirichlet
 
 namespace Conversion
 
@@ -94,7 +94,7 @@ theorem uniqueness_iff : LatticeProb.External.GilbargTrudingerWeakHomogeneousUni
 
 end Conversion
 
-open LatticeProb.Euclidean.Lattice LongRange
+open _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb.Euclidean.Lattice _root_.LongRangeAudit.QuantitativeHomogenization.LongRange
 
 /-- The full source main estimate produces the unique weak solution and representative. -/
 

@@ -5,8 +5,8 @@ import LongRangeAudit.QuantitativeHomogenization.SolutionBridge
 namespace LongRangeAudit.QuantitativeHomogenization
 
 noncomputable section
-open MeasureTheory LatticeProb LatticeProb.Elliptic LatticeProb.Euclidean.Lattice
-open LatticeProb.Elliptic.WeakDirichlet LongRange
+open MeasureTheory _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb.Elliptic _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb.Euclidean.Lattice
+open _root_.LongRangeAudit.QuantitativeHomogenization.LatticeProb.Elliptic.WeakDirichlet _root_.LongRangeAudit.QuantitativeHomogenization.LongRange
 
 /-- The full source main estimate produces the unique weak solution and representative. -/
 

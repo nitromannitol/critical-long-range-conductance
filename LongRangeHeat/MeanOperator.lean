@@ -235,6 +235,231 @@ theorem contOp_eq_sum_fderiv_fderiv {u : (Fin d → ℝ) → ℝ} (hu : ContDiff
   refine Finset.sum_congr rfl fun i _ => ?_
   exact fderiv_fderiv_apply_eq (hu.of_le (by simp)) x _ _
 
+theorem jumpKernel_nonneg (v : Fin d → ℝ) : 0 ≤ jumpKernel v := by
+  unfold jumpKernel
+  split_ifs
+  · exact le_rfl
+  · have := radius_nonneg v
+    positivity
+
+/-- The error of the jump `z = εw` at `x = εq` in the expansion of `L̄ u(x)`: the second-order
+Taylor remainder of `u` for a short jump `0 < |z| ≤ 1`, the increment for a long jump. -/
+def jumpError (ε : ℝ) (u : (Fin d → ℝ) → ℝ) (w q : Site d) : ℝ :=
+  if w ∈ unitBallIndices d ε then
+    u (physical ε q + physical ε w) - u (physical ε q) -
+      fderiv ℝ u (physical ε q) (physical ε w) -
+      1 / 2 * fderiv ℝ (fderiv ℝ u) (physical ε q) (physical ε w) (physical ε w)
+  else u (physical ε q + physical ε w) - u (physical ε q)
+
+/-- The expansion of the mean operator: `L̄ u(x) = (2d)⁻¹ Δ u(x) + (ε^d / κ_ε) ∑_z J(z) E_z(x)`
+with the jump errors `E_z = jumpError`. -/
+theorem meanGenerator_eq (hd : 1 ≤ d) {ε : ℝ} (hε : ε ∈ Ioo (0 : ℝ) 1)
+    {u : (Fin d → ℝ) → ℝ} (hu : ContDiff ℝ ∞ u) {M : ℝ} (hM : ∀ x, |u x| ≤ M)
+    (hJ : Summable fun w : Site d => jumpKernel (physical ε w)) (q : Site d) :
+    meanGenerator ε (restrict ε u) q = contOp d u (physical ε q) +
+      ε ^ d / kappa d ε * ∑' w : Site d, jumpKernel (physical ε w) * jumpError ε u w q := by
+  classical
+  set x := physical ε q with hx
+  set S := unitBallIndices d ε with hS
+  set I : Site d → ℝ := fun w => u (x + physical ε w) - u x with hI
+  set P : Site d → ℝ := fun w => fderiv ℝ u x (physical ε w) +
+    1 / 2 * fderiv ℝ (fderiv ℝ u) x (physical ε w) (physical ε w) with hP
+  have hsplit : ∀ w, jumpKernel (physical ε w) * I w = jumpKernel (physical ε w) *
+      jumpError ε u w q + (if w ∈ S then jumpKernel (physical ε w) * P w else 0) := by
+    intro w
+    simp only [jumpError, hI, hP, ← hx, ← hS]
+    split_ifs <;> ring
+  have hIs : Summable fun w => jumpKernel (physical ε w) * I w :=
+    Summable.of_norm_bounded (g := fun w => jumpKernel (physical ε w) * (2 * M)) (hJ.mul_right _)
+      fun w => by
+        rw [Real.norm_eq_abs, abs_mul, abs_of_nonneg (jumpKernel_nonneg _)]
+        refine mul_le_mul_of_nonneg_left ?_ (jumpKernel_nonneg _)
+        calc |I w| ≤ |u (x + physical ε w)| + |u x| := abs_sub _ _
+          _ ≤ 2 * M := by linarith [hM (x + physical ε w), hM x]
+  have hfin : Summable fun w => if w ∈ S then jumpKernel (physical ε w) * P w else 0 :=
+    summable_of_ne_finset_zero (s := S) fun w hw => by simp [hw]
+  have hEs : Summable fun w => jumpKernel (physical ε w) * jumpError ε u w q :=
+    (hIs.sub hfin).congr fun w => by rw [hsplit w]; ring
+  have hmg : meanGenerator ε (restrict ε u) q =
+      ε ^ d / kappa d ε * ∑' w : Site d, jumpKernel (physical ε w) * I w :=
+    meanGenerator_restrict ε u q
+  have hfin_eq : (∑' w, if w ∈ S then jumpKernel (physical ε w) * P w else 0) =
+      ∑ w ∈ S, jumpKernel (physical ε w) * P w := by
+    rw [tsum_eq_sum (s := S) fun w hw => by simp [hw]]
+    exact Finset.sum_congr rfl fun w hw => by simp [hw]
+  rw [hmg, tsum_congr hsplit, Summable.tsum_add hEs hfin, hfin_eq]
+  have hP1 : ∑ w ∈ S, jumpKernel (physical ε w) * P w =
+      ∑ w ∈ S, jumpKernel (physical ε w) * fderiv ℝ u x (physical ε w) +
+        ∑ w ∈ S, jumpKernel (physical ε w) *
+          (1 / 2 * fderiv ℝ (fderiv ℝ u) x (physical ε w) (physical ε w)) := by
+    rw [← Finset.sum_add_distrib]
+    exact Finset.sum_congr rfl fun w _ => by rw [hP]; ring
+  rw [hP1, sum_first_moment_eq_zero hε.1, zero_add]
+  have hQ := quadratic_moment hd hε (fderiv ℝ (fderiv ℝ u) x)
+  rw [← contOp_eq_sum_fderiv_fderiv hu] at hQ
+  linear_combination hQ
+
+/-- The right time derivative of the continuum solution is `(2d)⁻¹ Δ ū_s`. -/
+theorem derivWithin_continuumHeat (hd : 1 ≤ d) {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f)
+    (hfc : HasCompactSupport f) {s : ℝ} (hs : 0 ≤ s) (x : Fin d → ℝ) :
+    derivWithin (fun r => continuumHeat f r x) (Ici s) s = contOp d (continuumHeat f s) x :=
+  (hasDerivWithinAt_continuumHeat hd hf hfc hs x).derivWithin (uniqueDiffWithinAt_Ici s)
+
+/-- The heat flow does not increase the supremum norm. -/
+theorem abs_continuumHeat_le (hd : 1 ≤ d) {g : (Fin d → ℝ) → ℝ} (hg : Continuous g) {M : ℝ}
+    (hM : ∀ x, |g x| ≤ M) {s : ℝ} (hs : 0 ≤ s) (x : Fin d → ℝ) : |continuumHeat g s x| ≤ M := by
+  rcases hs.eq_or_lt with rfl | hs
+  · rw [continuumHeat_zero]
+    exact hM x
+  have hc : Continuous fun w => g (x - w) := hg.comp (continuous_const.sub continuous_id)
+  rw [continuumHeat_eq_integral g hs]
+  calc |∫ w, heatKernel d s w * g (x - w)| ≤ ∫ w, |heatKernel d s w * g (x - w)| :=
+        abs_integral_le_integral_abs
+    _ ≤ ∫ w, heatKernel d s w * M :=
+        integral_mono (integrable_heatKernel_mul_bdd hd hs hc fun w => hM _).abs
+          ((integrable_heatKernel hd hs).mul_const M) fun w => by
+            rw [abs_mul, abs_of_nonneg (heatKernel_nonneg hd _ _)]
+            exact mul_le_mul_of_nonneg_left (hM _) (heatKernel_nonneg hd _ _)
+    _ = M := by rw [integral_mul_const, integral_heatKernel hd hs, one_mul]
+
+/-- **Lemma 3.1** (`lem:mean`): `‖∂_s ū_s - L̄ ū_s‖_{L²(εℤ^d)} ≤ C / κ_ε`. -/
+theorem mean_operator_consistency (hd : 1 ≤ d) {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f)
+    (hfc : HasCompactSupport f) :
+    ∃ C : ℝ, ∀ ε ∈ Ioo (0 : ℝ) (1 / 2), ∀ s : ℝ, 0 ≤ s →
+      MemL2 (fun q : Site d => derivWithin (fun r => continuumHeat f r (physical ε q)) (Ici s) s -
+        meanGenerator ε (restrict ε (continuumHeat f s)) q) ∧
+      latticeNorm ε (fun q : Site d =>
+        derivWithin (fun r => continuumHeat f r (physical ε q)) (Ici s) s -
+          meanGenerator ε (restrict ε (continuumHeat f s)) q) ≤ C / kappa d ε := by
+  classical
+  obtain ⟨CT, hCT⟩ := taylor_bound hd hf hfc
+  obtain ⟨CI, hCI⟩ := increment_bound hd hf hfc
+  obtain ⟨C1, hC1⟩ := exists_short_sum_le hd
+  obtain ⟨C2, hC2⟩ := exists_long_sum_le d
+  obtain ⟨M0, hM0⟩ := hfc.exists_bound_of_continuous hf.continuous
+  have hM0' : ∀ x, |f x| ≤ M0 := fun x => by simpa [Real.norm_eq_abs] using hM0 x
+  set AT := max CT 1 with hAT
+  set AI := max CI 1 with hAI
+  have hAT0 : 0 < AT := lt_max_of_lt_right one_pos
+  have hAI0 : 0 < AI := lt_max_of_lt_right one_pos
+  refine ⟨AT * C1 + AI * C2, fun ε hε s hs => ?_⟩
+  have hε1 : ε ∈ Ioo (0 : ℝ) 1 := ⟨hε.1, by linarith [hε.2]⟩
+  have hκ := kappa_pos hd hε1
+  have hεd : 0 < ε ^ d := pow_pos hε.1 d
+  have hu : ContDiff ℝ ∞ (continuumHeat f s) := contDiff_continuumHeat hd hf hfc hs
+  have huM : ∀ x, |continuumHeat f s x| ≤ M0 := abs_continuumHeat_le hd hf.continuous hM0' hs
+  obtain ⟨hlong, hlong_le⟩ := hC2 ε hε
+  have hJ := summable_jumpKernel hε.1 hlong
+  set S := unitBallIndices d ε with hS
+  have hr : ∀ w ∈ S, 0 < radius (physical ε w) := fun w hw =>
+    radius_pos (unitBallIndices_physical_ne_zero hε.1 hw)
+  set D : Site d → ℝ := fun w => if w ∈ S then AT * radius (physical ε w) ^ 3 else AI with hD
+  have hD0 : ∀ w, 0 < D w := fun w => by
+    simp only [hD]
+    split_ifs with hw
+    · exact mul_pos hAT0 (pow_pos (hr w hw) 3)
+    · exact hAI0
+  set c : Site d → ℝ := fun w => ε ^ d / kappa d ε * (jumpKernel (physical ε w) * D w) with hc
+  set G : Site d → Site d → ℝ := fun w q => -(jumpError ε (continuumHeat f s) w q / D w)
+    with hG
+  have hc0 : ∀ w, 0 ≤ c w := fun w =>
+    mul_nonneg (div_nonneg hεd.le hκ.le) (mul_nonneg (jumpKernel_nonneg _) (hD0 w).le)
+  -- the identity `∂_s ū_s - L̄ ū_s = ∑_z c_z G_z`
+  have hE : ∀ q : Site d, derivWithin (fun r => continuumHeat f r (physical ε q)) (Ici s) s -
+      meanGenerator ε (restrict ε (continuumHeat f s)) q = ∑' w, c w * G w q := by
+    intro q
+    rw [derivWithin_continuumHeat hd hf hfc hs, meanGenerator_eq hd hε1 hu huM hJ q]
+    have hcg : ∀ w, c w * G w q = -(ε ^ d / kappa d ε) *
+        (jumpKernel (physical ε w) * jumpError ε (continuumHeat f s) w q) := fun w => by
+      simp only [hc, hG]
+      field_simp [(hD0 w).ne']
+    rw [tsum_congr hcg, tsum_mul_left]
+    ring
+  -- each `G_z` has norm at most one
+  have hGn : ∀ w (T : Finset (Site d)), ε ^ d * ∑ q ∈ T, G w q ^ 2 ≤ 1 := by
+    intro w T
+    by_cases hw : w ∈ S
+    · obtain ⟨hm, hn⟩ := hCT ε hε s hs (physical ε w)
+      have hfun : (fun q => jumpError ε (continuumHeat f s) w q) = fun q : Site d =>
+          continuumHeat f s (physical ε q + physical ε w) - continuumHeat f s (physical ε q) -
+            fderiv ℝ (continuumHeat f s) (physical ε q) (physical ε w) -
+            1 / 2 * fderiv ℝ (fderiv ℝ (continuumHeat f s)) (physical ε q) (physical ε w)
+              (physical ε w) := funext fun q => by simp [jumpError, ← hS, hw]
+      have hDw : D w = AT * radius (physical ε w) ^ 3 := by simp [hD, hw]
+      have hm' : MemL2 (fun q => jumpError ε (continuumHeat f s) w q) := by rw [hfun]; exact hm
+      have hn' : latticeNorm ε (fun q => jumpError ε (continuumHeat f s) w q) ≤ D w := by
+        rw [hfun, hDw]
+        exact hn.trans (mul_le_mul_of_nonneg_right (le_max_left _ _)
+          (pow_nonneg (radius_nonneg _) 3))
+      exact sum_sq_neg_div_le_one hε.1 (hD0 w) hm' hn' T
+    · obtain ⟨hm, hn⟩ := hCI ε hε s hs (physical ε w)
+      have hfun : (fun q => jumpError ε (continuumHeat f s) w q) = fun q : Site d =>
+          continuumHeat f s (physical ε q + physical ε w) - continuumHeat f s (physical ε q) :=
+        funext fun q => by simp [jumpError, ← hS, hw]
+      have hDw : D w = AI := by simp [hD, hw]
+      have hm' : MemL2 (fun q => jumpError ε (continuumHeat f s) w q) := by rw [hfun]; exact hm
+      have hn' : latticeNorm ε (fun q => jumpError ε (continuumHeat f s) w q) ≤ D w := by
+        rw [hfun, hDw]
+        refine hn.trans ?_
+        have h1 : 0 ≤ min (radius (physical ε w)) 1 := le_min (radius_nonneg _) zero_le_one
+        have h2 : min (radius (physical ε w)) 1 ≤ 1 := min_le_right _ _
+        rcases le_total CI 0 with hci | hci
+        · nlinarith [le_max_right CI 1]
+        · nlinarith [le_max_left CI 1]
+      exact sum_sq_neg_div_le_one hε.1 (hD0 w) hm' hn' T
+  -- the weights: `∑_z c_z ≤ C / κ_ε`
+  have hcsplit : ∀ w, jumpKernel (physical ε w) * D w =
+      (if w ∈ S then AT * (1 / radius (physical ε w) ^ (d - 1)) else 0) +
+        AI * (if 1 < radius (physical ε w) then 1 / radius (physical ε w) ^ (d + 2) else 0) := by
+    intro w
+    by_cases hw : w ∈ S
+    · have hrw := hr w hw
+      have hle : ¬ 1 < radius (physical ε w) := not_lt.2 ((mem_unitBallIndices hε.1 w).1 hw).2
+      rw [jumpKernel_of_ne_zero (unitBallIndices_physical_ne_zero hε.1 hw)]
+      simp only [hD, hw, hle, ↓reduceIte, mul_zero, add_zero]
+      have hpow : radius (physical ε w) ^ (d + 2) =
+          radius (physical ε w) ^ (d - 1) * radius (physical ε w) ^ 3 := by
+        rw [← pow_add]
+        congr 1
+        omega
+      rw [hpow]
+      field_simp
+    · simp only [hD, hw, ↓reduceIte, zero_add, jumpKernel_eq_of_notMem hε.1 hw]
+      ring
+  have hfin : Summable fun w : Site d =>
+      if w ∈ S then AT * (1 / radius (physical ε w) ^ (d - 1)) else 0 :=
+    summable_of_ne_finset_zero (s := S) fun w hw => by simp [hw]
+  have hJD : Summable fun w => jumpKernel (physical ε w) * D w := by
+    rw [funext hcsplit]
+    exact hfin.add (hlong.mul_left AI)
+  have hcs : Summable c := hJD.mul_left _
+  have hsum_c : ∑' w, c w ≤ (AT * C1 + AI * C2) / kappa d ε := by
+    have h1 : ∑' w, c w = (AT * (ε ^ d * ∑ w ∈ S, 1 / radius (physical ε w) ^ (d - 1)) +
+        AI * (ε ^ d * ∑' w : Site d, if 1 < radius (physical ε w) then
+          1 / radius (physical ε w) ^ (d + 2) else 0)) / kappa d ε := by
+      have e1 : ∑' w, c w = ε ^ d / kappa d ε * ∑' w, jumpKernel (physical ε w) * D w := by
+        simp only [hc]
+        exact tsum_mul_left
+      have e2 : ∑' w, jumpKernel (physical ε w) * D w =
+          AT * ∑ w ∈ S, 1 / radius (physical ε w) ^ (d - 1) +
+            AI * ∑' w : Site d, if 1 < radius (physical ε w) then
+              1 / radius (physical ε w) ^ (d + 2) else 0 := by
+        rw [tsum_congr hcsplit, Summable.tsum_add hfin (hlong.mul_left AI), tsum_mul_left]
+        congr 1
+        rw [tsum_eq_sum (s := S) fun w hw => by simp [hw], Finset.mul_sum]
+        exact Finset.sum_congr rfl fun w hw => by simp [hw]
+      rw [e1, e2]
+      ring
+    rw [h1]
+    gcongr
+    · exact hC1 ε hε
+  have hbound := memL2_and_latticeNorm_le hε.1 (tsum_nonneg hc0)
+    (v := fun q => ∑' w, c w * G w q) fun T => sum_sq_tsum_le hε.1 hc0 hcs hGn T
+  rw [show (fun q : Site d => derivWithin (fun r => continuumHeat f r (physical ε q)) (Ici s) s -
+      meanGenerator ε (restrict ε (continuumHeat f s)) q) = fun q => ∑' w, c w * G w q
+    from funext hE]
+  exact ⟨hbound.1, hbound.2.trans hsum_c⟩
+
 end
 
 end LongRangeHeat

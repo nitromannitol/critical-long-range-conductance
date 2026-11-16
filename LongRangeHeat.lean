@@ -4,3 +4,4 @@ import LongRangeHeat.Sampling
 import LongRangeHeat.Statements.Sampling
 import LongRangeHeat.SecondMoment
 import LongRangeHeat.MeanOperator
+import LongRangeHeat.Statements.MeanOperator

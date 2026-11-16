@@ -8,3 +8,6 @@ import LongRangeHeat.Sampling
 import LongRangeHeat.Statements.Sampling
 import LongRangeHeat.LatticeSemigroup
 import LongRangeHeat.Energy
+import LongRangeHeat.CanonicalPath
+import LongRangeHeat.Forcing
+import LongRangeHeat.Statements.Forcing

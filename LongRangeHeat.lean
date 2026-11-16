@@ -18,3 +18,4 @@ import LongRangeHeat.SecondMoment
 import LongRangeHeat.MeanOperator
 import LongRangeHeat.Statements.MeanOperator
 import LongRangeHeat.MainTheorem
+import LongRangeHeat.Statements.MainTheorem

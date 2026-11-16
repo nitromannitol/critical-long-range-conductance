@@ -4,6 +4,7 @@ import LongRange.Appendix.LatticeCount
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Lattice heat series
@@ -13,7 +14,7 @@ Bounds on the lattice generator and the exponential series for the heat equation
 
 namespace LongRangeHeat
 
-open LatticeProb LatticeProb.Euclidean.Lattice LongRange
+open LatticeProb LatticeProb.Euclidean.Lattice LongRange Set
 
 /-- The lattice heat series starts from the restriction of the initial data. -/
 theorem latticeHeat_zero {d : ℕ} (ε : ℝ) (a : LongRange.Edge d → ℝ)
@@ -570,6 +571,207 @@ theorem hasDerivAt_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 
     congr 1
     funext x
     exact hseries t x
+
+private theorem eq_zero_on_small_interval {ι : Type*} [Nonempty ι] (w g : ℝ → ι → ℝ) {a b K : ℝ}
+    (hab : a ≤ b) (hK : 0 ≤ K) (hsmall : K * (b - a) < 1)
+    (hz : ∀ q, w a q = 0)
+    (hb : ∃ M : ℝ, ∀ t ∈ Icc a b, ∀ q, |w t q| ≤ M)
+    (hc : ∀ q, ContinuousOn (fun s => w s q) (Icc a b))
+    (hd : ∀ t ∈ Ioo a b, ∀ q, HasDerivAt (fun s => w s q) (g t q) t)
+    (hG : ∀ M : ℝ, 0 ≤ M → (∀ t ∈ Icc a b, ∀ q, |w t q| ≤ M) →
+      ∀ t ∈ Icc a b, ∀ q, |g t q| ≤ K * M) :
+    ∀ t ∈ Icc a b, ∀ q, w t q = 0 := by
+  let S := (fun p : ℝ × ι => |w p.1 p.2|) '' (Icc a b ×ˢ univ)
+  let B := sSup S
+  obtain ⟨M, hM⟩ := hb
+  have hS : BddAbove S := by
+    refine ⟨M, ?_⟩
+    rintro _ ⟨⟨t, q⟩, ht, rfl⟩
+    exact hM t ht.1 q
+  have hne : S.Nonempty := by
+    obtain ⟨q⟩ := ‹Nonempty ι›
+    exact ⟨|w a q|, ⟨(a, q), ⟨⟨le_rfl, hab⟩, trivial⟩, rfl⟩⟩
+  have hB : 0 ≤ B := by
+    obtain ⟨q⟩ := ‹Nonempty ι›
+    exact (abs_nonneg (w a q)).trans (le_csSup hS ⟨(a, q), ⟨⟨le_rfl, hab⟩, trivial⟩, rfl⟩)
+  have hw : ∀ t ∈ Icc a b, ∀ q, |w t q| ≤ B := by
+    intro t ht q
+    exact le_csSup hS ⟨(t, q), ⟨ht, trivial⟩, rfl⟩
+  have hcontract : B ≤ K * B * (b - a) := by
+    apply csSup_le hne
+    rintro _ ⟨⟨t, q⟩, ht, rfl⟩
+    have hle : |w t q| ≤ K * B * (t - a) := by
+      by_cases heq : t = a
+      · simp [heq, hz q]
+      · have hat : a < t := lt_of_le_of_ne ht.1.1 (Ne.symm heq)
+        have hcont : ContinuousOn (fun s => w s q) (Icc a t) :=
+          (hc q).mono (fun _ hs => ⟨hs.1, hs.2.trans ht.1.2⟩)
+        have hdiff : ∀ s ∈ Ioo a t, HasDerivAt (fun r => w r q) (g s q) s :=
+          fun s hs => hd s ⟨hs.1, hs.2.trans_le ht.1.2⟩ q
+        obtain ⟨c, hc', hder⟩ := exists_hasDerivAt_eq_slope
+          (fun s => w s q) (fun s => g s q) hat hcont hdiff
+        have hgc := hG B hB hw c ⟨hc'.1.le, hc'.2.le.trans ht.1.2⟩ q
+        rw [hder, abs_div, abs_of_pos (sub_pos.mpr hat)] at hgc
+        have hm := (div_le_iff₀ (sub_pos.mpr hat)).mp hgc
+        simpa only [hz q, sub_zero] using hm
+    exact hle.trans (mul_le_mul_of_nonneg_left (sub_le_sub_right ht.1.2 a)
+      (mul_nonneg hK hB))
+  have hBzero : B = 0 := by
+    by_contra h
+    have hBpos : 0 < B := lt_of_le_of_ne hB (Ne.symm h)
+    have hlt : K * (b - a) * B < 1 * B := mul_lt_mul_of_pos_right hsmall hBpos
+    nlinarith
+  intro t ht q
+  have := hw t ht q
+  rw [hBzero] at this
+  have h := abs_le.mp this
+  linarith
+
+private theorem eq_zero_of_derivative_bound {ι : Type*} [Nonempty ι] (w g : ℝ → ι → ℝ) {K : ℝ} (hK : 0 ≤ K)
+    (hz : ∀ q, w 0 q = 0)
+    (hb : ∀ T : ℝ, 0 ≤ T → ∃ M : ℝ, ∀ t ∈ Icc 0 T, ∀ q, |w t q| ≤ M)
+    (hc : ∀ q, ContinuousOn (fun s => w s q) (Ici 0))
+    (hd : ∀ t ∈ Ioi (0 : ℝ), ∀ q, HasDerivAt (fun s => w s q) (g t q) t)
+    (hG : ∀ t ∈ Ici (0 : ℝ), ∀ M : ℝ, 0 ≤ M →
+      (∀ q, |w t q| ≤ M) → ∀ q, |g t q| ≤ K * M) :
+    ∀ t ∈ Ici (0 : ℝ), ∀ q, w t q = 0 := by
+  let δ := (K + 1)⁻¹ / 2
+  have hδ : 0 < δ := by dsimp [δ]; positivity
+  have hsmall : K * δ < 1 := by
+    dsimp [δ]
+    have hk1 : 0 < K + 1 := by positivity
+    have h := inv_mul_cancel₀ (ne_of_gt hk1)
+    have hi : 0 < (K + 1)⁻¹ := inv_pos.mpr hk1
+    nlinarith
+  have hgrid : ∀ n : ℕ, ∀ t ∈ Icc (0 : ℝ) (n * δ), ∀ q, w t q = 0 := by
+    intro n
+    induction n with
+    | zero =>
+      intro t ht q
+      have : t = 0 := by simpa using ht
+      simpa [this] using hz q
+    | succ n ih =>
+      intro t ht q
+      by_cases ht' : t ≤ (n : ℝ) * δ
+      · exact ih t ⟨ht.1, ht'⟩ q
+      · let a : ℝ := n * δ
+        let b : ℝ := (n + 1) * δ
+        have ha : 0 ≤ a := by dsimp [a]; positivity
+        have hab : a ≤ b := by dsimp [a, b]; nlinarith
+        have hwidth : b - a = δ := by dsimp [a, b]; ring
+        have hstart : ∀ q, w a q = 0 := fun q => ih a ⟨ha, le_rfl⟩ q
+        have hbd : ∃ M, ∀ s ∈ Icc a b, ∀ q, |w s q| ≤ M := by
+          obtain ⟨M, hM⟩ := hb b (ha.trans hab)
+          exact ⟨M, fun s hs => hM s ⟨ha.trans hs.1, hs.2⟩⟩
+        have hcont : ∀ q, ContinuousOn (fun s => w s q) (Icc a b) :=
+          fun q => (hc q).mono (fun _ hs => ha.trans hs.1)
+        have hdiff : ∀ s ∈ Ioo a b, ∀ q, HasDerivAt (fun r => w r q) (g s q) s := by
+          intro s hs q
+          exact hd s (lt_of_le_of_lt ha hs.1) q
+        have hbound : ∀ M : ℝ, 0 ≤ M → (∀ s ∈ Icc a b, ∀ q, |w s q| ≤ M) →
+            ∀ s ∈ Icc a b, ∀ q, |g s q| ≤ K * M := by
+          intro M hM hw s hs q
+          exact hG s (ha.trans hs.1) M hM (hw s hs) q
+        have htinterval : t ∈ Icc a b := by
+          constructor
+          · exact le_of_lt (lt_of_not_ge ht')
+          · simpa [b, Nat.cast_succ] using ht.2
+        exact eq_zero_on_small_interval w g hab hK (hwidth ▸ hsmall) hstart hbd hcont hdiff hbound t htinterval q
+  intro t ht q
+  obtain ⟨n, hn⟩ := exists_nat_gt (t / δ)
+  have htn : t ≤ (n : ℝ) * δ := le_of_lt ((div_lt_iff₀ hδ).mp hn)
+  exact hgrid n t ⟨ht, htn⟩ q
+
+private theorem generator_sub_of_summable {d : ℕ} (ε : ℝ) (a : Edge d → ℝ) {g h : Site d → ℝ} (q : Site d)
+    (hg : Summable (fun w : Site d => if hw : w = 0 then 0 else
+      a (edgeAdd q w hw) * (g (q + w) - g q) * jumpKernel (physical ε w)))
+    (hh : Summable (fun w : Site d => if hw : w = 0 then 0 else
+      a (edgeAdd q w hw) * (h (q + w) - h q) * jumpKernel (physical ε w))) :
+    generator ε a (fun x => g x - h x) q = generator ε a g q - generator ε a h q := by
+  unfold generator
+  rw [← mul_sub, ← hg.tsum_sub hh]
+  congr 1
+  apply tsum_congr
+  intro w
+  by_cases hw : w = 0
+  · simp only [hw, ↓reduceDIte, sub_zero]
+  · simp only [hw, ↓reduceDIte]
+    ring
+
+/-- Bounded classical solutions with the same initial data agree. -/
+theorem eq_of_bounded_lattice_solutions {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    (u v : ℝ → Site d → ℝ)
+    (h0 : ∀ q, u 0 q = v 0 q)
+    (huB : ∀ T : ℝ, 0 ≤ T → ∃ M, ∀ t ∈ Icc 0 T, ∀ q, |u t q| ≤ M)
+    (hvB : ∀ T : ℝ, 0 ≤ T → ∃ M, ∀ t ∈ Icc 0 T, ∀ q, |v t q| ≤ M)
+    (huC : ∀ q, ContinuousOn (fun t => u t q) (Ici 0))
+    (hvC : ∀ q, ContinuousOn (fun t => v t q) (Ici 0))
+    (huD : ∀ t ∈ Ioi (0 : ℝ), ∀ q,
+      HasDerivAt (fun s => u s q) (generator ε a (u t) q) t)
+    (hvD : ∀ t ∈ Ioi (0 : ℝ), ∀ q,
+      HasDerivAt (fun s => v s q) (generator ε a (v t) q) t) :
+    ∀ t ∈ Ici (0 : ℝ), ∀ q, u t q = v t q := by
+  let w := fun t q => u t q - v t q
+  let g := fun t q => generator ε a (u t) q - generator ε a (v t) q
+  let K : ℝ := 2 * |ε ^ d / kappa d ε| * lam⁻¹ *
+    ∑' z : Site d, jumpKernel (physical ε z)
+  have hK : 0 ≤ K := by
+    dsimp [K]
+    exact mul_nonneg (mul_nonneg (mul_nonneg (by positivity) (abs_nonneg _))
+      (inv_nonneg.mpr hlam.le)) (tsum_nonneg fun z => jumpKernel_nonneg _)
+  have hw0 : ∀ q, w 0 q = 0 := fun q => sub_eq_zero.mpr (h0 q)
+  have hwB : ∀ T : ℝ, 0 ≤ T → ∃ M, ∀ t ∈ Icc 0 T, ∀ q, |w t q| ≤ M := by
+    intro T hT
+    obtain ⟨U, hU⟩ := huB T hT
+    obtain ⟨V, hV⟩ := hvB T hT
+    refine ⟨U + V, fun t ht q => ?_⟩
+    exact (abs_sub _ _).trans (add_le_add (hU t ht q) (hV t ht q))
+  have hwC : ∀ q, ContinuousOn (fun t => w t q) (Ici 0) :=
+    fun q => (huC q).sub (hvC q)
+  have hwD : ∀ t ∈ Ioi (0 : ℝ), ∀ q, HasDerivAt (fun s => w s q) (g t q) t :=
+    fun t ht q => (huD t ht q).sub (hvD t ht q)
+  have hg : ∀ t ∈ Ici (0 : ℝ), ∀ M : ℝ, 0 ≤ M →
+      (∀ q, |w t q| ≤ M) → ∀ q, |g t q| ≤ K * M := by
+    intro t ht M hM hw q
+    obtain ⟨U, hU⟩ := huB t ht
+    obtain ⟨V, hV⟩ := hvB t ht
+    have hUt : ∀ q, |u t q| ≤ U := hU t ⟨ht, le_rfl⟩
+    have hVt : ∀ q, |v t q| ≤ V := hV t ⟨ht, le_rfl⟩
+    have hU0 : 0 ≤ U := (abs_nonneg (u t 0)).trans (hUt 0)
+    have hV0 : 0 ≤ V := (abs_nonneg (v t 0)).trans (hVt 0)
+    have heq := generator_sub_of_summable ε a q (summable_generator_of_bounded hd hε hlam ha hU0 hUt q)
+      (summable_generator_of_bounded hd hε hlam ha hV0 hVt q)
+    change |generator ε a (u t) q - generator ε a (v t) q| ≤ K * M
+    rw [← heq]
+    exact abs_generator_le hd hε hlam ha hM hw q
+  have hzero := eq_zero_of_derivative_bound w g hK hw0 hwB hwC hwD hg
+  intro t ht q
+  exact sub_eq_zero.mp (hzero t ht q)
+
+/-- The lattice heat series is the unique bounded classical solution. -/
+theorem latticeHeat_unique {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : Continuous f) (hfc : HasCompactSupport f)
+    (u : ℝ → Site d → ℝ) (hu0 : ∀ q, u 0 q = restrict ε f q)
+    (huB : ∀ T : ℝ, 0 ≤ T → ∃ M, ∀ t ∈ Icc 0 T, ∀ q, |u t q| ≤ M)
+    (huC : ∀ q, ContinuousOn (fun t => u t q) (Ici 0))
+    (huD : ∀ t ∈ Ioi (0 : ℝ), ∀ q,
+      HasDerivAt (fun s => u s q) (generator ε a (u t) q) t) :
+    ∀ t ∈ Ici (0 : ℝ), ∀ q, u t q = latticeHeat ε a f t q := by
+  apply eq_of_bounded_lattice_solutions hd hε hlam ha u (latticeHeat ε a f)
+  · intro q
+    rw [latticeHeat_zero]
+    exact hu0 q
+  · exact huB
+  · intro T _
+    exact latticeHeat_bounded_on_interval hd hε hlam ha hf hfc T
+  · exact huC
+  · intro q t ht
+    exact (hasDerivAt_latticeHeat hd hε hlam ha hfc t q).continuousAt.continuousWithinAt
+  · exact huD
+  · intro t ht q
+    exact hasDerivAt_latticeHeat hd hε hlam ha hfc t q
 
 end
 

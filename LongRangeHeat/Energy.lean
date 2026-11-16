@@ -49,6 +49,28 @@ theorem norm_sq_sub_eq_integral {E : Type*} [NormedAddCommGroup E]
   symm
   exact intervalIntegral.integral_eq_sub_of_hasDerivAt (fun t ht => (hd t ht).norm_sq) hi
 
+/-- Coercivity absorbs the gradient forcing term in the energy estimate. -/
+theorem forcing_le_coercive_add {c κ D G B : ℝ} (hc : 0 < c) (hκ : 0 < κ)
+    (hB : c / κ * D ^ 2 ≤ B) :
+    G * D / κ ≤ B + G ^ 2 / (4 * c * κ) := by
+  have hBmul : c * D ^ 2 ≤ κ * B := by
+    have hB' : c * D ^ 2 / κ ≤ B := by
+      simpa [div_mul_eq_mul_div] using hB
+    simpa [mul_comm] using (div_le_iff₀ hκ).mp hB'
+  have hprod : 0 ≤ 4 * c * (κ * B - c * D ^ 2) :=
+    mul_nonneg (by positivity) (sub_nonneg.mpr hBmul)
+  have hsq := sq_nonneg (2 * c * D - G)
+  have hmain : 4 * c * G * D ≤ 4 * c * κ * B + G ^ 2 := by nlinarith
+  apply (div_le_iff₀ hκ).2
+  have haux : G * D ≤ κ * B + G ^ 2 / (4 * c) := by
+    have hmul : (G * D - κ * B) * (4 * c) ≤ G ^ 2 := by nlinarith [hmain]
+    have hdiv := (le_div_iff₀ (show 0 < 4 * c by positivity)).2 hmul
+    linarith
+  have heq : (B + G ^ 2 / (4 * c * κ)) * κ = κ * B + G ^ 2 / (4 * c) := by
+    field_simp [hc.ne', hκ.ne']
+  rw [heq]
+  exact haux
+
 /-- An integrated energy inequality controls the maximum norm of a Hilbert-space path. -/
 theorem sSup_norm_le_of_energy_inequality {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] (w w' : ℝ → E) (g : ℝ → ℝ) {T A B Q : ℝ}

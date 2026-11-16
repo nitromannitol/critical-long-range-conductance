@@ -24,3 +24,4 @@ import LongRangeHeat.QuenchedMeasurable
 import LongRangeHeat.Aldous
 import LongRangeHeat.Statements.Aldous
 import LongRangeHeat.WalkPointwise
+import LongRangeHeat.FddStep

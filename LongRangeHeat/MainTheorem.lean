@@ -442,6 +442,110 @@ theorem sSup_latticeNorm_le_of_uniform_l2_forcing {d : ℕ} (hd : 1 ≤ d) {ε l
   · exact hmean
   · exact hforce
 
+/-- A bounded lattice norm supremum is measurable when coordinates are continuous in time
+and measurable in the parameter. -/
+theorem measurable_sSup_latticeNorm {d : ℕ} {Ω : Type*} [MeasurableSpace Ω] {ε T : ℝ} (hε : 0 < ε) (hT : 0 ≤ T)
+    (w : ℝ → Ω → Site d → ℝ)
+    (hwm : ∀ t q, Measurable fun r => w t r q)
+    (hwc : ∀ r q, ContinuousOn (fun t => w t r q) (Icc 0 T))
+    (hw : ∀ r t, t ∈ Icc 0 T → MemL2 (w t r))
+    (hb : ∀ r, BddAbove ((fun t => latticeNorm ε (w t r)) '' Icc 0 T)) :
+    Measurable (fun r => sSup ((fun t => latticeNorm ε (w t r)) '' Icc 0 T)) := by
+  classical
+  let I := Icc (0 : ℝ) T
+  let : Nonempty I := ⟨⟨0, ⟨le_rfl, hT⟩⟩⟩
+  obtain ⟨D, hDc, hDd⟩ := TopologicalSpace.exists_countable_dense I
+  have hnm (t : I) : Measurable fun r => latticeNorm ε (w t r) := by
+    unfold latticeNorm latticeNormSq
+    exact (measurable_const.mul (Measurable.tsum fun q => (hwm t q).pow_const 2)).sqrt
+  have hm := Measurable.sSup hDc fun t ht => hnm t
+  convert hm using 1
+  funext r
+  let F : I → ℝ := fun t => latticeNorm ε (w t r)
+  have hsub : F '' D ⊆ (fun t => latticeNorm ε (w t r)) '' I := by
+    rintro y ⟨t, ht, rfl⟩
+    exact ⟨t, t.2, rfl⟩
+  have hbd : BddAbove (F '' D) := (hb r).mono hsub
+  have hDn : D.Nonempty := hDd.nonempty
+  have hA0 : 0 ≤ sSup (F '' D) := by
+    obtain ⟨t, ht⟩ := hDn
+    exact (Real.sqrt_nonneg _).trans (le_csSup hbd ⟨t, ht, rfl⟩)
+  apply le_antisymm
+  · apply csSup_le
+    · exact ⟨_, ⟨0, ⟨le_rfl, hT⟩, rfl⟩⟩
+    · rintro _ ⟨t, ht, rfl⟩
+      apply (memL2_and_latticeNorm_le hε hA0 ?_).2
+      intro S
+      have hc : Continuous (fun x : I => ε ^ d * ∑ q ∈ S, w x r q ^ 2) := by
+        apply continuous_const.mul
+        apply continuous_finsetSum
+        intro q hq
+        exact ((hwc r q).domRestrict).pow 2
+      have hclosed : IsClosed {x : I | ε ^ d * ∑ q ∈ S, w x r q ^ 2 ≤ (sSup (F '' D)) ^ 2} :=
+        isClosed_le hc continuous_const
+      have hD : D ⊆ {x : I | ε ^ d * ∑ q ∈ S, w x r q ^ 2 ≤ (sSup (F '' D)) ^ 2} := by
+        intro x hx
+        have hs : (∑ q ∈ S, w x r q ^ 2) ≤ ∑' q, w x r q ^ 2 :=
+          (hw r x x.2).sum_le_tsum S (fun q hq => sq_nonneg _)
+        have hn : (latticeNorm ε (w x r)) ^ 2 = ε ^ d * ∑' q, w x r q ^ 2 := by
+          unfold latticeNorm latticeNormSq
+          rw [Real.sq_sqrt (mul_nonneg (pow_nonneg hε.le _) (tsum_nonneg fun q => sq_nonneg _))]
+        change ε ^ d * ∑ q ∈ S, w x r q ^ 2 ≤ (sSup (F '' D)) ^ 2
+        calc
+          _ ≤ (latticeNorm ε (w x r)) ^ 2 := by rw [hn]; exact mul_le_mul_of_nonneg_left hs (pow_nonneg hε.le _)
+          _ ≤ _ := (sq_le_sq₀ (Real.sqrt_nonneg _) hA0).2 (le_csSup hbd ⟨x, hx, rfl⟩)
+      have hall := closure_minimal hD hclosed
+      rw [hDd.closure_eq] at hall
+      exact hall (mem_univ ⟨t, ht⟩)
+  · exact csSup_le (hDn.image F) (fun y hy => le_csSup (hb r) (hsub hy))
+
+/-- The lattice error norms are uniformly bounded on a bounded time interval. -/
+theorem bddAbove_latticeHeat_error {d : ℕ} (hd : 1 ≤ d) {ε lam T : ℝ} (hε : 0 < ε) (hε1 : ε ≤ 1)
+    (hlam : 0 < lam) {a : Edge d → ℝ}
+    (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f) :
+    BddAbove ((fun t => latticeNorm ε
+      (fun q => latticeHeat ε a f t q - restrict ε (continuumHeat f t) q)) '' Icc 0 T) := by
+  obtain ⟨R, S, hRS⟩ := exists_latticeHeat_uniform_l2_bounds hd hε hlam ha hfc T
+  obtain ⟨P, hP⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1 hf.continuous hfc
+  refine ⟨Real.sqrt (ε ^ d * (2 * (R + P))), ?_⟩
+  rintro _ ⟨t, ht, rfl⟩
+  have hu := memL2_latticeHeat hd hε hlam ha hfc t
+  have hv := (hP t ht.1).1
+  have h := Summable.tsum_le_tsum (fun q : Site d => show
+      (latticeHeat ε a f t q - restrict ε (continuumHeat f t) q) ^ 2 ≤
+      2 * (latticeHeat ε a f t q ^ 2 + restrict ε (continuumHeat f t) q ^ 2) by
+      nlinarith [sq_nonneg (latticeHeat ε a f t q + restrict ε (continuumHeat f t) q)])
+    (memL2_sub hu hv) ((hu.add hv).mul_left 2)
+  have hh : (∑' q, (latticeHeat ε a f t q - restrict ε (continuumHeat f t) q) ^ 2) ≤
+      2 * (R + P) := by
+    rw [tsum_mul_left, hu.tsum_add hv] at h
+    nlinarith [(hRS t ht).1, (hP t ht.1).2]
+  unfold latticeNorm latticeNormSq
+  exact Real.sqrt_le_sqrt (mul_le_mul_of_nonneg_left hh (pow_nonneg hε.le _))
+
+/-- The time supremum of the lattice error norm is measurable in the conductances. -/
+theorem measurable_latticeHeat_error_sup {d : ℕ} (hd : 1 ≤ d) {Ω : Type*}
+    [MeasurableSpace Ω] {ε lam T : ℝ} (hε : 0 < ε) (hε1 : ε ≤ 1)
+    (hlam : 0 < lam) (hT : 0 ≤ T) (a : Ω → Edge d → ℝ)
+    (ha : ∀ e, Measurable fun r => a r e)
+    (haB : ∀ r e, lam ≤ a r e ∧ a r e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f) :
+    Measurable (fun r => sSup ((fun t => latticeNorm ε
+      (fun q => latticeHeat ε (a r) f t q - restrict ε (continuumHeat f t) q)) '' Icc 0 T)) := by
+  obtain ⟨R, hR⟩ := exists_sampledHeat_uniform_l2_bound hd hε hε1 hf.continuous hfc
+  apply measurable_sSup_latticeNorm hε hT
+    (fun t r q => latticeHeat ε (a r) f t q - restrict ε (continuumHeat f t) q)
+  · intro t q
+    exact (measurable_latticeHeat ε a ha f t q).sub measurable_const
+  · intro r q
+    exact (continuousOn_latticeHeat_error hd hε hlam (haB r) hf hfc q).mono
+      (fun t ht => ht.1)
+  · intro r t ht
+    exact memL2_sub (memL2_latticeHeat hd hε hlam (haB r) hfc t) (hR t ht.1).1
+  · intro r
+    exact bddAbove_latticeHeat_error hd hε hε1 hlam (haB r) hf hfc
+
 /-- A deterministic bound by an integrated Gaussian field yields a Gaussian bound. -/
 theorem isOq_of_energy_bound {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) [IsProbabilityMeasure P]
     {H : ℝ → Ω → ℝ} (hH : ∀ s r, 0 ≤ H s r)

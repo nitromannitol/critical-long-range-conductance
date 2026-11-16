@@ -3,3 +3,6 @@ import LongRangeHeat.Dirichlet
 import LongRangeHeat.Statements.Dirichlet
 import LongRangeHeat.StochasticO
 import LongRangeHeat.Statements.StochasticO
+import LongRangeHeat.CanonicalPath
+import LongRangeHeat.Forcing
+import LongRangeHeat.Statements.Forcing

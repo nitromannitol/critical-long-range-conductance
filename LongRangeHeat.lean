@@ -12,6 +12,8 @@ import LongRangeHeat.SampledForcing
 import LongRangeHeat.Continuum
 import LongRangeHeat.Sampling
 import LongRangeHeat.Statements.Sampling
+import LongRangeHeat.LatticeSemigroup
+import LongRangeHeat.Energy
 import LongRangeHeat.SecondMoment
 import LongRangeHeat.MeanOperator
 import LongRangeHeat.Statements.MeanOperator
@@ -25,3 +27,5 @@ import LongRangeHeat.Aldous
 import LongRangeHeat.Statements.Aldous
 import LongRangeHeat.WalkPointwise
 import LongRangeHeat.FddStep
+import LongRangeHeat.MainTheorem
+import LongRangeHeat.Statements.MainTheorem

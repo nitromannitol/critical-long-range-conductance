@@ -1,6 +1,6 @@
 import LongRange.HeatKernel.UnitWalk
-import LatticeProb.Prob.JumpChain.TimeScale
-import LatticeProb.Prob.JumpChain.PositionLaw
+import LongRange.Support.Prob.JumpChain.TimeScale
+import LongRange.Support.Prob.JumpChain.PositionLaw
 import LongRange.Appendix.Kappa
 
 /-!
@@ -59,7 +59,7 @@ theorem exterior_power_finset_le (hd : 1 ≤ d) {n : ℕ} (hn : 0 < n)
     have hr : 1 ≤ radius (physical (1 / R) w) := by
       rw [radius_physical_eq_mul hε.le]
       exact (one_le_div hR0).mpr (hu w hw) |>.trans_eq (by ring)
-    rw [if_pos hr, radius_physical_eq_mul hε.le,
+    rw [ite_eq_left hr, radius_physical_eq_mul hε.le,
       Real.mul_rpow hε.le (radius_nonneg _), Real.rpow_neg hε.le,
       Real.rpow_natCast, Real.rpow_neg (radius_nonneg _), Real.rpow_natCast]
     simp only [one_div, inv_pow, inv_inv]
@@ -174,8 +174,8 @@ theorem unit_transition_tail_of_offDiagonal (hd : 1 ≤ d) {lam : ℝ} (hlam : 0
     apply Finset.sum_congr rfl
     intro y _
     by_cases hy : y ∈ S
-    · rw [Set.indicator_of_mem hy, if_pos hy, MeasureTheory.ofReal_measureReal]
-    · rw [Set.indicator_of_notMem hy, if_neg hy]
+    · rw [Set.indicator_of_mem hy, ite_eq_left hy, MeasureTheory.ofReal_measureReal]
+    · rw [Set.indicator_of_notMem hy, ite_eq_right hy]
   rw [hs, ← ENNReal.ofReal_sum_of_nonneg
     (fun y _ => measureReal_nonneg)]
   apply ENNReal.ofReal_le_ofReal

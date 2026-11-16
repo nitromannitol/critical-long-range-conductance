@@ -1,7 +1,7 @@
 import LongRange.HeatKernel.UniformOffDiagonal
 import LongRange.Appendix.Kappa
-import LatticeProb.Prob.JumpChain.TimeScale
-import LatticeProb.Prob.JumpChain.PositionLaw
+import LongRange.Support.Prob.JumpChain.TimeScale
+import LongRange.Support.Prob.JumpChain.PositionLaw
 
 /-!
 # The rescaled heat kernel

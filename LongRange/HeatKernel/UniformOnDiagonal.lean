@@ -1,8 +1,8 @@
 import LongRange.HeatKernel.UnitWalk
-import LatticeProb.External.MuruganSaloffCosteUniform
-import LatticeProb.Graph.LongRangeKernel.CriticalVolume
-import LatticeProb.Analysis.KernelPowerBridge
-import LatticeProb.Analysis.PoissonProfile
+import LongRange.Support.External.MuruganSaloffCosteUniform
+import LongRange.Support.Graph.LongRangeKernel.CriticalVolume
+import LongRange.Support.Analysis.KernelPowerBridge
+import LongRange.Support.Analysis.PoissonProfile
 
 /-!
 # A field-uniform on-diagonal heat-kernel bound
@@ -63,9 +63,9 @@ theorem unitRates_density_profile_uniform (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 <
           quadraticScale (graphNorm (y - x)) := by
         unfold latticeVolumeProfile quadraticScale
         positivity
-      rw [JumpChain.BoundedRates.p, if_neg h]
+      rw [JumpChain.BoundedRates.p, ite_eq_right h]
       change _ ≤ unitRate a x y / R
-      rw [unitRate, dif_neg hw]
+      rw [unitRate, dite_eq_right hw]
       calc
         _ ≤ (lam / R) / _ := div_le_div_of_nonneg_right hlow hD
         _ = lam * (1 / (latticeVolumeProfile d (graphNorm (y - x)) *
@@ -77,7 +77,7 @@ theorem unitRates_density_profile_uniform (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 <
     · subst y
       simp only [sub_self, graphNorm_zero, Nat.cast_zero, latticeVolumeProfile,
         quadraticScale, add_zero, one_pow, mul_one, div_one]
-      rw [JumpChain.BoundedRates.p, if_pos rfl]
+      rw [JumpChain.BoundedRates.p, ite_eq_left rfl]
       have ht : 0 ≤ (∑' k, (unitRates hd hlam a ha).q x k) /
           (unitRates hd hlam a ha).R :=
         div_nonneg (tsum_nonneg ((unitRates hd hlam a ha).q_nonneg x)) hR.le
@@ -88,9 +88,9 @@ theorem unitRates_density_profile_uniform (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 <
           quadraticScale (graphNorm (y - x)) := by
         unfold latticeVolumeProfile quadraticScale
         positivity
-      rw [JumpChain.BoundedRates.p, if_neg h]
+      rw [JumpChain.BoundedRates.p, ite_eq_right h]
       change unitRate a x y / R ≤ _
-      rw [unitRate, dif_neg hw]
+      rw [unitRate, dite_eq_right hw]
       calc
         _ ≤ (lam⁻¹ * (B / (latticeVolumeProfile d (graphNorm (y - x)) *
             quadraticScale (graphNorm (y - x))))) / R := by

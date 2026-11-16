@@ -28,7 +28,7 @@ theorem cellCube_eq_pi (ε : ℝ) (q : Site d) :
     cellCube ε q = Set.pi Set.univ
       (fun i => Set.Ico (physical ε q i - ε / 2) (physical ε q i + ε / 2)) := by
   ext y
-  simp only [cellCube, Set.mem_setOf_eq, Set.mem_pi, Set.mem_univ, Set.mem_Ico,
+  simp only [cellCube, Set.mem_ofPred_eq, Set.mem_pi, Set.mem_univ, Set.mem_Ico,
     forall_const]
 
 /-- Full cells are Lebesgue measurable. -/
@@ -107,7 +107,7 @@ theorem cellAverage_sq_le {ε : ℝ} (hε : 0 < ε) (U : Set (Fin d → ℝ))
   let μ := volume.restrict (cellCube ε q)
   have hvol : μ Set.univ = ENNReal.ofReal (ε ^ d) := by
     simp only [μ, Measure.restrict_apply_univ, volume_cellCube hε]
-  haveI : IsFiniteMeasure μ := ⟨by rw [hvol]; exact ENNReal.ofReal_lt_top⟩
+  have : IsFiniteMeasure μ := ⟨by rw [hvol]; exact ENNReal.ofReal_lt_top⟩
   have hi : Integrable (U.indicator f) μ := hf.integrable (by norm_num)
   let a := cellAverage ε U f q
   have hn : 0 ≤ ∫ y, (U.indicator f y - a) ^ 2 ∂μ :=
@@ -157,7 +157,7 @@ theorem l2NormSq_cellAverage_le {ε : ℝ} (hε : 0 < ε)
     {f : (Fin d → ℝ) → ℝ} (hf : MemLp f 2 (volume.restrict U)) :
     l2NormSq ε U (cellAverage ε U f) ≤ ∫ y in U, f y ^ 2 := by
   classical
-  letI := (latticeSet_finite hε hb).fintype
+  let := (latticeSet_finite hε hb).fintype
   have he : MemLp (U.indicator f) 2 volume := (memLp_indicator_iff_restrict hU).mpr hf
   have hs : Integrable (U.indicator (fun y => f y ^ 2)) volume := by
     rw [← indicator_sq]
@@ -265,7 +265,7 @@ theorem cellAverage_sub_sample_le {ε : ℝ} (hε : 0 < ε)
     l2NormSq ε U (fun q => cellAverage ε U F q - F (physical ε q)) ≤
       ε ^ d * (latticeSet ε U).ncard * ω (Real.sqrt d * ε / 2) ^ 2 := by
   classical
-  letI := (latticeSet_finite hε hb).fintype
+  let := (latticeSet_finite hε hb).fintype
   have hm (q : Site d) := abs_cellAverage_sub_sample_le hε U hF hzero ω hω q
   have hn : 0 ≤ ω (Real.sqrt d * ε / 2) :=
     (abs_nonneg _).trans (hm 0)

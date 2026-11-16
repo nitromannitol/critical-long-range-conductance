@@ -1,10 +1,10 @@
 import LongRange.HeatKernel.UniformOnDiagonal
 import LongRange.HeatKernel.Truncated
 import LongRange.HeatKernel.PropositionA
-import LatticeProb.Analysis.NashProfile
-import LatticeProb.Analysis.CriticalProfile
-import LatticeProb.External.ChenKimKumagaiWang
-import LatticeProb.Analysis.NashProduct
+import LongRange.Support.Analysis.NashProfile
+import LongRange.Support.Analysis.CriticalProfile
+import LongRange.Support.External.ChenKimKumagaiWang
+import LongRange.Support.Analysis.NashProduct
 
 /-!
 # Uniform truncated Nash and Davies bounds

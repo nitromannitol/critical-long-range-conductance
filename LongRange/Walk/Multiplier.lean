@@ -121,7 +121,7 @@ theorem abs_mul_cellAverage_sub_le {ε : ℝ} (hε : 0 < ε)
   have hv : volume (cellCube ε q) ≠ ⊤ := by
     rw [volume_cellCube hε]
     exact ENNReal.ofReal_ne_top
-  haveI : IsFiniteMeasure (volume.restrict (cellCube ε q)) :=
+  have : IsFiniteMeasure (volume.restrict (cellCube ε q)) :=
     ⟨by simpa only [Measure.restrict_apply_univ] using hv.lt_top⟩
   have hi := (he.restrict (cellCube ε q)).integrable (by norm_num)
   have hp := memLp_bounded_mul φ.continuous.aestronglyMeasurable

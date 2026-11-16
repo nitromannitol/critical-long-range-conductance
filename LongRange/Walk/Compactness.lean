@@ -1,7 +1,7 @@
 import LongRange.Walk.Increments
 import LongRange.Walk.Marginals
-import LatticeProb.Prob.Cadlag.HalfLine.ChainPathLaw
-import LatticeProb.External.EthierKurtzSkorokhod
+import LongRange.Support.Prob.Cadlag.HalfLine.ChainPathLaw
+import LongRange.Support.External.EthierKurtzSkorokhod
 
 /-!
 # Relative compactness of rescaled walk laws
@@ -39,16 +39,16 @@ theorem walk_pathLaws_relativelyCompact (hMSC : External.MuruganSaloffCoste)
       μ ε {x | R < radius (physical ε x)} ≤ ENNReal.ofReal η) :
     IsCompact (closure (Set.range (fun ε : Set.Ioo (0 : ℝ) 1 ↦
       pathLaw (walkRates hd ε.2.1 hlam a ha) (μ ε) (walkEmbed ε)))) := by
-  haveI : Nonempty (Set.Ioo (0 : ℝ) 1) :=
+  have : Nonempty (Set.Ioo (0 : ℝ) 1) :=
     Set.nonempty_Ioo_subtype zero_lt_one
   let μ' : ℝ → Measure (Site d) := fun ε ↦
     if h : ε ∈ Set.Ioo (0 : ℝ) 1 then μ ⟨ε, h⟩ else Measure.dirac 0
-  haveI : ∀ ε, IsProbabilityMeasure (μ' ε) := by
+  have : ∀ ε, IsProbabilityMeasure (μ' ε) := by
     intro ε
     dsimp [μ']
     split <;> infer_instance
   have hμ' (ε : Set.Ioo (0 : ℝ) 1) : μ' ε = μ ε := by
-    simp only [μ', dif_pos ε.2]
+    simp only [μ', dite_eq_left ε.2]
   have htight' : ∀ η : ℝ, 0 < η → ∃ R : ℝ, ∀ ε ∈ Set.Ioo (0 : ℝ) 1,
       μ' ε {x | R < radius (physical ε x)} ≤ ENNReal.ofReal η := by
     intro η hη
@@ -56,9 +56,10 @@ theorem walk_pathLaws_relativelyCompact (hMSC : External.MuruganSaloffCoste)
     exact ⟨R, fun ε hε ↦ by simpa only [hμ' ⟨ε, hε⟩] using hR ⟨ε, hε⟩⟩
   obtain ⟨K, hK, hinc⟩ := walk_increment_condition hMSC hNash hDavies hd hlam a ha
   obtain ⟨K₀, hK₀, hini⟩ := walk_increment_initial hMSC hNash hDavies hd hlam a ha
+  let law : Set.Ioo (0 : ℝ) 1 → ProbabilityMeasure (JumpChain.RegularHistory (Site d)) :=
+    fun ε ↦ ⟨(walkRates hd ε.2.1 hlam a ha).regularLaw (μ ε), inferInstance⟩
   refine hEK (EuclideanSpace ℝ (Fin d)) (Set.Ioo (0 : ℝ) 1)
-    (fun _ ↦ JumpChain.RegularHistory (Site d)) (fun _ ↦ inferInstance)
-    (fun ε ↦ ⟨(walkRates hd ε.2.1 hlam a ha).regularLaw (μ ε), inferInstance⟩)
+    (fun _ ↦ JumpChain.RegularHistory (Site d)) (fun _ ↦ inferInstance) law
     (fun ε h ↦ h.halfLinePath (walkEmbed ε))
     (fun ε ↦ measurable_halfLinePath (walkEmbed ε)) ?_ ?_ ?_
   · intro ε t
@@ -77,7 +78,7 @@ theorem walk_pathLaws_relativelyCompact (hMSC : External.MuruganSaloffCoste)
       ext h
       simp only [JumpChain.RegularHistory.halfLinePath_apply, Metric.mem_closedBall,
         dist_zero_right, walkEmbed, ← radius_norm, Set.mem_compl_iff,
-        Set.mem_setOf_eq, not_lt]
+        Set.mem_ofPred_eq, not_lt]
     rw [he, prob_compl_eq_one_sub]
     · rw [ENNReal.ofReal_sub _ hη.le, ENNReal.ofReal_one]
       exact tsub_le_tsub_left hb 1
@@ -98,7 +99,7 @@ theorem walk_pathLaws_relativelyCompact (hMSC : External.MuruganSaloffCoste)
         funext h
         simp only [incrementPower, Real.rpow_one,
           JumpChain.RegularHistory.halfLinePath_apply]
-      simp only [hp, ProbabilityMeasure.coe_mk]
+      simp only [hp, law, ProbabilityMeasure.coe_mk]
       change ∀ᵐ w ∂(walkRates hd ε.2.1 hlam a ha).regularLaw (μ ε),
         ((walkRates hd ε.2.1 hlam a ha).regularLaw (μ ε))⁻[fun h ↦
           ENNReal.ofReal (min (dist (walkEmbed ε (h.position (t + u)))
@@ -128,7 +129,7 @@ theorem walk_pathLaws_relativelyCompact (hMSC : External.MuruganSaloffCoste)
           (eventually_lt_nhds zero_lt_one).filter_mono nhdsWithin_le_nhds)] with δ hδ hδ1
       apply iSup_le
       intro ε
-      simpa only [incrementPower, Real.rpow_one, ProbabilityMeasure.coe_mk,
+      simpa only [law, incrementPower, Real.rpow_one, ProbabilityMeasure.coe_mk,
         JumpChain.RegularHistory.halfLinePath_apply] using
         hini ε ε.2 (μ ε) δ.toNNReal δ hδ hδ1 (by
           rw [Real.coe_toNNReal _ hδ.le])

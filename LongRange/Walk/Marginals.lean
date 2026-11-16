@@ -1,5 +1,5 @@
 import LongRange.Walk.DisplacementTail
-import LatticeProb.Prob.JumpChain.PositionLaw
+import LongRange.Support.Prob.JumpChain.PositionLaw
 
 /-!
 # Marginal tails of the rescaled walk

@@ -1,7 +1,7 @@
 import LongRange.Model.Operator
 import LongRange.Calculus.Summability
 import LongRange.Calculus.BilinForm
-import LatticeProb.Prob.JumpChain.Rates
+import LongRange.Support.Prob.JumpChain.Rates
 
 /-!
 # Bounded rates for the rescaled walk

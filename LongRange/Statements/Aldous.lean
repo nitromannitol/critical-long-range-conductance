@@ -1,4 +1,4 @@
-import LatticeProb.Prob.Cadlag.HalfLine.AldousFinite
+import LongRange.Support.Prob.Cadlag.HalfLine.AldousFinite
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -32,7 +32,7 @@ theorem LongRange.Statements.aldous
         (∀ t : I,
           IsTightMeasureSet (Set.range (fun n =>
             (((mu n).map
-              (LatticeProb.Cadlag.measurable_eval t).aemeasurable) : Measure E)))) →
+              (fun x : Pth => x.1 t)) : Measure E)))) →
         (∀ eta : ℝ, 0 < eta →
           ∀ tau : ℕ → Pth → I,
             (∀ n (t : I), @MeasurableSet Pth (info t)

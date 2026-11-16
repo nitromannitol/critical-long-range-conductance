@@ -366,6 +366,99 @@ private theorem lp_norm_sq_eq {d : ℕ} (f : lp (fun _ : Site d => ℝ) 2) :
   have h := lp.norm_rpow_eq_tsum (p := (2 : ENNReal)) (by norm_num) f
   simpa [Real.norm_eq_abs, Real.rpow_two] using h
 
+private theorem summable_generator_of_bounded {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {v : Site d → ℝ} {M : ℝ} (hM : 0 ≤ M) (hv : ∀ q, |v q| ≤ M) (q : Site d) :
+    Summable (fun w : Site d => if hw : w = 0 then 0 else
+      a (edgeAdd q w hw) * (v (q + w) - v q) * jumpKernel (physical ε w)) := by
+  apply ((summable_jumpKernel hd hε).mul_left (lam⁻¹ * (2 * M))).of_norm_bounded
+  intro w
+  have hj := jumpKernel_nonneg (physical ε w)
+  by_cases hw : w = 0
+  · subst w
+    simp only [↓reduceDIte, norm_zero]
+    exact mul_nonneg (mul_nonneg (inv_nonneg.mpr hlam.le) (by positivity)) hj
+  · simp only [hw, ↓reduceDIte, Real.norm_eq_abs, abs_mul,
+      abs_of_nonneg (hlam.le.trans (ha _).1), abs_of_nonneg hj]
+    apply mul_le_mul_of_nonneg_right _ hj
+    apply mul_le_mul (ha _).2 _ (abs_nonneg _) (inv_nonneg.mpr hlam.le)
+    exact (abs_sub _ _).trans (by linarith [hv (q + w), hv q])
+
+private theorem generator_add_of_summable {d : ℕ} (ε : ℝ) (a : Edge d → ℝ) {g h : Site d → ℝ} (q : Site d)
+    (hg : Summable (fun w : Site d => if hw : w = 0 then 0 else
+      a (edgeAdd q w hw) * (g (q + w) - g q) * jumpKernel (physical ε w)))
+    (hh : Summable (fun w : Site d => if hw : w = 0 then 0 else
+      a (edgeAdd q w hw) * (h (q + w) - h q) * jumpKernel (physical ε w))) :
+    generator ε a (fun x => g x + h x) q = generator ε a g q + generator ε a h q := by
+  unfold generator
+  rw [← mul_add, ← hg.tsum_add hh]
+  congr 1
+  apply tsum_congr
+  intro w
+  by_cases hw : w = 0
+  · simp only [hw, ↓reduceDIte, add_zero]
+  · simp only [hw, ↓reduceDIte]
+    ring
+
+private theorem generator_const_mul {d : ℕ} (ε : ℝ) (a : Edge d → ℝ) (c : ℝ)
+    (h : Site d → ℝ) (q : Site d) :
+    generator ε a (fun x => c * h x) q = c * generator ε a h q := by
+  unfold generator
+  have heq : (∑' w : Site d, if hw : w = 0 then 0 else
+      a (edgeAdd q w hw) * (c * h (q + w) - c * h q) * jumpKernel (physical ε w)) =
+      c * ∑' w : Site d, if hw : w = 0 then 0 else
+        a (edgeAdd q w hw) * (h (q + w) - h q) * jumpKernel (physical ε w) := by
+    rw [← tsum_mul_left]
+    apply tsum_congr
+    intro w
+    by_cases hw : w = 0
+    · simp only [hw, ↓reduceDIte, mul_zero]
+    · simp only [hw, ↓reduceDIte]
+      ring
+  rw [heq]
+  ring
+
+/-- The lattice generator as a bounded operator on `ℓ²`. -/
+noncomputable def generatorL2 {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) :
+    lp (fun _ : Site d => ℝ) 2 →L[ℝ] lp (fun _ : Site d => ℝ) 2 := by
+  let K : ℝ := 2 * |ε ^ d / kappa d ε| * lam⁻¹ *
+    ∑' w : Site d, jumpKernel (physical ε w)
+  have hK : 0 ≤ K := by
+    dsimp [K]
+    exact mul_nonneg (mul_nonneg (mul_nonneg (by positivity) (abs_nonneg _))
+      (inv_nonneg.mpr hlam.le)) (tsum_nonneg fun w => jumpKernel_nonneg _)
+  let L : lp (fun _ : Site d => ℝ) 2 →ₗ[ℝ] lp (fun _ : Site d => ℝ) 2 :=
+    { toFun := fun v => ⟨generator ε a v,
+        memℓp_of_memL2 (memL2_generator hd hε hlam ha (memL2_of_memℓp (lp.memℓp v)))⟩
+      map_add' := by
+        intro v w
+        apply Subtype.ext
+        funext q
+        exact generator_add_of_summable ε a q
+          (summable_generator_of_bounded hd hε hlam ha (norm_nonneg v) (fun q => by
+            simpa only [Real.norm_eq_abs] using lp.norm_apply_le_norm (by norm_num) v q) q)
+          (summable_generator_of_bounded hd hε hlam ha (norm_nonneg w) (fun q => by
+            simpa only [Real.norm_eq_abs] using lp.norm_apply_le_norm (by norm_num) w q) q)
+      map_smul' := by
+        intro c v
+        apply Subtype.ext
+        funext q
+        exact generator_const_mul ε a c v q }
+  apply L.mkContinuous K
+  intro v
+  have hsq : ‖L v‖ ^ 2 ≤ (K * ‖v‖) ^ 2 := by
+    rw [lp_norm_sq_eq, mul_pow, lp_norm_sq_eq]
+    exact tsum_sq_generator_le hd hε hlam ha (memL2_of_memℓp (lp.memℓp v))
+  exact (sq_le_sq₀ (norm_nonneg _) (mul_nonneg hK (norm_nonneg _))).mp hsq
+
+/-- Evaluation of the bounded `ℓ²` generator gives the lattice generator. -/
+theorem generatorL2_apply {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    (v : lp (fun _ : Site d => ℝ) 2) (q : Site d) :
+    generatorL2 hd hε hlam ha v q = generator ε a v q := by
+  rfl
+
 /-- The lattice heat series is square summable for compactly supported initial data. -/
 theorem memL2_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
     {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)

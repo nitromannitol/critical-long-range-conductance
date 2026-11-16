@@ -515,12 +515,18 @@ theorem memL2_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
   rw [← hv]
   exact memL2_of_memℓp (lp.memℓp v)
 
-/-- The lattice heat series solves the lattice heat equation at every site. -/
-theorem hasDerivAt_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
-    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
-    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) (q : Site d) :
-    HasDerivAt (fun s => latticeHeat ε a f s q)
-      (generator ε a (latticeHeat ε a f t) q) t := by
+/-- The lattice heat series as an ℓ²-valued path. -/
+noncomputable def latticeHeatL2 {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) :
+    lp (fun _ : Site d => ℝ) 2 :=
+  ⟨latticeHeat ε a f t, memℓp_of_memL2 (memL2_latticeHeat hd hε hlam ha hf t)⟩
+
+private theorem latticeHeatL2_eq_exp {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) :
+    latticeHeatL2 hd hε hlam ha hf t = (NormedSpace.exp (t • generatorL2 hd hε hlam ha))
+      ⟨restrict ε f, memℓp_of_memL2 (memL2_restrict hε hf)⟩ := by
   let V : lp (fun _ : Site d => ℝ) 2 := ⟨restrict ε f, memℓp_of_memL2 (memL2_restrict hε hf)⟩
   let A := generatorL2 hd hε hlam ha
   have hpow : ∀ n : ℕ, ⇑((A ^ n) V) = (generator ε a)^[n] (restrict ε f) := by
@@ -559,18 +565,37 @@ theorem hasDerivAt_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 
         ring
       · rfl
     exact h3.tsum_eq
-  have hd' := (hasDerivAt_exp_smul_const' A t).clm_apply (hasDerivAt_const t V)
-  have hd'' := (lp.evalCLM ℝ (fun _ : Site d => ℝ) 2 q).hasFDerivAt.comp_hasDerivAt t hd'
-  convert hd'' using 1
+  apply Subtype.ext
+  funext q
+  exact hseries t q
+
+/-- The ℓ²-valued lattice heat path solves the abstract evolution equation. -/
+theorem hasDerivAt_latticeHeatL2 {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) :
+    HasDerivAt (fun s => latticeHeatL2 hd hε hlam ha hf s)
+      (generatorL2 hd hε hlam ha (latticeHeatL2 hd hε hlam ha hf t)) t := by
+  let V : lp (fun _ : Site d => ℝ) 2 := ⟨restrict ε f, memℓp_of_memL2 (memL2_restrict hε hf)⟩
+  let A := generatorL2 hd hε hlam ha
+  have hh := (hasDerivAt_exp_smul_const' A t).clm_apply (hasDerivAt_const t V)
+  rw [latticeHeatL2_eq_exp hd hε hlam ha hf t]
+  convert hh using 1
   · funext s
-    exact hseries s q
+    exact latticeHeatL2_eq_exp hd hε hlam ha hf s
   · simp only [map_zero, add_zero, mul_apply_eq_comp]
-    change generator ε a (latticeHeat ε a f t) q =
-      (A ((NormedSpace.exp (t • A)) V)) q
-    rw [generatorL2_apply]
-    congr 1
-    funext x
-    exact hseries t x
+    rfl
+
+/-- The lattice heat series solves the lattice heat equation at every site. -/
+theorem hasDerivAt_latticeHeat {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : HasCompactSupport f) (t : ℝ) (q : Site d) :
+    HasDerivAt (fun s => latticeHeat ε a f s q)
+      (generator ε a (latticeHeat ε a f t) q) t := by
+  have h := (lp.evalCLM ℝ (fun _ : Site d => ℝ) 2 q).hasFDerivAt.comp_hasDerivAt t
+    (hasDerivAt_latticeHeatL2 hd hε hlam ha hf t)
+  change HasDerivAt (fun s => latticeHeat ε a f s q)
+      (generator ε a (latticeHeat ε a f t) q) t at h
+  exact h
 
 private theorem eq_zero_on_small_interval {ι : Type*} [Nonempty ι] (w g : ℝ → ι → ℝ) {a b K : ℝ}
     (hab : a ≤ b) (hK : 0 ≤ K) (hsmall : K * (b - a) < 1)

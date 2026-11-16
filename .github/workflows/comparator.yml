@@ -19,6 +19,7 @@ jobs:
       LAKE_JOBS: '1'
       CARGO_BUILD_JOBS: '1'
       GOMAXPROCS: '1'
+      LEAN4EXPORT_REV: "v4.35.0-rc2"
     steps:
       - uses: actions/checkout@v4
       - name: Install toolchains
@@ -30,7 +31,7 @@ jobs:
             -o "$RUNNER_TEMP/elan-init.sh"
           sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.32.0
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.35.0-rc2
           "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.34.0-rc1
       - uses: actions/setup-go@v5
         with:
@@ -49,12 +50,12 @@ jobs:
             git -C "$tools/$1" remote add origin "$2"
             git -C "$tools/$1" fetch --depth=1 origin "$3"
             git -C "$tools/$1" checkout --detach FETCH_HEAD
-            test "$(git -C "$tools/$1" rev-parse HEAD)" = "$3"
+            test "$(git -C "$tools/$1" rev-parse HEAD)" = "${4:-$3}"
           }
           fetch comparator https://github.com/leanprover/comparator \
             575674928e239f5bc452aab72d1dd7b0f1326494
           fetch exporter https://github.com/leanprover/lean4export \
-            4e7915201d3f9f04470d9eae002fa695f7cdc589
+            "$LEAN4EXPORT_REV" 6cea97789dc088ea47fcea15692db85685aedac5
           fetch nanoda https://github.com/ammkrn/nanoda_lib \
             6ae1f0cd962f081f6c423454c5da729d841236a7
           fetch landrun https://github.com/Zouuup/landrun \
@@ -64,7 +65,7 @@ jobs:
             elan run leanprover/lean4:v4.34.0-rc1 lake build comparator) \
             2>&1 | tee .lake/comparator-logs/setup/comparator-build.log
           (cd "$tools/exporter" && /usr/bin/flock -x "$COMPARATOR_LOCK" \
-            elan run leanprover/lean4:v4.32.0 lake build lean4export) \
+            elan run leanprover/lean4:v4.35.0-rc2 lake build lean4export) \
             2>&1 | tee .lake/comparator-logs/setup/exporter-build.log
           rustup toolchain install 1.90.0 --profile minimal
           (cd "$tools/nanoda" && cargo +1.90.0 build --release --locked --bin nanoda_bin) \
@@ -80,10 +81,10 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/flock -x "$COMPARATOR_LOCK" \
-            elan run leanprover/lean4:v4.32.0 lake exe cache get \
+            elan run leanprover/lean4:v4.35.0-rc2 lake exe cache get \
             2>&1 | tee .lake/comparator-logs/setup/cache.log
           /usr/bin/flock -x "$COMPARATOR_LOCK" \
-            elan run leanprover/lean4:v4.32.0 lake build LongRange \
+            elan run leanprover/lean4:v4.35.0-rc2 lake build LongRange \
             2>&1 | tee .lake/comparator-logs/setup/production-build.log
       - name: Fresh comparisons and kernel replays, sequentially
         run: python3 scripts/run_comparators.py

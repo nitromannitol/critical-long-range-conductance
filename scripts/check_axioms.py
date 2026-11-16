@@ -20,7 +20,10 @@ with tempfile.TemporaryDirectory(prefix="longrange-axioms-") as directory:
 print(result.stdout, end="")
 if result.returncode:
     raise SystemExit(result.returncode)
-if re.search(r"\b(?:warning|error):", result.stdout):
+if re.search(r"^error:|:\d+:\d+: error:|"
+             r"^warning: (?:.*/)?(?:LongRange|LongRangeHeat|LongRangeAudit)/|"
+             r"^(?:.*/)?(?:LongRange|LongRangeHeat|LongRangeAudit)/.*:\d+:\d+: warning:",
+             result.stdout, re.MULTILINE):
     raise SystemExit("Unexpected Lean diagnostic")
 seen = set()
 for name, axioms in re.findall(

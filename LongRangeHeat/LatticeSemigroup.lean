@@ -4,9 +4,9 @@ import LongRange.Appendix.LatticeCount
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 
 /-!
-# Initial value of the lattice heat series
+# Lattice heat series
 
-The exponential series has the prescribed initial value at time zero.
+Bounds on the lattice generator and the exponential series for the heat equation.
 -/
 
 namespace LongRangeHeat
@@ -110,6 +110,127 @@ theorem abs_generator_le {d : ℕ} (hd : 1 ≤ d) {ε lam M : ℝ}
       apply mul_le_mul_of_nonneg_left _ (abs_nonneg _)
       exact (norm_tsum_le_tsum_norm hs.norm).trans (hs.norm.tsum_le_tsum hbound ht)
     _ = _ := by rw [tsum_mul_left]; ring
+
+/-- The generator obeys an ℓ² bound with the total jump rate. -/
+theorem tsum_sq_generator_le (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) {f : Site d → ℝ}
+    (hf : MemL2 f) :
+    (∑' q, generator ε a f q ^ 2) ≤
+      (2 * |ε ^ d / kappa d ε| * lam⁻¹ *
+        ∑' w : Site d, jumpKernel (physical ε w)) ^ 2 * ∑' q, f q ^ 2 := by
+  set S := ∑' w : Site d, jumpKernel (physical ε w)
+  have hE := summable_jumpKernel_mul_increment_sq hd hε hf
+  have hJs := summable_jumpKernel hd hε
+  have hI : 0 ≤ lam⁻¹ := inv_nonneg.mpr hlam.le
+  have hbound : ∀ q, generator ε a f q ^ 2 ≤ (ε ^ d / kappa d ε) ^ 2 *
+      (lam⁻¹ ^ 2 * S * ∑' w, jumpKernel (physical ε w) * (f (q + w) - f q) ^ 2) := by
+    intro q
+    obtain ⟨hs1, hcs⟩ := summable_mul_abs_and_sq_tsum_le (fun w => jumpKernel_nonneg _) hJs
+      (hE.prod_factor q)
+    have hF : ∀ w : Site d, ‖(if hw : w = 0 then 0 else
+        a (edgeAdd q w hw) * (f (q + w) - f q) * jumpKernel (physical ε w))‖ ≤
+        lam⁻¹ * (jumpKernel (physical ε w) * |f (q + w) - f q|) := by
+      intro w
+      have hJ := jumpKernel_nonneg (physical ε w)
+      split_ifs with hw
+      · rw [norm_zero]
+        exact mul_nonneg hI (mul_nonneg hJ (abs_nonneg _))
+      · have ha0 : 0 ≤ a (edgeAdd q w hw) := hlam.le.trans (ha _).1
+        rw [Real.norm_eq_abs, abs_mul, abs_mul, abs_of_nonneg ha0, abs_of_nonneg hJ]
+        have := mul_le_mul_of_nonneg_right (ha (edgeAdd q w hw)).2
+          (mul_nonneg (abs_nonneg (f (q + w) - f q)) hJ)
+        linarith
+    have habs := tsum_of_norm_bounded (hs1.mul_left lam⁻¹).hasSum hF
+    rw [tsum_mul_left, Real.norm_eq_abs] at habs
+    have hT : (∑' w : Site d, if hw : w = 0 then 0 else
+        a (edgeAdd q w hw) * (f (q + w) - f q) * jumpKernel (physical ε w)) ^ 2 ≤
+        lam⁻¹ ^ 2 * S * ∑' w, jumpKernel (physical ε w) * (f (q + w) - f q) ^ 2 := by
+      rw [← sq_abs]
+      calc _ ≤ (lam⁻¹ * ∑' w, jumpKernel (physical ε w) * |f (q + w) - f q|) ^ 2 :=
+            pow_le_pow_left₀ (abs_nonneg _) habs 2
+        _ = lam⁻¹ ^ 2 * (∑' w, jumpKernel (physical ε w) * |f (q + w) - f q|) ^ 2 := by
+            ring
+        _ ≤ lam⁻¹ ^ 2 * (S * ∑' w, jumpKernel (physical ε w) * (f (q + w) - f q) ^ 2) :=
+            mul_le_mul_of_nonneg_left hcs (sq_nonneg _)
+        _ = _ := by ring
+    unfold generator
+    rw [mul_pow]
+    exact mul_le_mul_of_nonneg_left hT (sq_nonneg _)
+  have hpos : 0 ≤ (ε ^ d / kappa d ε) ^ 2 * (lam⁻¹ ^ 2 * S) := by
+    exact mul_nonneg (sq_nonneg _) (mul_nonneg (sq_nonneg _) (tsum_nonneg fun w => jumpKernel_nonneg _))
+  have hgen := memL2_generator hd hε hlam ha hf
+  have hbase := summable_jumpKernel_mul_sq hd hε hf
+  have hshift := summable_jumpKernel_mul_sq_add hd hε hf
+  have hshift_eq : (∑' p : Site d × Site d,
+      jumpKernel (physical ε p.2) * f (p.1 + p.2) ^ 2) =
+      ∑' p : Site d × Site d, jumpKernel (physical ε p.2) * f p.1 ^ 2 := by
+    exact (shiftPair d).tsum_eq (fun p : Site d × Site d =>
+      jumpKernel (physical ε p.2) * f p.1 ^ 2)
+  have hcompare : ∀ p : Site d × Site d,
+      jumpKernel (physical ε p.2) * (f (p.1 + p.2) - f p.1) ^ 2 ≤
+      2 * (jumpKernel (physical ε p.2) * f (p.1 + p.2) ^ 2 +
+        jumpKernel (physical ε p.2) * f p.1 ^ 2) := by
+    intro p
+    have hh : (f (p.1 + p.2) - f p.1) ^ 2 ≤
+        2 * (f (p.1 + p.2) ^ 2 + f p.1 ^ 2) := by
+      nlinarith [sq_nonneg (f (p.1 + p.2) + f p.1)]
+    nlinarith [mul_le_mul_of_nonneg_left hh (jumpKernel_nonneg (physical ε p.2))]
+  have hsum : (∑' p : Site d × Site d,
+      jumpKernel (physical ε p.2) * (f (p.1 + p.2) - f p.1) ^ 2) ≤
+      4 * S * ∑' q, f q ^ 2 := by
+    calc
+      _ ≤ ∑' p : Site d × Site d, 2 * (jumpKernel (physical ε p.2) *
+          f (p.1 + p.2) ^ 2 + jumpKernel (physical ε p.2) * f p.1 ^ 2) :=
+        hE.tsum_le_tsum hcompare ((hshift.add hbase).mul_left 2)
+      _ = 2 * ((∑' p : Site d × Site d, jumpKernel (physical ε p.2) *
+          f (p.1 + p.2) ^ 2) + ∑' p : Site d × Site d,
+          jumpKernel (physical ε p.2) * f p.1 ^ 2) := by
+        rw [tsum_mul_left, hshift.tsum_add hbase]
+      _ = 4 * S * ∑' q, f q ^ 2 := by
+        rw [hshift_eq, hbase.tsum_prod]
+        simp only [tsum_mul_right, tsum_mul_left]
+        dsimp [S]
+        ring
+  calc
+    _ ≤ ∑' q, (ε ^ d / kappa d ε) ^ 2 *
+        (lam⁻¹ ^ 2 * S * ∑' w, jumpKernel (physical ε w) *
+          (f (q + w) - f q) ^ 2) :=
+      hgen.tsum_le_tsum hbound ((hE.prod.mul_left _).mul_left _)
+    _ = ((ε ^ d / kappa d ε) ^ 2 * (lam⁻¹ ^ 2 * S)) *
+        ∑' p : Site d × Site d, jumpKernel (physical ε p.2) *
+          (f (p.1 + p.2) - f p.1) ^ 2 := by
+      simp only [tsum_mul_left]
+      rw [hE.tsum_prod]
+      ring
+    _ ≤ ((ε ^ d / kappa d ε) ^ 2 * (lam⁻¹ ^ 2 * S)) *
+        (4 * S * ∑' q, f q ^ 2) := mul_le_mul_of_nonneg_left hsum hpos
+    _ = _ := by dsimp [S]; rw [mul_pow, mul_pow, mul_pow, sq_abs]; ring
+
+/-- The generator is bounded on the rescaled lattice `L²` space. -/
+theorem latticeNorm_generator_le (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+    (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : Site d → ℝ} (hf : MemL2 f) :
+    latticeNorm ε (generator ε a f) ≤
+      (2 * |ε ^ d / kappa d ε| * lam⁻¹ *
+        ∑' w : Site d, jumpKernel (physical ε w)) * latticeNorm ε f := by
+  let K := 2 * |ε ^ d / kappa d ε| * lam⁻¹ *
+    ∑' w : Site d, jumpKernel (physical ε w)
+  have hK : 0 ≤ K := by
+    dsimp [K]
+    exact mul_nonneg (mul_nonneg (mul_nonneg (by positivity) (abs_nonneg _))
+      (inv_nonneg.mpr hlam.le)) (tsum_nonneg fun w => jumpKernel_nonneg _)
+  have hsq : latticeNormSq ε (generator ε a f) ≤ K ^ 2 * latticeNormSq ε f := by
+    unfold latticeNormSq
+    calc
+      _ ≤ ε ^ d * (K ^ 2 * ∑' q, f q ^ 2) :=
+        mul_le_mul_of_nonneg_left (tsum_sq_generator_le hd hε hlam ha hf) (pow_nonneg hε.le _)
+      _ = _ := by ring
+  calc
+    latticeNorm ε (generator ε a f) ≤ Real.sqrt (K ^ 2 * latticeNormSq ε f) :=
+      Real.sqrt_le_sqrt hsq
+    _ = K * latticeNorm ε f := by
+      rw [Real.sqrt_mul (sq_nonneg K), Real.sqrt_sq_eq_abs, abs_of_nonneg hK]
+      rfl
 
 /-- Iterates of the generator have a uniform geometric bound. -/
 theorem abs_generator_iterate_le {d : ℕ} (hd : 1 ≤ d) {ε lam M : ℝ}

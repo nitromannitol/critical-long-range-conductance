@@ -18,3 +18,6 @@ import LongRangeHeat.Statements.MeanOperator
 import LongRangeHeat.HeatKernelBounds
 import LongRangeHeat.Statements.HeatKernelBounds
 import LongRangeHeat.Annealed
+import LongRangeHeat.QuenchedMeasurable
+import LongRangeHeat.Aldous
+import LongRangeHeat.Statements.Aldous

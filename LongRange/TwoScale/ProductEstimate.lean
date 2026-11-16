@@ -47,14 +47,14 @@ lemma kernel_min_sq_bound (hd : 1 ≤ d) :
   let t := fun w : Site d => if 1 < radius (physical ε w) then
     jumpKernel (physical ε w) * (1 + radius (physical ε w)) else 0
   have ha : Summable a := summable_of_ne_finset_zero (s := s) (by
-    intro w hw; exact if_neg hw)
+    intro w hw; exact ite_eq_right hw)
   have ht : Summable t := (htail ε hε).1
   have hf : Summable f := summable_kernel_min_sq hd hε.1
   have hpoint : ∀ w, f w ≤ a w + t w := by
     intro w
     by_cases hw : w ∈ s
     · have hr := ((mem_unitBallIndices hε.1 w).mp hw).2
-      simp only [f, a, t, if_pos hw, min_eq_left hr, if_neg (not_lt.mpr hr), add_zero]
+      simp only [f, a, t, ite_eq_left hw, min_eq_left hr, ite_eq_right (not_lt.mpr hr), add_zero]
       exact le_rfl
     · by_cases hz : w = 0
       · subst w
@@ -62,14 +62,14 @@ lemma kernel_min_sq_bound (hd : 1 ≤ d) :
       · have hr : 1 < radius (physical ε w) := by
           by_contra hn
           exact hw ((mem_unitBallIndices hε.1 w).mpr ⟨hz, le_of_not_gt hn⟩)
-        simp only [f, a, t, if_neg hw, if_pos hr, min_eq_right hr.le,
+        simp only [f, a, t, ite_eq_right hw, ite_eq_left hr, min_eq_right hr.le,
           one_pow, mul_one, zero_add]
         exact le_mul_of_one_le_right (jumpKernel_nonneg _) (by
           linarith [radius_nonneg (physical ε w)])
   have hsum : (∑' w, a w) = ∑ w ∈ s,
       jumpKernel (physical ε w) * radius (physical ε w) ^ 2 := by
-    rw [tsum_eq_sum (s := s) (fun w hw => by exact if_neg hw)]
-    exact Finset.sum_congr rfl (fun w hw => if_pos hw)
+    rw [tsum_eq_sum (s := s) (fun w hw => by exact ite_eq_right hw)]
+    exact Finset.sum_congr rfl (fun w hw => ite_eq_left hw)
   have hsmall : ε ^ d / kappa d ε * ∑' w, a w = 1 := by
     rw [hsum]
     change ε ^ d / kappa d ε * ∑ w ∈ unitBallIndices d ε,

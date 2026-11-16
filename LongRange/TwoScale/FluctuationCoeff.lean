@@ -1,7 +1,7 @@
 import LongRange.TwoScale.ResidualDefs
 import LongRange.Dirichlet.Weights
 import LongRange.Calculus.Summability
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
@@ -91,10 +91,10 @@ theorem fluctuation_coeff_sq_sum_le (hd : 1 ≤ d) :
       (ε ^ d / kappa d ε * (2 * B) *
         ((ε ^ (d + 2))⁻¹ * (1 + ε))) * g (d + 1) w := by
     by_cases hw : w = 0
-    · simp only [c, g, hw, if_true, norm_zero, mul_zero, le_refl]
+    · simp only [c, g, hw, ite_true, norm_zero, mul_zero, le_refl]
     simp only [c, Real.norm_eq_abs, abs_mul,
       abs_of_nonneg (div_nonneg (pow_nonneg hε.1.le _) hk.le),
-      abs_of_nonneg (jumpKernel_nonneg _), g, if_neg hw]
+      abs_of_nonneg (jumpKernel_nonneg _), g, ite_eq_right hw]
     calc
       _ ≤ ε ^ d / kappa d ε * jumpKernel (physical ε w) *
           (2 * B * (1 + radius (physical ε w))) := by
@@ -115,7 +115,7 @@ theorem fluctuation_coeff_sq_sum_le (hd : 1 ≤ d) :
     ((hdSum 1 zero_lt_one).1.mul_left _).of_norm_bounded hlin
   have hquad (w : Site d) : |c w| ≤ B / kappa d ε * g d w := by
     by_cases hw : w = 0
-    · simp only [c, g, hw, if_true, abs_zero, mul_zero, le_refl]
+    · simp only [c, g, hw, ite_true, abs_zero, mul_zero, le_refl]
     have hr := lt_of_lt_of_le zero_lt_one (lattice_radius_ge_one hw)
     have hrem := smoothRemainder_abs_le_sq hv hv2 (physical ε q) (physical ε w)
     have hrem' : |smoothRemainder v (physical ε q) (physical ε w)| ≤
@@ -123,7 +123,7 @@ theorem fluctuation_coeff_sq_sum_le (hd : 1 ≤ d) :
       hrem.trans (mul_le_mul_of_nonneg_right (by linarith) (sq_nonneg _))
     simp only [c, abs_mul,
       abs_of_nonneg (div_nonneg (pow_nonneg hε.1.le _) hk.le),
-      abs_of_nonneg (jumpKernel_nonneg _), g, if_neg hw]
+      abs_of_nonneg (jumpKernel_nonneg _), g, ite_eq_right hw]
     calc
       _ ≤ ε ^ d / kappa d ε * jumpKernel (physical ε w) *
           (B * radius (physical ε w) ^ 2) :=

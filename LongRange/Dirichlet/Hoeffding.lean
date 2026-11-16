@@ -1,6 +1,6 @@
 import LongRange.Model.Conductance
-import LatticeProb.Prob.HoeffdingSeries.Countable
-import LatticeProb.Prob.StochasticO
+import LongRange.Support.Prob.HoeffdingSeries.Countable
+import LongRange.Support.Prob.StochasticO
 
 /-!
 # Hoeffding estimates for conductances
@@ -26,7 +26,7 @@ theorem AssumptionU.integral_eq_mean (hA : AssumptionU P lam a) (e : Edge d) :
 /-- Uniform ellipticity makes each conductance integrable. -/
 theorem AssumptionU.integrable (hA : AssumptionU P lam a) (e : Edge d) :
     Integrable (fun ω => a ω e) P := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   apply Integrable.of_bound (hA.measurable e).aestronglyMeasurable lam⁻¹
   exact ae_of_all _ fun ω => by
     rw [Real.norm_eq_abs, abs_of_nonneg (hA.lam_pos.le.trans (hA.bounds ω e).1)]
@@ -35,7 +35,7 @@ theorem AssumptionU.integrable (hA : AssumptionU P lam a) (e : Edge d) :
 /-- The mean inherits the same ellipticity interval as every conductance. -/
 theorem AssumptionU.mean_mem_Icc (hA : AssumptionU P lam a) :
     meanConductance P hA.one_le_dim a ∈ Set.Icc lam lam⁻¹ := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let e := baseEdge hA.one_le_dim
   have hl := integral_mono (integrable_const lam) (hA.integrable e)
     (fun ω => (hA.bounds ω e).1)
@@ -51,7 +51,7 @@ theorem AssumptionU.osBound_weighted_tsum (hA : AssumptionU P lam a)
     Measurable (fun ω => ∑' i, b i * (a ω (e i) - meanConductance P hA.one_le_dim a)) ∧
     OsBound P 2 (2 * lam⁻¹ * Real.sqrt (∑' i, b i ^ 2))
       (fun ω => |∑' i, b i * (a ω (e i) - meanConductance P hA.one_le_dim a)|) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let m := meanConductance P hA.one_le_dim a
   let X := fun i ω => lam * (a ω (e i) - m)
   have hm : ∀ i, Measurable (X i) := fun i =>
@@ -111,7 +111,7 @@ theorem edge_hoeffding_second_moment :
   obtain ⟨C, hC, hmoment⟩ := osBound_moment 2 2 (by norm_num) (by norm_num)
   refine ⟨4 * C, by positivity, ?_⟩
   intro d Ω _ P lam a hA ι _ e he b hb
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨hm, hbound⟩ := hA.osBound_weighted_tsum e he b hb
   let S := fun ω => ∑' i, b i * (a ω (e i) - meanConductance P hA.one_le_dim a)
   have hnonneg : 0 ≤ ∑' i, b i ^ 2 := tsum_nonneg fun i => sq_nonneg _

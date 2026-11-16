@@ -109,7 +109,7 @@ theorem isCorrectorMinimizer_iff {d : ℕ} (hd : 1 ≤ d) {ε : ℝ}
     have hη : SupportedIn ε U η := by
       intro x hx
       have hne : x ≠ q := fun heq => hx (heq.symm ▸ hq)
-      exact if_neg hne
+      exact ite_eq_right hne
     have heq := hv η hη
     rw [bilinForm_eq_neg_generator_affine hd hε.1 hlam ha p hb
       (hη.hasFiniteSupport hε.1 hU)] at heq

@@ -32,7 +32,7 @@ theorem SupportedIn.summable_sq {ε : ℝ} (hε : 0 < ε)
 theorem summable_l2NormSq {ε : ℝ} (hε : 0 < ε) {U : Set (Fin d → ℝ)}
     (hU : Bornology.IsBounded U) (h : Site d → ℝ) :
     Summable (fun q : latticeSet ε U => h q ^ 2) := by
-  letI := (latticeSet_finite hε hU).fintype
+  let := (latticeSet_finite hε hU).fintype
   exact Summable.of_finite
 
 end

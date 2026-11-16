@@ -1,5 +1,5 @@
 import LongRange.TwoScale.KernelSums
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 import LatticeProb.Analysis.Elliptic.Holder
 
 /-!
@@ -128,10 +128,10 @@ theorem smooth_error_bound (d : ℕ) (hd : 1 ≤ d) {σ : ℝ}
     jumpKernel (physical ε w) * (1 + radius (physical ε w)) else 0
   have hQ : Summable Q := summable_of_ne_finset_zero (s := s) (by
     intro w hw
-    simp only [Q, if_neg hw])
+    simp only [Q, ite_eq_right hw])
   have hN : Summable N := summable_of_ne_finset_zero (s := s) (by
     intro w hw
-    simp only [N, if_neg hw])
+    simp only [N, ite_eq_right hw])
   obtain ⟨hT, hTb⟩ := hb ε hε
   have hJ (w : Site d) : 0 ≤ jumpKernel (physical ε w) := by
     unfold jumpKernel
@@ -142,7 +142,7 @@ theorem smooth_error_bound (d : ℕ) (hd : 1 ≤ d) {σ : ℝ}
     by_cases hw : w ∈ s
     · have hr := (mem_unitBallIndices hε.1 w).mp hw |>.2
       have ht : ¬1 < radius (physical ε w) := not_lt.mpr hr
-      simp only [f, Q, N, T, if_pos hw, if_neg ht, mul_zero, add_zero]
+      simp only [f, Q, N, T, ite_eq_left hw, ite_eq_right ht, mul_zero, add_zero]
       rw [← mul_sub, Real.norm_eq_abs, abs_mul, abs_of_nonneg (hJ w)]
       calc
         _ ≤ jumpKernel (physical ε w) *
@@ -151,9 +151,9 @@ theorem smooth_error_bound (d : ℕ) (hd : 1 ≤ d) {σ : ℝ}
             (TaylorHolder.remainder_sub_quadratic_le hv ⟨hσ.le, hσ1⟩ hvH x
               (physical ε w)) (hJ w)
         _ = _ := by ring
-    · simp only [Q, N, if_neg hw, sub_zero, mul_zero, zero_add]
+    · simp only [Q, N, ite_eq_right hw, sub_zero, mul_zero, zero_add]
       by_cases ht : 1 < radius (physical ε w)
-      · simp only [f, T, if_pos ht, Real.norm_eq_abs, abs_mul, abs_of_nonneg (hJ w)]
+      · simp only [f, T, ite_eq_left ht, Real.norm_eq_abs, abs_mul, abs_of_nonneg (hJ w)]
         calc
           _ ≤ jumpKernel (physical ε w) *
               (2 * B₀ + B₁ * radius (physical ε w)) :=
@@ -174,7 +174,7 @@ theorem smooth_error_bound (d : ℕ) (hd : 1 ≤ d) {σ : ℝ}
           subst w
           ext i
           simp only [physical, Pi.zero_apply, Int.cast_zero, mul_zero]
-        simp only [f, hz, jumpKernel_zero, zero_mul, norm_zero, T, if_neg ht, mul_zero,
+        simp only [f, hz, jumpKernel_zero, zero_mul, norm_zero, T, ite_eq_right ht, mul_zero,
           le_refl]
   have hg : Summable (fun w => M * N w + (2 * B₀ + B₁) * T w) :=
     (hN.mul_left M).add (hT.mul_left (2 * B₀ + B₁))
@@ -183,16 +183,16 @@ theorem smooth_error_bound (d : ℕ) (hd : 1 ≤ d) {σ : ℝ}
     simpa only [sub_add_cancel] using he.add hQ
   have hsumN : ∑' w, N w = ∑ w ∈ s,
       jumpKernel (physical ε w) * radius (physical ε w) ^ (2 + σ) := by
-    rw [tsum_eq_sum (s := s) (fun w hw => by simp only [N, if_neg hw])]
+    rw [tsum_eq_sum (s := s) (fun w hw => by simp only [N, ite_eq_right hw])]
     apply Finset.sum_congr rfl
     intro w hw
-    exact if_pos hw
+    exact ite_eq_left hw
   have hsumQ : ∑' w, Q w = ∑ w ∈ s, jumpKernel (physical ε w) *
       ((1 / 2) * iteratedFDeriv ℝ 2 v x ![physical ε w, physical ε w]) := by
-    rw [tsum_eq_sum (s := s) (fun w hw => by simp only [Q, if_neg hw])]
+    rw [tsum_eq_sum (s := s) (fun w hw => by simp only [Q, ite_eq_right hw])]
     apply Finset.sum_congr rfl
     intro w hw
-    exact if_pos hw
+    exact ite_eq_left hw
   have hnear : ε ^ d * ∑' w, N w ≤ A := by
     rw [hsumN]
     exact ha ε hε

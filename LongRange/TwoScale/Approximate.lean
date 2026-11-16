@@ -21,7 +21,7 @@ variable {d : ℕ}
 theorem zeroExtension_supportedIn (ε : ℝ) (U : Set (Fin d → ℝ))
     (v : (Fin d → ℝ) → ℝ) : SupportedIn ε U (zeroExtension ε U v) := by
   intro q hq
-  exact if_neg hq
+  exact ite_eq_right hq
 
 /-- Supported correctors give a supported approximate solution. -/
 theorem approxSolution_supportedIn {ε : ℝ} {U : Set (Fin d → ℝ)}
@@ -62,7 +62,7 @@ theorem l2Norm_eq_euclidean {ε : ℝ} (hε : 0 < ε) {U : Set (Fin d → ℝ)}
 theorem l2Norm_add_le {ε : ℝ} (hε : 0 < ε) {U : Set (Fin d → ℝ)}
     (hU : Bornology.IsBounded U) (g h : Site d → ℝ) :
     l2Norm ε U (fun q => g q + h q) ≤ l2Norm ε U g + l2Norm ε U h := by
-  letI := (latticeSet_finite hε hU).fintype
+  let := (latticeSet_finite hε hU).fintype
   rw [l2Norm_eq_euclidean hε, l2Norm_eq_euclidean hε, l2Norm_eq_euclidean hε,
     ← mul_add]
   apply mul_le_mul_of_nonneg_left _ (Real.sqrt_nonneg _)
@@ -85,7 +85,7 @@ theorem l2Norm_mul_le {ε : ℝ} (hε : 0 < ε) {U : Set (Fin d → ℝ)}
     (hU : Bornology.IsBounded U) {B : ℝ} (hB : 0 ≤ B) (c g : Site d → ℝ)
     (hc : ∀ q, |c q| ≤ B) :
     l2Norm ε U (fun q => c q * g q) ≤ B * l2Norm ε U g := by
-  letI := (latticeSet_finite hε hU).fintype
+  let := (latticeSet_finite hε hU).fintype
   have hs : ∑ q : latticeSet ε U, (c q * g q) ^ 2 ≤
       B ^ 2 * ∑ q : latticeSet ε U, g q ^ 2 := by
     rw [Finset.mul_sum]
@@ -115,7 +115,7 @@ theorem l2Norm_approxSolution_sub_le {ε : ℝ} (hε : 0 < ε)
   rw [l2Norm_congr (h := fun q => ∑ i, gradientCoeff ε v i q * φ i q) (by
     intro q hq
     have hmem : physical ε q ∈ U := hq
-    simp only [approxSolution, zeroExtension, if_pos hmem, add_sub_cancel_left])]
+    simp only [approxSolution, zeroExtension, ite_eq_left hmem, add_sub_cancel_left])]
   calc
     _ ≤ ∑ i, l2Norm ε U (fun q => gradientCoeff ε v i q * φ i q) :=
       l2Norm_finset_sum_le hε hU Finset.univ _

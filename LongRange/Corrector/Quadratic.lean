@@ -87,9 +87,9 @@ theorem summable_correctorFunctional (hd : 1 ≤ d) {ε lam : ℝ}
   · simp only [hz, ↓reduceDIte, mul_zero, add_zero]
   · simp only [hz, ↓reduceDIte, linearFn_add]
     by_cases hq : q.1 ∈ latticeSet ε U ∨ q.1 + q.2 ∈ latticeSet ε U
-    · rw [if_pos hq]
+    · rw [ite_eq_left hq]
       ring
-    · rw [if_neg hq, hu q.1 (not_or.mp hq).1,
+    · rw [ite_eq_right hq, hu q.1 (not_or.mp hq).1,
         hu (q.1 + q.2) (not_or.mp hq).2]
       ring
 
@@ -134,9 +134,9 @@ theorem correctorFunctional_eq_quadratic (hd : 1 ≤ d) {ε lam : ℝ}
   · simp only [hz, ↓reduceDIte, mul_zero, add_zero]
   · simp only [hz, ↓reduceDIte, linearFn_add]
     by_cases hq : q.1 ∈ latticeSet ε U ∨ q.1 + q.2 ∈ latticeSet ε U
-    · rw [if_pos hq]
+    · rw [ite_eq_left hq]
       ring
-    · rw [if_neg hq, hu q.1 (not_or.mp hq).1,
+    · rw [ite_eq_right hq, hu q.1 (not_or.mp hq).1,
         hu (q.1 + q.2) (not_or.mp hq).2]
       ring
 

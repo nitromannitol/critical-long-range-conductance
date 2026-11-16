@@ -67,7 +67,7 @@ lemma longCoeff_eq_cycle {ε : ℝ} (hε : ε ∈ Set.Ioo (0 : ℝ) 1)
           · exact Or.inl (neg_neg _)
         rw [hv, radius_physical_unit_orientation hε.1.le (-z) i hnz] at hr
         exact (not_le.mpr hε.2) hr
-    simp only [defectCoeff, if_neg hn, sub_zero]
+    simp only [defectCoeff, ite_eq_right hn, sub_zero]
   · rfl
 
 /-- Long coefficients inherit the exterior cycle square-sum bound, including summability. -/
@@ -127,17 +127,17 @@ lemma edge_indicator_tsum_le (ε : ℝ) (U : Set (Fin d → ℝ)) (x z : Site d)
     intro q hq
     by_contra hn
     apply hq
-    exact if_neg (by simpa only [Set.mem_insert_iff, Set.mem_singleton_iff] using hn))
+    exact ite_eq_right (by simpa only [Set.mem_insert_iff, Set.mem_singleton_iff] using hn))
   have hsum : ∑' q, f q ≤ 2 * b := by
     rw [tsum_eq_sum (s := {(x, z), (x + z, -z)}) (by
       intro q hq
-      exact if_neg (by simpa only [Finset.mem_insert, Finset.mem_singleton] using hq))]
+      exact ite_eq_right (by simpa only [Finset.mem_insert, Finset.mem_singleton] using hq))]
     by_cases he : (x, z) = (x + z, -z)
     · simp only [he, Finset.insert_eq_of_mem (Finset.mem_singleton_self _),
-        Finset.sum_singleton, f, or_self, if_true]
+        Finset.sum_singleton, f, or_self, ite_true]
       linarith
     · rw [Finset.sum_pair he]
-      simp only [f, true_or, or_true, if_true]
+      simp only [f, true_or, or_true, ite_true]
       ring_nf
       exact le_rfl
   exact (Summable.tsum_subtype_le f (Cycle.indexSet ε U)
@@ -229,11 +229,11 @@ theorem shortCoeff_abs_sum_bound (hd : 1 ≤ d) :
   have hpoint (r : Cycle.indexSet ε U) : |shortCoeff ε U p x z r| ≤ A r + B r := by
     dsimp only [shortCoeff, A, B]
     split_ifs with hr he he
-    · simpa only [defectCoeff, if_pos he, abs_cycle_coefficient] using
+    · simpa only [defectCoeff, ite_eq_left he, abs_cycle_coefficient] using
         abs_sub (jumpKernel (physical ε r.1.2) * linearFn ε p r.1.2 *
           (Cycle.cycle r.1.1 r.1.2 (x + z) x : ℝ))
           (jumpKernel (physical ε z) * linearFn ε p z)
-    · simp only [defectCoeff, if_neg he, sub_zero, abs_cycle_coefficient, add_zero,
+    · simp only [defectCoeff, ite_eq_right he, sub_zero, abs_cycle_coefficient, add_zero,
         le_refl]
     · simp only [abs_zero, zero_add, abs_nonneg]
     · simp only [abs_zero, add_zero, le_refl]
@@ -283,7 +283,7 @@ theorem defectCoeff_sq_sum_bound_with_summable (hd : 1 ≤ d) :
     have hh := hs.subtype (Cycle.indexSet ε U)
     apply hh.congr
     intro r
-    exact if_pos r.2.2.1
+    exact ite_eq_left r.2.2.1
   have hA : ∑' r, A r ≤ C * radius p ^ 2 * ε ^ (-(2 * (d : ℝ) + 2)) := by
     have hh := Summable.tsum_subtype_le _ (Cycle.indexSet ε U)
       (by intro q; split_ifs <;> positivity) hs
@@ -291,7 +291,7 @@ theorem defectCoeff_sq_sum_bound_with_summable (hd : 1 ≤ d) :
       _ = ∑' r : Cycle.indexSet ε U, (if r.1.2 ≠ 0 then
           (cycleWeight ε p r.1.2 *
             |(Cycle.cycle r.1.1 r.1.2 (x + z) x : ℝ)|) ^ 2 else 0) :=
-        tsum_congr (fun r => (if_pos r.2.2.1).symm)
+        tsum_congr (fun r => (ite_eq_left r.2.2.1).symm)
       _ ≤ _ := hh.trans ht
   have hsB : Summable B := summable_edge_indicator ε U x z _
   have hpoint (r : Cycle.indexSet ε U) : defectCoeff ε U p x z r ^ 2 ≤

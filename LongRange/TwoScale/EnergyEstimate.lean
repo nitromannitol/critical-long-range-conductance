@@ -37,7 +37,7 @@ private theorem pairing_le_l2Norm {ε : ℝ} (hε : 0 < ε) {U : Set (Fin d → 
     (hh : SupportedIn ε U h) :
     ε ^ d * ∑' q : Site d, f q * h q ≤ l2Norm ε U f * l2Norm ε U h := by
   classical
-  letI := (latticeSet_finite hε hU).fintype
+  let := (latticeSet_finite hε hU).fintype
   rw [pairing_eq_subtype ε U f hh]
   simp only [l2Norm, l2NormSq, tsum_fintype]
   rw [Real.sqrt_mul (pow_nonneg hε.le _), Real.sqrt_mul (pow_nonneg hε.le _)]

@@ -28,7 +28,7 @@ theorem latticeSet_cube {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
     latticeSet ε (cube ε n) = integerBox d n := by
   ext q
   change (∀ i, |ε * (q i : ℝ)| < ε * 3 ^ n / 2) ↔ _
-  simp only [abs_mul, abs_of_pos hε, integerBox, Set.mem_setOf_eq,
+  simp only [abs_mul, abs_of_pos hε, integerBox, Set.mem_ofPred_eq,
     mul_div_assoc, mul_lt_mul_iff_right₀ hε]
 
 /-- Physical cubes are bounded in the coordinate carrier. -/
@@ -191,7 +191,7 @@ theorem microscopic_sums_summable (hd : 1 ≤ d) (n : ℕ) {Ψ : Site d → ℝ}
   have hf : (integerBox d n).Finite := by
     rw [← latticeSet_cube zero_lt_one]
     exact latticeSet_finite zero_lt_one (cube_isBounded 1 n)
-  letI := hf.fintype
+  let := hf.fintype
   have hs : SupportedIn 1 (cube 1 n) Ψ := by
     intro q hq
     exact hΨ q (by rwa [latticeSet_cube zero_lt_one] at hq)

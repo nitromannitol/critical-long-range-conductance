@@ -1,7 +1,7 @@
 import LongRange.Walk.SemigroupConvergence
 import LongRange.Walk.KilledFddConvergence
 import LongRange.Walk.KillingRemoval
-import LatticeProb.Prob.Cadlag.HalfLine.FddAssembly
+import LongRange.Support.Prob.Cadlag.HalfLine.FddAssembly
 
 /-!
 # Convergence of positive-time walk observations
@@ -48,11 +48,11 @@ theorem exists_density_representative {g : (Fin d → ℝ) → ℝ} (hg : MemLp 
     (hg0 : ∀ᵐ x ∂volume, 0 ≤ g x) :
     ∃ g' : (Fin d → ℝ) → ℝ, Measurable g' ∧ (∀ x, 0 ≤ g' x) ∧ g' =ᵐ[volume] g ∧
       Function.support g' ⊆ tsupport g := by
-  refine ⟨(tsupport g).indicator (fun x => max (hg.1.mk g x) 0), ?_, ?_, ?_, ?_⟩
-  · exact (hg.1.stronglyMeasurable_mk.measurable.max measurable_const).indicator
+  refine ⟨(tsupport g).indicator (fun x => max (hg.aestronglyMeasurable.mk g x) 0), ?_, ?_, ?_, ?_⟩
+  · exact (hg.aestronglyMeasurable.stronglyMeasurable_mk.measurable.max measurable_const).indicator
       (isClosed_tsupport g).measurableSet
   · exact Set.indicator_nonneg (fun y _ => le_max_right _ _)
-  · filter_upwards [hg.1.ae_eq_mk, hg0] with x hx hx0
+  · filter_upwards [hg.aestronglyMeasurable.ae_eq_mk, hg0] with x hx hx0
     by_cases hxs : x ∈ tsupport g
     · rw [Set.indicator_of_mem hxs, ← hx, max_eq_left hx0]
     · rw [Set.indicator_of_notMem hxs, image_eq_zero_of_notMem_tsupport hxs]
@@ -207,17 +207,21 @@ theorem tendsto_walk_integral_of_killed_largeBall_seq (hd : 1 ≤ d)
     (r := fun R => ((initialDensityEuclidean g hg hg0 hg1 : Measure (Euc d)).prod β).real
       {p | scaledExit (Metric.ball 0 ((R + N : ℕ) : ℝ)) s p.1 p.2 ≤ (T : ℝ≥0∞)})
   · intro R n
-    rw [pathLaw, ProbabilityMeasure.toMeasure_map,
-      integral_map (measurable_halfLinePath (walkEmbed (ε n))).aemeasurable
+    rw [pathLaw]
+    erw [ProbabilityMeasure.toMeasure_map]
+    rw [integral_map (measurable_halfLinePath (walkEmbed (ε n))).aemeasurable
         hZ.aestronglyMeasurable]
-    exact abs_integral_sub_killed_le _ (hZ.comp (measurable_halfLinePath _))
+    exact abs_integral_sub_killed_le
+      ((walkRates hd (ε n).2.1 hlam a ha).regularLaw
+        (initialLaw (ε n) g (ε n).2.1 hg hg0 hg1))
+      (hZ.comp (measurable_halfLinePath _))
       (fun h => hZC _) (hA n R)
   · intro R
     have hB : MeasurableSet {p : Euc d × BrownianPath d |
         (T : ℝ≥0∞) < scaledExit (Metric.ball 0 ((R + N : ℕ) : ℝ)) s p.1 p.2} :=
       measurableSet_lt measurable_const
         (measurable_scaledExit_joint Metric.isOpen_ball s)
-    simpa only [Set.compl_setOf, not_lt] using
+    simpa only [Set.compl_ofPred, not_lt] using
       abs_integral_sub_killed_le
         ((initialDensityEuclidean g hg hg0 hg1 : Measure (Euc d)).prod β) hW hWC hB
   · exact hk
@@ -253,7 +257,7 @@ theorem tendsto_walk_productTest_of_killed (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 
       (𝓝 (∫ p, ∏ j, φ j (p.1 + Real.sqrt (2 * a₀) • p.2 (ss j))
         ∂(initialDensityEuclidean g (integrable_initial_density hg hgc)
           (Eventually.of_forall hg0) hg1 : Measure (EuclideanSpace ℝ (Fin d))).prod μB)) := by
-  letI : IsProbabilityMeasure μB := hμB.1
+  let : IsProbabilityMeasure μB := hμB.1
   have hgi := integrable_initial_density hg hgc
   -- Observation times, with the initial time prepended.
   let t : Fin (m + 2) → ℝ≥0 := Fin.cons 0 ss
@@ -289,7 +293,7 @@ theorem tendsto_walk_productTest_of_killed (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 
     rw [continuumDomain_eq_radius] at hs hx
     have h3 : (0 : ℝ) ≤ ((R + N : ℕ) : ℝ) := Nat.cast_nonneg _
     exact hx (show radius x < ((R + N : ℕ) : ℝ) by
-      dsimp only [Set.mem_setOf_eq] at hs; linarith)
+      dsimp only [Set.mem_ofPred_eq] at hs; linarith)
   -- Coordinate versions of the Euclidean marks.
   let ι : C(Fin d → ℝ, EuclideanSpace ℝ (Fin d)) :=
     ⟨WithLp.toLp 2, PiLp.continuous_toLp (p := (2 : ENNReal)) (fun _ : Fin d => ℝ)⟩
@@ -307,7 +311,7 @@ theorem tendsto_walk_productTest_of_killed (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 
       {h | ∀ s ≤ t (Fin.last (m + 1)), h.position s ∈
         latticeSet (ε n).val (continuumDomain (d := d) ((R + N : ℕ) : ℝ))} := by
     ext h
-    simp only [Set.mem_setOf_eq, walkEmbed_mem_ball_iff]
+    simp only [Set.mem_ofPred_eq, walkEmbed_mem_ball_iff]
   have hB (R : ℕ) : MeasurableSet {p : Euc d × BrownianPath d | (t (Fin.last (m + 1)) : ℝ≥0∞) <
       scaledExit (Metric.ball 0 ((R + N : ℕ) : ℝ)) (Real.sqrt (2 * a₀)) p.1 p.2} :=
     measurableSet_lt measurable_const (measurable_scaledExit_joint Metric.isOpen_ball _)
@@ -327,11 +331,11 @@ theorem tendsto_walk_productTest_of_killed (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 
     (Finset.measurable_prod _ (fun j _ => (φ j).continuous.measurable.comp (by fun_prop)))
     (fun w => by
       rw [Finset.abs_prod]
-      exact Finset.prod_le_prod (fun j _ => abs_nonneg _)
+      exact Finset.prod_le_prod₀ (fun j _ => abs_nonneg _)
         (fun j _ => by simpa only [Real.norm_eq_abs] using (φ j).norm_coe_le_norm _))
     (fun p => by
       rw [Finset.abs_prod]
-      exact Finset.prod_le_prod (fun j _ => abs_nonneg _)
+      exact Finset.prod_le_prod₀ (fun j _ => abs_nonneg _)
         (fun j _ => by simpa only [Real.norm_eq_abs] using (φ j).norm_coe_le_norm _))
     ε N
   · intro R
@@ -344,7 +348,7 @@ theorem tendsto_walk_productTest_of_killed (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 
       congr 1
       funext p
       rw [killedProduct_ofFn_eq Metric.isOpen_ball _ t ht ht0]
-      simp only [Set.indicator, Set.mem_setOf_eq]
+      simp only [Set.indicator, Set.mem_ofPred_eq]
       split_ifs <;> rfl
   · intro R
     have h1 : Tendsto (fun n => ((walkRates hd (ε n).property.1 hlam a ha).regularLaw
@@ -367,14 +371,14 @@ theorem tendsto_walk_productTest_of_killed (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 
         congr 1
         funext p
         rw [killedProduct_ofFn_eq Metric.isOpen_ball _ t ht ht0]
-        simp only [hone, Finset.prod_const_one, Set.indicator, Set.mem_setOf_eq]
+        simp only [hone, Finset.prod_const_one, Set.indicator, Set.mem_ofPred_eq]
         split_ifs <;> rfl
     have h2 := (tendsto_const_nhds (x := (1 : ℝ))).sub h1
     convert h2 using 1
     · funext n
       exact probReal_compl_eq_one_sub (hA n R)
     · congr 1
-      rw [← probReal_compl_eq_one_sub (hB R), Set.compl_setOf]
+      rw [← probReal_compl_eq_one_sub (hB R), Set.compl_ofPred]
       simp only [not_lt]
 
 /-- On one full-probability event, for every null sequence of scales, the walk path laws
@@ -405,8 +409,8 @@ theorem ae_tendsto_walk_productTests
           (⟨(initialDensityEuclidean g (integrable_initial_density hg hgc) hg0 hg1 :
             Measure (EuclideanSpace ℝ (Fin d))).prod (B : Measure (BrownianPath d)),
               inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-          (measurable_brownianMixturePath (d := d)
-            (Real.sqrt (2 * (meanConductance P hd a / (2 * (d : ℝ)))))).aemeasurable) ss :
+          (brownianMixturePath (d := d)
+            (Real.sqrt (2 * (meanConductance P hd a / (2 * (d : ℝ))))))) ss :
               Measure (Fin m → EuclideanSpace ℝ (Fin d))))) := by
   filter_upwards [ae_tendsto_killedSemigroup hTK h619 h66 h37 h637 h614 hd P a ha hB]
     with ξ hξ
@@ -432,7 +436,7 @@ theorem ae_tendsto_walk_productTests
     have hZ : Measurable (fun w : D (EuclideanSpace ℝ (Fin d)) => ∏ j, φ j (w.1 (ss j))) :=
       Finset.measurable_prod _ (fun j _ =>
         (φ j).continuous.measurable.comp (measurable_eval (ss j)))
-    rw [ProbabilityMeasure.toMeasure_map, integral_map
+    erw [ProbabilityMeasure.toMeasure_map, integral_map
       (measurable_brownianMixturePath (d := d) _).aemeasurable hZ.aestronglyMeasurable]
     exact tendsto_walk_productTest_of_killed hd ha.lam_pos (a ξ) (ha.bounds ξ) _ hB hξ
       g' hg'm hg'L hg'c hg'0 hg'1 ε hε ss hss.monotone φ

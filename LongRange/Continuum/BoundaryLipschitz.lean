@@ -1,6 +1,6 @@
 import LongRange.TwoScale.ResidualDefs
 import LatticeProb.Analysis.Elliptic.Dirichlet
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 
 /-!
 # Lipschitz control of the exterior defect
@@ -61,8 +61,8 @@ lemma exteriorDefect_eq_zero_on_latticeSet (ε : ℝ) (U : Set (Fin d → ℝ))
     (v : (Fin d → ℝ) → ℝ) :
     ∀ x ∈ latticeSet ε U, exteriorDefect ε U v x = 0 := by
   intro x hx
-  simp only [latticeSet, mem_setOf_eq] at hx
-  simp only [exteriorDefect, zeroExtension, if_pos hx, sub_self]
+  simp only [latticeSet, mem_ofPred_eq] at hx
+  simp only [exteriorDefect, zeroExtension, ite_eq_left hx, sub_self]
 
 /-- The sampled exterior defect is bounded by Euclidean distance to the domain. -/
 lemma exteriorDefect_le_boundaryDistance {ε : ℝ} {U : Set (Fin d → ℝ)}
@@ -70,9 +70,9 @@ lemma exteriorDefect_le_boundaryDistance {ε : ℝ} {U : Set (Fin d → ℝ)}
     (hN : ∀ x, ‖fderiv ℝ v x‖ ≤ N) (h0 : ∀ x ∈ frontier U, v x = 0)
     (y : Site d) : |exteriorDefect ε U v y| ≤ N * boundaryDistance ε U y := by
   by_cases hy : physical ε y ∈ U
-  · simp only [exteriorDefect, zeroExtension, if_pos hy, sub_self, abs_zero]
+  · simp only [exteriorDefect, zeroExtension, ite_eq_left hy, sub_self, abs_zero]
     exact mul_nonneg ((norm_nonneg _).trans (hN (physical ε y))) Metric.infDist_nonneg
-  · simp only [exteriorDefect, zeroExtension, if_neg hy, sub_zero, boundaryDistance]
+  · simp only [exteriorDefect, zeroExtension, ite_eq_right hy, sub_zero, boundaryDistance]
     exact abs_le_infDist_of_frontier hne hv hN h0 _ hy
 
 end

@@ -24,7 +24,7 @@ theorem cube_isOpen (w : ℝ) (L : ℕ) : IsOpen (cube (d := d) w L) := by
   have heq : cube (d := d) w L =
       ⋂ i : Fin d, {x : Fin d → ℝ | |x i| < w * 3 ^ L / 2} := by
     ext x
-    simp only [cube, Set.mem_setOf_eq, Set.mem_iInter]
+    simp only [cube, Set.mem_ofPred_eq, Set.mem_iInter]
   rw [heq]
   apply isOpen_iInter_of_finite
   intro i
@@ -93,7 +93,7 @@ theorem block_corrector_event (hd : 1 ≤ d) (lam : ℝ) (hlam : 0 < lam)
   have hC : 0 < C := hD.trans_le (le_max_right _ _)
   refine ⟨C, 1, hC, zero_lt_one, ?_⟩
   intro Ω _ P a hAss m
-  letI : IsProbabilityMeasure P := hAss.isProbabilityMeasure
+  let : IsProbabilityMeasure P := hAss.isProbabilityMeasure
   by_cases hlarge : N + 1 ≤ m
   · by_cases hblock : ∃ ε : ℝ, ∃ hε : ε ∈ Set.Ioo (0 : ℝ) 1,
         blockIndex U ε hε.1 = m
@@ -173,7 +173,7 @@ theorem block_corrector_event (hd : 1 ≤ d) (lam : ℝ) (hlam : 0 < lam)
             ({ω | 1 / (m : ℝ) < X i ω} ∪ {ω | 1 / (m : ℝ) < Y i ω}) := by
           ext ω
           simp only [G, Set.mem_compl_iff, Set.mem_iInter, Set.mem_inter_iff,
-            Set.mem_setOf_eq, not_forall, not_and_or, not_le, Set.mem_iUnion,
+            Set.mem_ofPred_eq, not_forall, not_and_or, not_le, Set.mem_iUnion,
             Set.mem_union]
         rw [hcompl]
         calc

@@ -49,8 +49,8 @@ theorem cycle_translate_count (v x y : Site d) (he : IsNNEdge s(x, y)) :
   have hf : Function.Injective f := by
     intro a b h
     exact Subtype.ext (congrArg (fun q : T => q.val.1) h)
-  letI : Finite T := hT.1.to_subtype
-  letI : Finite S := Finite.of_injective f hf
+  let : Finite T := hT.1.to_subtype
+  let : Finite S := Finite.of_injective f hf
   exact ⟨Set.toFinite S, (Nat.card_le_card_of_injective f hf).trans hT.2⟩
 
 /-- The coordinate path length is bounded by dimension times the Euclidean radius.
@@ -245,9 +245,9 @@ theorem punctured_radial_sum_bound (hd : 1 ≤ d) (n : ℕ) (hn : d < n) :
     by_cases hv : v = 0
     · subst v
       simp [g, radius, physical]
-    · rw [if_pos (lattice_radius_ge_one hv), Real.rpow_neg (radius_nonneg _),
+    · rw [ite_eq_left (lattice_radius_ge_one hv), Real.rpow_neg (radius_nonneg _),
         Real.rpow_natCast]
-      exact if_neg hv
+      exact ite_eq_right hv
   have hb (s : Finset (Site d)) : ∑ v ∈ s, g v ≤ C := by
     simp_rw [heq]
     have h := Euclidean.Estimates.exterior_finset_le hd hnd
@@ -266,7 +266,7 @@ theorem punctured_radial_sum_bound (hd : 1 ≤ d) (n : ℕ) (hn : d < n) :
       else (radius (physical ε v) ^ n)⁻¹) = (ε ^ n)⁻¹ * g v := by
     by_cases hv : v = 0
     · simp [hv, g]
-    · simp only [hv, if_false, g, radius_physical_eq_mul hε.le, mul_pow, mul_inv]
+    · simp only [hv, ite_false, g, radius_physical_eq_mul hε.le, mul_pow, mul_inv]
   simp_rw [hscale]
   refine ⟨hg.mul_left _, ?_⟩
   rw [tsum_mul_left, ← mul_assoc, mul_inv_cancel₀ (pow_ne_zero _ hε.ne'), one_mul]
@@ -307,9 +307,9 @@ theorem cycle_weight_sq_sum_le {ε : ℝ} (hε : 0 < ε) (p : Fin d → ℝ)
     (by
       intro v
       by_cases hv : v ≠ 0 ∧ P v
-      · simp only [if_pos hv]
+      · simp only [ite_eq_left hv]
         exact cycleWeight_sq_mul_path_length_le hε p v hv.1
-      · simp only [if_neg hv, zero_mul, mul_zero, le_refl])
+      · simp only [ite_eq_right hv, zero_mul, mul_zero, le_refl])
   have heq (q : Site d × Site d) :
       (if q.2 ≠ 0 ∧ P q.2 then cycleWeight ε p q.2 ^ 2 else 0) *
           |(Cycle.cycle q.1 q.2 x y : ℝ)| ^ 2 =
@@ -338,7 +338,7 @@ theorem cycle_weight_sq_sum_bound (hd : 1 ≤ d) :
       (radius (physical ε v) ^ (2 * d))⁻¹ else (0 : ℝ)) =
         (if v = 0 then 0 else (radius (physical ε v) ^ (2 * d))⁻¹) := by
     by_cases hv : v = 0 <;> simp only [hv, ne_eq, not_true_eq_false,
-      if_false, if_true, not_false_eq_true]
+      ite_false, ite_true, not_false_eq_true]
   have hsum := cycle_weight_sq_sum_le hε.1 p x y he (fun _ => True)
     (by simpa only [and_true, heq] using hs)
   simp only [and_true, heq] at hsum
@@ -422,7 +422,7 @@ theorem cycle_weight_short_sum_bound (hd : 1 ≤ d) :
       apply (unitBallIndices d ε).finite_toSet.subset
       intro v hv
       by_contra hn
-      exact hv (if_neg hn)
+      exact hv (ite_eq_right hn)
     exact summable_of_hasFiniteSupport hsupp
   have hb (v : Site d) : w v * ∑ i, (v i).natAbs ≤ g v := by
     dsimp [w, g]
@@ -433,9 +433,9 @@ theorem cycle_weight_short_sum_bound (hd : 1 ≤ d) :
         simp [h, physical, radius] at hpos
       have hm : v ∈ unitBallIndices d ε :=
         (mem_unitBallIndices hε.1 v).mpr ⟨hv0, hv.2.le⟩
-      rw [if_pos hv, if_pos hm]
+      rw [ite_eq_left hv, ite_eq_left hm]
       exact cycleWeight_mul_path_length_le hε.1 p v hv0
-    · rw [if_neg hv, zero_mul]
+    · rw [ite_eq_right hv, zero_mul]
       split_ifs
       · exact mul_nonneg hK (inv_nonneg.mpr (pow_nonneg (radius_nonneg _) _))
       · exact le_rfl
@@ -454,7 +454,7 @@ theorem cycle_weight_short_sum_bound (hd : 1 ≤ d) :
   simp only [heq] at hs hsum
   refine ⟨hs, hsum.trans ?_⟩
   have hg_sum : ∑' v, g v = K * (kappa d ε / ε ^ d) := by
-    rw [tsum_eq_sum (s := unitBallIndices d ε) (fun v hv => if_neg hv)]
+    rw [tsum_eq_sum (s := unitBallIndices d ε) (fun v hv => ite_eq_right hv)]
     simp only [Finset.sum_ite_mem, Finset.inter_self, ← Finset.mul_sum, kappa]
     congr 1
     field_simp [hε.1.ne']

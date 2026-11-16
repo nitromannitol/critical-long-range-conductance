@@ -36,7 +36,7 @@ theorem finite_gaussian_event {Ω ι : Type*} [MeasurableSpace Ω]
     measurableSet_le (hX i hi).abs measurable_const), ?_, ?_⟩
   · have heq : Gᶜ = ⋃ i ∈ I, {ω | t * θ i < |X i ω|} := by
       ext ω
-      simp only [G, Set.mem_compl_iff, Set.mem_iInter, Set.mem_setOf_eq,
+      simp only [G, Set.mem_compl_iff, Set.mem_iInter, Set.mem_ofPred_eq,
         Set.mem_iUnion, not_forall, not_le, exists_prop]
     rw [heq]
     apply (measure_biUnion_finset_le I _).trans

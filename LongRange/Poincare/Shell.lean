@@ -46,7 +46,7 @@ theorem forwardBox_energy_le {d k : ℕ} {ε : ℝ}
     rw [← tsum_mul_left]
     apply tsum_congr
     intro x
-    exact (if_pos (forwardBox_shell hε.1 hz)).symm
+    exact (ite_eq_left (forwardBox_shell hε.1 hz)).symm
   have hswap := (Equiv.prodComm (Site (d + 1)) (Site (d + 1))).tsum_eq
     (shellTerm ε k h)
   simp only [Equiv.prodComm_apply] at hswap

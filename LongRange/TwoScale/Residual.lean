@@ -144,7 +144,7 @@ theorem generator_approxSolution (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
   classical
   have hzero : SupportedIn ε U (zeroExtension ε U v) := by
     intro x hx
-    exact if_neg hx
+    exact ite_eq_right hx
   have hprod (i : Fin d) : SupportedIn ε U (fun x => gradientCoeff ε v i x * φ i x) := by
     intro x hx
     change gradientCoeff ε v i x * φ i x = 0
@@ -224,7 +224,7 @@ theorem residual_identity (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) {U : Set (Fin
     change _ = _ + -(ε ^ d / kappa d ε) * ∑' w, T w
     ring
   have hinterior : zeroExtension ε U v q = v (physical ε q) :=
-    if_pos (mem_latticeSet.mp hq)
+    ite_eq_left (mem_latticeSet.mp hq)
   rw [hsub, happgen]
   have hequ := heq q hq
   change μ * (u q - (zeroExtension ε U v q +

@@ -2,7 +2,7 @@ import LongRange.TwoScale.CorrectorPairing
 import LongRange.TwoScale.BoundaryDefect
 import LongRange.Continuum.BoundaryLipschitz
 import LongRange.Poincare.Inequality
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 
 /-!
 # Dual estimate for the boundary and corrector errors

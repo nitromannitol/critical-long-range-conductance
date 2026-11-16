@@ -61,7 +61,7 @@ lemma integer_path_counting (z : Site d) (e : Sym2 (Site d)) :
     have hq := q.property.1
     rw [hu] at hp
     exact sub_left_inj.mp (hp.trans hq.symm)
-  letI : Finite S := Finite.of_injective f hinj
+  let : Finite S := Finite.of_injective f hinj
   refine ⟨Set.toFinite S, ?_⟩
   calc
     Nat.card S ≤ Nat.card T := Nat.card_le_card_of_injective f hinj

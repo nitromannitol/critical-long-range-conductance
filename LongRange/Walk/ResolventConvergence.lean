@@ -1,10 +1,10 @@
 import LongRange.Walk.ContinuumSemigroup
 import LongRange.Walk.KilledResolvent
 import LongRange.Walk.HomogenizationEvent
-import LatticeProb.Analysis.DenseSmoothFamily
-import LatticeProb.Analysis.Elliptic.BallDomain
-import LatticeProb.Analysis.Elliptic.OneDimExistence
-import LatticeProb.External.GilbargTrudingerExistence
+import LongRange.Support.Analysis.DenseSmoothFamily
+import LongRange.Support.Analysis.Elliptic.BallDomain
+import LongRange.Support.Analysis.Elliptic.OneDimExistence
+import LongRange.Support.External.GilbargTrudingerExistence
 import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
@@ -45,7 +45,7 @@ theorem exists_classicalDirichletSolution_continuumDomain
         {x : Fin 1 → ℝ | |x 0 - 0| < R} := by
       rw [continuumDomain, image_ball_eq 0 hR]
       ext x
-      simp only [Set.mem_setOf_eq, map_zero, Pi.zero_apply, sub_zero,
+      simp only [Set.mem_ofPred_eq, map_zero, Pi.zero_apply, sub_zero,
         Fin.sum_univ_one]
       exact by
         simpa only [sq_abs] using (sq_lt_sq₀ (abs_nonneg (x 0)) hR.le)
@@ -190,11 +190,11 @@ theorem ae_tendsto_sampled_killedResolvent
       hU.2.2.1 zero_lt_one (fun q => f (physical ε q))
   have hs : ∀ ε ∈ Set.Ioo (0 : ℝ) 1, SupportedIn ε U (v ε) := by
     intro ε hε
-    simpa only [v, dif_pos hε.1] using (hv ε hε.1).1
+    simpa only [v, dite_eq_left hε.1] using (hv ε hε.1).1
   have heq : ∀ ε ∈ Set.Ioo (0 : ℝ) 1, ∀ q ∈ latticeSet ε U,
       1 * v ε q - generator ε (a ξ) (v ε) q = f (physical ε q) := by
     intro ε hε
-    simpa only [v, dif_pos hε.1] using (hv ε hε.1).2.2
+    simpa only [v, dite_eq_left hε.1] using (hv ε hε.1).2.2
   have hlim := (hξ v hs heq).comp
     (tendsto_comap (f := (Subtype.val : {ε : ℝ // 0 < ε} → ℝ)))
   apply hlim.congr
@@ -206,7 +206,7 @@ theorem ae_tendsto_sampled_killedResolvent
         (a ξ) (ha.bounds ξ) hU.2.2.1) 1 zero_lt_one
         ((memLp_latticeMeasure ε.property hU.2.2.1
           (fun q => f (physical ε q))).toLp _) := by
-    simpa only [v, dif_pos ε.property] using (hv ε ε.property).2.1
+    simpa only [v, dite_eq_left ε.property] using (hv ε ε.property).2.1
   change ‖(memLp_latticeMeasure ε.property hU.2.2.1 (v ε)).toLp (v ε) -
     (memLp_latticeMeasure ε.property hU.2.2.1
       (fun q => u (physical ε q))).toLp _‖ = _
@@ -296,19 +296,19 @@ theorem exists_dense_family_ae_cellAverage_resolvent
       (∀ R, DenseRange (fun k => (hf R k).toLp (f R k))) ∧
       (∀ R k, ContDiff ℝ ∞ (f R k) ∧ HasCompactSupport (f R k) ∧
         tsupport (f R k) ⊆ continuumDomain R.val) ∧
-      ∀ᵐ ξ ∂P, ∀ R k,
-        let hU := continuumDomain_isC2HolderDomain (d := d) (1 / 2)
-          (show (0 : ℝ) < R.val by exact_mod_cast (lt_of_lt_of_le
-            Nat.zero_lt_one R.property))
+      ∀ᵐ ξ ∂P, ∀ (R : {R : ℕ // 1 ≤ R}) (k : ℕ),
+        let hU : IsC2HolderDomain (1 / 2) (continuumDomain (d := d) R.val) :=
+          continuumDomain_isC2HolderDomain (d := d) (1 / 2)
+            (show (0 : ℝ) < R.val by exact_mod_cast (lt_of_lt_of_le
+              Nat.zero_lt_one R.property))
+        let v : Lp ℝ 2 (volume.restrict (continuumDomain R.val)) := (hf R k).toLp (f R k)
         Tendsto (fun ε : {ε : ℝ // 0 < ε} =>
-          ‖resolvent (discreteKilledSemigroup hd ε.property ha.lam_pos
-              (a ξ) (ha.bounds ξ) hU.2.2.1) 1 zero_lt_one
-              (cellAverageLp ε.property hU.1.measurableSet hU.2.2.1
-                ((hf R k).toLp (f R k))) -
-            cellAverageLp ε.property hU.1.measurableSet hU.2.2.1
-              (resolvent (continuumSemigroup R.val
-                (meanConductance P hd a / (2 * d)) hμB) 1 zero_lt_one
-                ((hf R k).toLp (f R k)))‖)
+          let π := cellAverageLp (U := continuumDomain R.val) ε.property
+            hU.1.measurableSet hU.2.2.1
+          let S := discreteKilledSemigroup (U := continuumDomain R.val) hd ε.property
+            ha.lam_pos (a ξ) (ha.bounds ξ) hU.2.2.1
+          ‖resolvent S 1 zero_lt_one (π v) - π (resolvent (continuumSemigroup R.val
+            (meanConductance P hd a / (2 * d)) hμB) 1 zero_lt_one v)‖)
           (comap Subtype.val (𝓝[>] (0 : ℝ))) (𝓝 0) := by
   have hR (R : {R : ℕ // 1 ≤ R}) : (0 : ℝ) < R.val := by
     exact_mod_cast (lt_of_lt_of_le Nat.zero_lt_one R.property)
@@ -343,7 +343,7 @@ theorem tendsto_norm_of_dense_family {H : Type*} [NormedAddCommGroup H]
       _ ≤ 2 * ‖x - y‖ := (A i).le_of_opNorm_le (hA i) _
       _ = (2 : ℝ≥0) * dist x y := by rw [dist_eq_norm]; rfl
   exact hv.induction_on f
-    ((LipschitzWith.uniformEquicontinuous _ 2 hLip).equicontinuous.isClosed_setOf_tendsto
+    ((LipschitzWith.uniformEquicontinuous _ 2 hLip).equicontinuous.isClosed_setOfPred_tendsto
       continuous_const) hlim
 
 /-- Almost sure resolvent convergence holds for every datum on every integer-radius ball. -/

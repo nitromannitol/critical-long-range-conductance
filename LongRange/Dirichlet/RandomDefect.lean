@@ -1,6 +1,6 @@
 import LongRange.Dirichlet.NearestNeighbour
 import LongRange.Dirichlet.Coefficients
-import LatticeProb.Prob.StochasticO
+import LongRange.Support.Prob.StochasticO
 
 /-!
 # Random flux defects
@@ -24,7 +24,7 @@ theorem osBound_const_mul {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
   by_cases hzero : c = 0
   · subst c
     intro t ht
-    simp only [zero_mul, mul_zero, max_self, lt_self_iff_false, Set.setOf_false,
+    simp only [zero_mul, mul_zero, max_self, lt_self_iff_false, Set.ofPred_false,
       measure_empty]
     exact bot_le
   · have hpos : 0 < c := lt_of_le_of_ne hc (Ne.symm hzero)
@@ -78,7 +78,7 @@ theorem fluxDefect_eq_short_add_long (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
     (hx : x ∈ latticeSet ε U) (hz : z ≠ 0) :
     fluxDefect ε U a m p x z =
       shortDefect ε U a m p x z + longDefect ε U a m p x z := by
-  rw [fluxDefect, dif_neg hz, gpField_sub_eq_tsum_defectCoeff hd hε hU ha m p hx hz]
+  rw [fluxDefect, dite_eq_right hz, gpField_sub_eq_tsum_defectCoeff hd hε hU ha m p hx hz]
   have hs := summable_centered_mul (summable_shortCoeff hd hε hU p x z)
     (fun r => ha (edgeAdd r.1.1 r.1.2 r.2.2.1)) m
   have hl := summable_centered_mul (summable_longCoeff hd hε hU p x z)

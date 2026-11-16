@@ -28,7 +28,7 @@ theorem ae_minimalScale_lt_top {Ω : Type*} [MeasurableSpace Ω]
     apply ge_of_tendsto hlim
     filter_upwards [eventually_ge_atTop (1 : ℝ)] with s hs
     exact (measure_mono (fun ω hω ↦ by
-      simp only [Set.mem_setOf_eq] at hω ⊢
+      simp only [Set.mem_ofPred_eq] at hω ⊢
       rw [hω]
       exact ENNReal.ofReal_lt_top)).trans (htail s hs)
   simpa only [ae_iff, not_lt, top_le_iff] using hzero

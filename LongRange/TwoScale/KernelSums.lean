@@ -40,7 +40,7 @@ theorem kernel_remainder_sum_bound (d : ℕ) {σ : ℝ} (hσ : 0 < σ) (hσ1 : �
     push_cast
     ring
   simp_rw [Finset.sum_congr rfl heq]
-  simpa only [if_pos (show (d : ℝ) - σ < d by linarith)] using (hb ε hε).1
+  simpa only [ite_eq_left (show (d : ℝ) - σ < d by linarith)] using (hb ε hε).1
 
 /-- Outside the unit ball, the kernel with linear growth is the sum of two radial powers. -/
 lemma kernel_linear_growth_eq {d : ℕ} {z : Fin d → ℝ} (hz : 1 < radius z) :
@@ -86,8 +86,8 @@ theorem kernel_tail_sum_bound (d : ℕ) :
     intro w
     dsimp [f, g]
     by_cases hw : 1 < radius (physical ε w)
-    · rw [if_pos hw, if_pos hw.le, if_pos hw.le, kernel_linear_growth_eq hw]
-    · rw [if_neg hw]
+    · rw [ite_eq_left hw, ite_eq_left hw.le, ite_eq_left hw.le, kernel_linear_growth_eq hw]
+    · rw [ite_eq_right hw]
       split_ifs <;> positivity
   have hf0 : ∀ w, 0 ≤ f w := by
     intro w
@@ -166,7 +166,7 @@ theorem boundary_kernel_sum_bound (d : ℕ) :
       rw [Finset.sum_image (fun a _ b _ h => hi h), Finset.mul_sum]
       apply Finset.sum_congr rfl
       intro x _
-      rw [if_pos (hsep' x), hterm]
+      rw [ite_eq_left (hsep' x), hterm]
     rw [hs]
     calc
       _ ≤ (ρ ^ (d + 2))⁻¹ * (t ^ (-((d : ℝ) + 2)) *

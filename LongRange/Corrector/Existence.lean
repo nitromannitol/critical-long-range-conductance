@@ -26,7 +26,7 @@ theorem eq_zero_of_bilinForm_self_eq_zero (hd : 1 ≤ d) {ε : ℝ}
     {u : Site d → ℝ} (hu : u.HasFiniteSupport) (hz : bilinForm ε a u u = 0) :
     u = 0 := by
   classical
-  letI : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
+  let : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
   have hlo := (bilinForm_self_bounds hd hε.1 hlam ha hu).1
   rw [hz] at hlo
   have hn : 0 ≤ h1CritSq ε u := by
@@ -75,7 +75,7 @@ theorem correctorVariationSpace_finite {ε : ℝ} (hε : 0 < ε)
     {U : Set (Fin d → ℝ)} (hU : Bornology.IsBounded U) :
     FiniteDimensional ℝ (correctorVariationSpace ε U) := by
   classical
-  letI : Fintype (latticeSet ε U) := (latticeSet_finite hε hU).fintype
+  let : Fintype (latticeSet ε U) := (latticeSet_finite hε hU).fintype
   let R : correctorVariationSpace ε U →ₗ[ℝ] (latticeSet ε U → ℝ) :=
     { toFun := fun u q => u.val q
       map_add' := fun _ _ => rfl
@@ -149,7 +149,7 @@ theorem existsUnique_correctorMinimizer {d : ℕ} (hd : 1 ≤ d) {ε : ℝ}
     ∃! φ : Site d → ℝ, SupportedIn ε U φ ∧
       ∀ w, SupportedIn ε U w →
         correctorFunctional ε U a p φ ≤ correctorFunctional ε U a p w := by
-  letI := correctorVariationSpace_finite hε.1 hU
+  let := correctorVariationSpace_finite hε.1 hU
   let B := correctorVariationForm hd hε.1 hU hlam ha
   have hB : B.Nondegenerate := correctorVariationForm_nondegenerate hd hε hU hlam ha
   let L := correctorAffineForm hd hε.1 hU hlam ha p

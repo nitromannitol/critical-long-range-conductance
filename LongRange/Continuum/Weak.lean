@@ -1,6 +1,6 @@
 import LongRange.Continuum.Canonical
 import LongRange.Continuum.Package
-import LatticeProb.Analysis.Elliptic.ClassicalWeakGraph
+import LongRange.Support.Analysis.Elliptic.ClassicalWeakGraph
 import LatticeProb.Analysis.Elliptic.WeakDirichletAlgebra
 
 /-!

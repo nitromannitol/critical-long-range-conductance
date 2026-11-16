@@ -1,5 +1,5 @@
 import LongRange.Dirichlet.Young
-import LatticeProb.Analysis.AntisymmetricPairing
+import LongRange.Support.Analysis.AntisymmetricPairing
 
 /-!
 # Delta tests characterize solenoidal fields
@@ -76,7 +76,7 @@ theorem supportedIn_deltaTest {ε : ℝ} {U : Set (Fin d → ℝ)} {x : Site d}
     (hx : x ∈ latticeSet ε U) : SupportedIn ε U (deltaTest x) := by
   intro y hy
   change (if y = x then (1 : ℝ) else 0) = 0
-  exact if_neg (fun h : y = x => hy (h.symm ▸ hx))
+  exact ite_eq_right (fun h : y = x => hy (h.symm ▸ hx))
 
 /-- Pairing with a unit delta gives minus twice the absolutely convergent divergence row. -/
 theorem antisymmetric_pairing_deltaTest (g : Site d → Site d → ℝ)

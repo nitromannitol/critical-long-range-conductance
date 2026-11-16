@@ -40,7 +40,7 @@ theorem AssumptionU.integrable_correctorEnergy {d : ℕ} {Ω : Type*} [Measurabl
     {ε : ℝ} (hε : ε ∈ Set.Ioo (0 : ℝ) 1) {U : Set (Fin d → ℝ)}
     (hU : Bornology.IsBounded U) (p : Fin d → ℝ) :
     Integrable (fun ω => correctorEnergy ε U (a ω) p) P := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨C, hC⟩ := exists_correctorEnergy_uniform_bound hA.one_le_dim hε hA.lam_pos hU p
   apply Integrable.of_bound
     (measurable_correctorEnergy hA.one_le_dim hε.1 hA.lam_pos hU p
@@ -125,7 +125,7 @@ theorem integral_affineDrift_sq {Ω : Type*} [MeasurableSpace Ω] {P : Measure �
     {ε : ℝ} (hε : 0 < ε) (p : Fin d → ℝ) (q : Site d) :
     ∫ ω, affineDrift ε (a ω) p q ^ 2 ∂P =
       Var[fun ω => a ω (baseEdge hA.one_le_dim); P] * ∑' z, affineCoeff ε p z ^ 2 := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hlam := hA.lam_pos
   let m := meanConductance P hA.one_le_dim a
   let X : Site d → Ω → ℝ := fun z ω => centeredIncident m (a ω) q z
@@ -185,7 +185,7 @@ theorem integrable_affineDrift_sq {Ω : Type*} [MeasurableSpace Ω] {P : Measure
     {lam : ℝ} {a : Ω → Edge d → ℝ} (hA : AssumptionU P lam a)
     {ε : ℝ} (hε : 0 < ε) (p : Fin d → ℝ) (q : Site d) :
     Integrable (fun ω => affineDrift ε (a ω) p q ^ 2) P := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hm : Measurable (fun ω => affineDrift ε (a ω) p q) := by
     apply Measurable.tsum
     intro z
@@ -274,7 +274,7 @@ theorem integral_correctorEnergy_ge_card {Ω : Type*} [MeasurableSpace Ω] {P : 
         Var[fun ω => a ω (baseEdge hA.one_le_dim); P] * radius p ^ 2 /
         (2 * kappa d ε * (lam⁻¹ * ∑' z : Site d, jumpKernel (physical 1 z))) ≤
       ∫ ω, correctorEnergy ε U (a ω) p ∂P := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let K := lam⁻¹ * ∑' z : Site d, jumpKernel (physical 1 z)
   have hK : 0 < K := mul_pos (inv_pos.mpr hA.lam_pos) (unitKernel_tsum_pos hA.one_le_dim)
   let R := K / ε ^ (d + 2)

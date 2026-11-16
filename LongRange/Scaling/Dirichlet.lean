@@ -99,8 +99,8 @@ theorem existsUnique_dirichlet (hd : 1 ≤ d) {ε lam : ℝ}
     ∃! u : Site d → ℝ, SupportedIn ε U u ∧
       ∀ q ∈ latticeSet ε U, -generator ε a u q = f q := by
   classical
-  letI := (latticeSet_finite hε.1 hU).fintype
-  letI := correctorVariationSpace_finite hε.1 hU
+  let := (latticeSet_finite hε.1 hU).fintype
+  let := correctorVariationSpace_finite hε.1 hU
   let B := correctorVariationForm hd hε.1 hU hlam ha
   have hB : B.Nondegenerate := correctorVariationForm_nondegenerate hd hε hU hlam ha
   let L : Module.Dual ℝ (correctorVariationSpace ε U) :=
@@ -122,7 +122,7 @@ theorem existsUnique_dirichlet (hd : 1 ≤ d) {ε lam : ℝ}
     have hη : SupportedIn ε U η := by
       intro x hx
       change (if x = q then (1 : ℝ) else 0) = 0
-      exact if_neg (fun he : x = q => hx (he.symm ▸ hq))
+      exact ite_eq_right (fun he : x = q => hx (he.symm ▸ hq))
     have hv := hu ⟨η, hη⟩
     rw [bilinForm_eq_neg_generator_bounded hd hε.1 hlam ha
       (exists_bound_of_finite_support (u.property.hasFiniteSupport hε.1 hU))
@@ -138,7 +138,7 @@ theorem existsUnique_dirichlet (hd : 1 ≤ d) {ε lam : ℝ}
         split_ifs with hx
         · rw [hx]
         · rfl
-      rw [hi, Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+      rw [hi, Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _)]
     change -(ε ^ d * ∑' x : Site d, η x * generator ε a u.val x) =
       ε ^ d * ∑ x : latticeSet ε U, η x * f x at hv
     rw [ht, hf, ← mul_neg] at hv

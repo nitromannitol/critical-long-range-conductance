@@ -1,5 +1,5 @@
 import LongRange.Appendix.Kappa
-import LatticeProb.Euclidean.LatticeAnnulusRiemann
+import LongRange.Support.Euclidean.LatticeAnnulusRiemann
 
 /-!
 # The normalization increment on halving the mesh

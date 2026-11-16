@@ -1,5 +1,5 @@
 import LongRange.Appendix.LatticeCount
-import LatticeProb.Euclidean.LatticeCountLower
+import LongRange.Support.Euclidean.LatticeCountLower
 
 /-!
 # A lower lattice count in a nonempty open set

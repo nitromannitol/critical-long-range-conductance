@@ -55,12 +55,12 @@ theorem walk_marginals_isTight (hMSC : External.MuruganSaloffCoste)
   classical
   let μ' : ℝ → Measure (Site d) := fun ε =>
     if h : 0 < ε then (initialLaw ε g h hg hg0 hg1 : Measure (Site d)) else Measure.dirac 0
-  haveI : ∀ ε, IsProbabilityMeasure (μ' ε) := by
+  have : ∀ ε, IsProbabilityMeasure (μ' ε) := by
     intro ε
     dsimp only [μ']
     split <;> infer_instance
   have hμ' (ε : ℝ) (h : 0 < ε) : μ' ε = (initialLaw ε g h hg hg0 hg1 : Measure (Site d)) :=
-    dif_pos h
+    dite_eq_left h
   have htight : ∀ η : ℝ, 0 < η → ∃ R : ℝ, ∀ ε ∈ Set.Ioo (0 : ℝ) 1,
       μ' ε {x | R < radius (physical ε x)} ≤ ENNReal.ofReal η := by
     intro η hη
@@ -77,7 +77,7 @@ theorem walk_marginals_isTight (hMSC : External.MuruganSaloffCoste)
   rintro _ ⟨n, rfl⟩
   have hn := hR (ε n).val (ε n).property
   rw [hμ' _ (ε n).property.1, ENNReal.ofReal_toReal htop] at hn
-  rw [Measure.map_apply (measurable_eval t) Metric.isClosed_closedBall.measurableSet.compl,
+  erw [Measure.map_apply (measurable_eval t) Metric.isClosed_closedBall.measurableSet.compl,
     pathLaw, ProbabilityMeasure.toMeasure_map,
     Measure.map_apply (measurable_halfLinePath _)
       ((measurable_eval t) Metric.isClosed_closedBall.measurableSet.compl)]
@@ -86,7 +86,7 @@ theorem walk_marginals_isTight (hMSC : External.MuruganSaloffCoste)
   · ext h
     simp only [Set.mem_preimage, Set.mem_compl_iff, Metric.mem_closedBall, dist_zero_right,
       not_le, JumpChain.RegularHistory.halfLinePath_apply, walkEmbed, ← radius_norm,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
 
 /-- The quenched invariance principle for any spatial amplitude equal to `sqrt (2 a₀)`. -/
 theorem ae_tendsto_walk_pathLaw
@@ -120,7 +120,7 @@ theorem ae_tendsto_walk_pathLaw
           (⟨(initialDensityEuclidean g (integrable_initial_density hg hgc) hg0 hg1 :
             Measure (EuclideanSpace ℝ (Fin d))).prod (B : Measure (BrownianPath d)),
               inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-          (measurable_brownianMixturePath (d := d) s).aemeasurable)) := by
+          (brownianMixturePath (d := d) s))) := by
   subst hs
   filter_upwards [ae_tendsto_walk_productTests hTK h619 h66 h37 h637 h614 hd P a hU
     g hg hg0 hgc hg1 B hB] with ξ hξ
@@ -163,7 +163,7 @@ theorem quenched_invariance_principle_of_cited
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -175,7 +175,7 @@ theorem quenched_invariance_principle_of_cited
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable)) := by
+              F)) := by
   intro ρ s F
   refine ⟨initialDensityEuclidean g (integrable_initial_density hg hgc) hg0 hg1, rfl,
     measurable_brownianMixturePath (d := d) s, ?_⟩
@@ -211,7 +211,7 @@ theorem quenched_invariance_principle_intro_of_cited
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -223,7 +223,7 @@ theorem quenched_invariance_principle_intro_of_cited
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable)) := by
+              F)) := by
   intro ρ s F
   refine ⟨initialDensityEuclidean g (integrable_initial_density hg hgc) hg0 hg1, rfl,
     measurable_brownianMixturePath (d := d) s, ?_⟩

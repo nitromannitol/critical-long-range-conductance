@@ -1,7 +1,7 @@
 import LongRange.Scaling.Dirichlet
 import LongRange.Walk.Pairing
 import LongRange.TwoScale.Approximate
-import LatticeProb.Analysis.Elliptic.Examples
+import LongRange.Support.Analysis.Elliptic.Examples
 
 /-!
 # Analytic ingredients of the deterministic scaling obstruction

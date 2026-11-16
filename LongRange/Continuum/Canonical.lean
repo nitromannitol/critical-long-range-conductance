@@ -1,5 +1,5 @@
 import LongRange.Dirichlet.Hoeffding
-import LatticeProb.Analysis.Elliptic.CanonicalDirichlet
+import LongRange.Support.Analysis.Elliptic.CanonicalDirichlet
 
 /-!
 # Classical continuum solutions at the mean conductance

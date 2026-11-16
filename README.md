@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/nitromannitol/critical-long-range-conductance/actions/workflows/build.yml/badge.svg)](https://github.com/nitromannitol/critical-long-range-conductance/actions/workflows/build.yml)
 [![Independent comparators](https://github.com/nitromannitol/critical-long-range-conductance/actions/workflows/comparator.yml/badge.svg)](https://github.com/nitromannitol/critical-long-range-conductance/actions/workflows/comparator.yml)
-[![Lean 4.32.0](https://img.shields.io/badge/Lean-4.32.0-blue)](lean-toolchain)
+[![Lean 4.35.0-rc2](https://img.shields.io/badge/Lean-4.35.0--rc2-blue)](lean-toolchain)
 
 A Lean 4 and Mathlib formalization of *Quantitative homogenization for the critical
 long-range random conductance model*, Ahmed Bou-Rabee and Paul Dario,
@@ -45,14 +45,6 @@ python3 scripts/check_axioms.py
 `check_axioms.py` checks every public statement and definition export against the allowed
 axioms `propext`, `Classical.choice` and `Quot.sound`. Explicit cited hypotheses are
 ordinary proposition parameters and are separate from this kernel axiom check.
-
-A clean build compiled 9,099 jobs with zero warnings and errors, using fresh project and
-Lattice-Probability build directories and the official Mathlib cache. The in-checkout axiom
-audit checked all 26 public exports and found only the three allowed kernel axioms.
-
-The independent comparisons passed for the main theorem and both formulations of the
-invariance principle in this release checkout, including dependency comparison, NanoDa
-and Lean kernel replay.
 
 The Build workflow checks main-branch pushes and pull requests. The Independent comparators
 workflow runs by manual dispatch; the badges above link to the current hosted results. See

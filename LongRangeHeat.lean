@@ -1,1 +1,3 @@
 import LongRangeHeat.Defs
+import LongRangeHeat.LatticeSemigroup
+import LongRangeHeat.Energy

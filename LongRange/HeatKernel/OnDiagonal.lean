@@ -1,9 +1,9 @@
 import LongRange.HeatKernel.UnitWalk
-import LatticeProb.External.MuruganSaloffCoste
-import LatticeProb.Graph.LongRangeKernel.LatticeDistance
-import LatticeProb.Graph.LongRangeKernel.CriticalVolume
-import LatticeProb.Analysis.KernelPowerBridge
-import LatticeProb.Analysis.PoissonProfile
+import LongRange.Support.External.MuruganSaloffCoste
+import LongRange.Support.Graph.LongRangeKernel.LatticeDistance
+import LongRange.Support.Graph.LongRangeKernel.CriticalVolume
+import LongRange.Support.Analysis.KernelPowerBridge
+import LongRange.Support.Analysis.PoissonProfile
 
 /-!
 # The unit-scale on-diagonal estimate

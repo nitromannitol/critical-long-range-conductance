@@ -1,6 +1,6 @@
 import LongRange.Walk.Compactness
-import LatticeProb.Prob.Cadlag.HalfLine.RestrictionTight
-import LatticeProb.External.BillingsleySkorokhod
+import LongRange.Support.Prob.Cadlag.HalfLine.RestrictionTight
+import LongRange.Support.External.BillingsleySkorokhod
 
 /-!
 # Tightness of the rescaled walks on a finite horizon
@@ -77,7 +77,7 @@ theorem tendsto_averagedIncrementBound (K : ℝ) :
       ((continuous_const_mul (2 : ℝ)).tendsto 0).mono_left nhdsWithin_le_nhds
   refine ((walk_increment_bound_tendsto K).comp h2).congr' ?_
   filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 1 / 2 by norm_num)] with h hh
-  simp only [Function.comp_apply, averagedIncrementBound, if_pos hh.2]
+  simp only [Function.comp_apply, averagedIncrementBound, ite_eq_left hh.2]
 
 /-- Expected averaged increments of the rescaled walk laws obey the uniform width bound. -/
 theorem walk_averagedIncrement_le (hMSC : External.MuruganSaloffCoste)
@@ -104,7 +104,7 @@ theorem walk_averagedIncrement_le (hMSC : External.MuruganSaloffCoste)
     Integrable.of_bound hm.aestronglyMeasurable 1
       (ae_of_all _ fun x => norm_boundedDistance_le_one _ _)
   by_cases hsmall : h < 1 / 2
-  · rw [averagedIncrementBound, if_pos hsmall]
+  · rw [averagedIncrementBound, ite_eq_left hsmall]
     have hT0 : (0 : ℝ) ≤ T := T.2
     have hst : s.toNNReal ≤ t.toNNReal := Real.toNNReal_le_toNNReal (by linarith)
     let u : ℝ≥0 := t.toNNReal - s.toNNReal
@@ -114,8 +114,9 @@ theorem walk_averagedIncrement_le (hMSC : External.MuruganSaloffCoste)
       have := Real.le_coe_toNNReal s
       linarith
     have hl := hinc ε hε μ s.toNNReal u (2 * h) (by linarith) (by linarith) hu
-    rw [pathLaw, ProbabilityMeasure.toMeasure_map,
-      integral_map (measurable_halfLinePath _).aemeasurable hm.aestronglyMeasurable]
+    rw [pathLaw]
+    erw [ProbabilityMeasure.toMeasure_map]
+    rw [integral_map (measurable_halfLinePath _).aemeasurable hm.aestronglyMeasurable]
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun _ => boundedDistance_nonneg _ _)
       (hm.comp (measurable_halfLinePath _)).aestronglyMeasurable]
     apply ENNReal.toReal_le_of_le_ofReal
@@ -128,7 +129,7 @@ theorem walk_averagedIncrement_le (hMSC : External.MuruganSaloffCoste)
       congr 1
       funext x
       simp only [JumpChain.RegularHistory.halfLinePath_apply, htu, boundedDistance, dist_comm]
-  · rw [averagedIncrementBound, if_neg hsmall]
+  · rw [averagedIncrementBound, ite_eq_right hsmall]
     calc
       _ ≤ ∫ _x, (1 : ℝ) ∂(pathLaw (walkRates hd hε.1 hlam a ha) μ (walkEmbed ε) :
           Measure (D (EuclideanSpace ℝ (Fin d)))) :=
@@ -147,7 +148,7 @@ theorem walk_restrict_isTight (hMSC : External.MuruganSaloffCoste)
     [∀ ε, IsProbabilityMeasure (μ ε)]
     (hμ : IsTightMeasureSet {Measure.map (walkEmbed ε.1) (μ ε) | (ε : Set.Ioo (0 : ℝ) 1)}) :
     IsTightMeasureSet {(((pathLaw (walkRates hd ε.2.1 hlam a ha) (μ ε) (walkEmbed ε)).map
-      (measurable_restrict T).aemeasurable : ProbabilityMeasure
+      (LatticeProb.Cadlag.HalfLine.restrict T) : ProbabilityMeasure
         (Cadlag.D T (EuclideanSpace ℝ (Fin d)))) : Measure (Cadlag.D T (EuclideanSpace ℝ (Fin d))))
         | ε} := by
   have hK := walk_pathLaws_relativelyCompact hMSC hNash hDavies hRC hd hlam a ha μ

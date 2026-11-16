@@ -1,7 +1,7 @@
 import LongRange.HeatKernel.OnDiagonal
 import LongRange.HeatKernel.OffDiagonal
-import LatticeProb.Graph.LongRangeKernel.LatticeGaussianLower
-import LatticeProb.Analysis.NashProduct
+import LongRange.Support.Graph.LongRangeKernel.LatticeGaussianLower
+import LongRange.Support.Analysis.NashProduct
 
 /-!
 # Heat kernel bounds from the cited inputs

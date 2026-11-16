@@ -1,9 +1,9 @@
 import LongRange.Walk.KilledResolvent
 import LongRange.Walk.InitialLaw
 import LongRange.Walk.Multiplier
-import LatticeProb.Prob.JumpChain.PositionFdd
-import LatticeProb.Prob.JumpChain.KilledL2
-import LatticeProb.Prob.JumpChain.MarkovProperty
+import LongRange.Support.Prob.JumpChain.PositionFdd
+import LongRange.Support.Prob.JumpChain.KilledL2
+import LongRange.Support.Prob.JumpChain.MarkovProperty
 
 /-!
 # Finite killed walk observations
@@ -52,9 +52,9 @@ theorem inner_discreteL2_eq_sum {ε : ℝ} (hε : 0 < ε)
   · rw [Finset.mul_sum]
     apply Finset.sum_congr rfl
     intro x hx
-    rw [if_pos ((latticeSet_finite hε hb).mem_toFinset.mp hx)]
+    rw [ite_eq_left ((latticeSet_finite hε hb).mem_toFinset.mp hx)]
   · intro x hx
-    rw [if_neg (fun h => hx ((latticeSet_finite hε hb).mem_toFinset.mpr h)), zero_mul]
+    rw [ite_eq_right (fun h => hx ((latticeSet_finite hε hb).mem_toFinset.mpr h)), zero_mul]
 
 /-- An initial density converts a finite initial-law average into the discrete pairing. -/
 theorem sum_initialLaw_eq_inner {ε : ℝ} (hε : 0 < ε)
@@ -82,7 +82,7 @@ theorem integral_survival_eq_sum_cylinders {S : Type*} [MeasurableSpace S]
           (∀ i, h.position (t i) = (x i : S)) ∧
             ∀ s ≤ T, h.position s ∈ U} * F (fun i => x i) := by
   classical
-  letI := hU.fintype
+  let := hU.fintype
   let A : Set (JumpChain.RegularHistory S) := {h | ∀ s ≤ T, h.position s ∈ U}
   let E (x : Fin k → U) : Set (JumpChain.RegularHistory S) :=
     {h | (∀ i, h.position (t i) = (x i : S)) ∧ ∀ s ≤ T, h.position s ∈ U}
@@ -95,8 +95,9 @@ theorem integral_survival_eq_sum_cylinders {S : Type*} [MeasurableSpace S]
       MeasurableSet.iInter fun i => measurableSet_eq_fun
         (JumpChain.RegularHistory.measurable_position (S := S) (t i)) measurable_const
     convert hm using 1
+    refine Iff.of_eq (congrArg MeasurableSet ?_)
     ext h
-    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq]
     rfl
   have heq : A.indicator (fun h => F (fun i => h.position (t i))) =
       fun h => ∑ x : Fin k → U, (E x).indicator (fun _ => F (fun i => x i)) h := by
@@ -143,7 +144,7 @@ theorem regularLaw_killed_position_fdd_real {S : Type*} [MeasurableSpace S]
   · rw [ENNReal.toReal_sum]
     · apply Finset.sum_congr rfl
       intro z hz
-      rw [if_pos (hU.mem_toFinset.mp hz), ENNReal.toReal_mul, ENNReal.toReal_prod]
+      rw [ite_eq_left (hU.mem_toFinset.mp hz), ENNReal.toReal_mul, ENNReal.toReal_prod]
       congr 1
       apply Finset.prod_congr rfl
       intro i _
@@ -152,7 +153,7 @@ theorem regularLaw_killed_position_fdd_real {S : Type*} [MeasurableSpace S]
       exact ENNReal.mul_ne_top (by split_ifs <;> simp)
         (ENNReal.prod_ne_top fun _ _ => ENNReal.ofReal_ne_top)
   · intro z hz
-    rw [if_neg (fun h => hz (hU.mem_toFinset.mpr h)), zero_mul]
+    rw [ite_eq_right (fun h => hz (hU.mem_toFinset.mpr h)), zero_mul]
 
 /-- Products of sampled observations on surviving paths have the finite killed-kernel law. -/
 theorem killed_product_expectation_eq_kernel_sum (hd : 1 ≤ d)
@@ -173,7 +174,7 @@ theorem killed_product_expectation_eq_kernel_sum (hd : 1 ≤ d)
             (Fin.cons (α := fun _ => Site d) z (fun j => (y j : Site d)) i.castSucc)
             (y i)) * ∏ i : Fin k, φ i (physical ε (y i)) := by
   classical
-  letI := (latticeSet_finite hε hb).fintype
+  let := (latticeSet_finite hε hb).fintype
   rw [integral_survival_eq_sum_cylinders (walkRates hd hε hlam a ha) ν (latticeSet ε U)
     (latticeSet_finite hε hb) (fun i => t i.succ) (t (Fin.last k))
     (fun i => ht (Fin.le_last _))
@@ -192,7 +193,7 @@ theorem killed_product_expectation_eq_kernel_sum (hd : 1 ≤ d)
         h.position (t i) = Fin.cons (α := fun _ => Site d) 0 (fun j => (y j : Site d)) i) ∧
         ∀ s ≤ t (Fin.last k), h.position s ∈ latticeSet ε U} := by
     ext h
-    simp only [Set.mem_setOf_eq, Fin.forall_fin_succ, lt_self_iff_false,
+    simp only [Set.mem_ofPred_eq, Fin.forall_fin_succ, lt_self_iff_false,
       false_implies, Fin.cons_succ, Fin.succ_pos, true_implies, true_and]
   rw [hevent, he]
   apply Finset.sum_congr rfl
@@ -225,7 +226,7 @@ theorem killedBackwardProduct_apply (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
           (δ i) (Fin.cons (α := fun _ => Site d) x (fun j => (y j : Site d)) i.castSucc) (y i) *
             φ i (physical ε (y i)) := by
   classical
-  letI := (latticeSet_finite hε hb).fintype
+  let := (latticeSet_finite hε hb).fintype
   induction k generalizing x with
   | zero =>
     rw [killedBackwardProduct, toLp_latticeMeasure_apply hε hb _ x hx]
@@ -276,7 +277,7 @@ theorem killed_product_expectation_eq_sum (hd : 1 ≤ d)
         killedBackwardProduct hd hε hlam a ha hb k
           (fun i => t i.succ - t i.castSucc) φ x := by
   classical
-  letI := (latticeSet_finite hε hb).fintype
+  let := (latticeSet_finite hε hb).fintype
   rw [killed_product_expectation_eq_kernel_sum hd hε hlam a ha hb ν k t ht ht0 φ]
   simp_rw [Finset.sum_mul]
   rw [Finset.sum_comm]

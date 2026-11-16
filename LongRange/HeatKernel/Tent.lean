@@ -1,5 +1,5 @@
 import LongRange.HeatKernel.UnitWalk
-import LatticeProb.External.ChenKimKumagaiWang
+import LongRange.Support.External.ChenKimKumagaiWang
 import LongRange.Appendix.LatticeSums
 
 /-!
@@ -217,12 +217,12 @@ lemma tent_davies_summand_le (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
     subst w
     rw [(truncRates hd hlam a ha ρ).q_self]
     simp only [mul_zero, zero_mul, sub_self]
-    rw [if_neg (by simp [unitBallIndices])]
+    rw [ite_eq_right (by simp [unitBallIndices])]
   by_cases ht : radius (physical 1 (w - z)) ≤ ρ
   · have hmem : w - z ∈ unitBallIndices d ρ⁻¹ := by
       rw [mem_unitBallIndices (inv_pos.mpr hp), radius_physical_eq_mul (inv_nonneg.mpr hp.le)]
       exact ⟨hn, (inv_mul_le_one₀ hp).mpr ht⟩
-    rw [if_pos hmem]
+    rw [ite_eq_left hmem]
     have hr := radius_pos ((physical_eq_zero_iff zero_lt_one _).not.mpr hn)
     have hq := unitRate_le hlam ha z w
     rw [jumpKernel_of_ne_zero ((physical_eq_zero_iff zero_lt_one _).not.mpr hn)] at hq
@@ -253,7 +253,7 @@ lemma tent_davies_summand_le (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
         ring
   · have hq : (truncRates hd hlam a ha ρ).q z w = 0 := by
       change (if radius (physical 1 (w - z)) ≤ ρ then _ else 0) = 0
-      rw [if_neg ht]
+      rw [ite_eq_right ht]
     rw [hq, mul_zero, zero_mul]
     split_ifs
     · exact mul_nonneg (by positivity) (Real.rpow_nonneg (radius_nonneg _) _)
@@ -284,8 +284,8 @@ lemma tent_davies_row_le (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
       ENNReal.ofReal (K * radius (physical 1 u) ^ (-(d : ℝ))) else 0) =
       ∑ u ∈ unitBallIndices d ρ⁻¹,
         ENNReal.ofReal (K * radius (physical 1 u) ^ (-(d : ℝ))) := by
-    rw [tsum_eq_sum (s := unitBallIndices d ρ⁻¹) (fun u hu => if_neg hu)]
-    exact Finset.sum_congr rfl (fun u hu => if_pos hu)
+    rw [tsum_eq_sum (s := unitBallIndices d ρ⁻¹) (fun u hu => ite_eq_right hu)]
+    exact Finset.sum_congr rfl (fun u hu => ite_eq_left hu)
   rw [hfinite]
   rw [← ENNReal.ofReal_sum_of_nonneg (fun u _ =>
     mul_nonneg hK (Real.rpow_nonneg (radius_nonneg _) _)), ← Finset.mul_sum]

@@ -1,6 +1,6 @@
 import LongRange.Walk.Rates
-import LatticeProb.Graph.LongRangeKernel.Lattice
-import LatticeProb.Graph.LongRangeKernel.CriticalScale
+import LongRange.Support.Graph.LongRangeKernel.Lattice
+import LongRange.Support.Graph.LongRangeKernel.CriticalScale
 
 /-!
 # The unit-scale walk and lazy uniformization
@@ -132,7 +132,7 @@ theorem unitRates_p_self_ge_half (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
   classical
   have hb := (unitRate_summable_bound hd hlam a ha x).2
   have hr := (unitRates hd hlam a ha).R_pos
-  rw [JumpChain.BoundedRates.p, if_pos rfl]
+  rw [JumpChain.BoundedRates.p, ite_eq_left rfl]
   have hdiv : (∑' y, (unitRates hd hlam a ha).q x y) /
       (unitRates hd hlam a ha).R ≤ 1 / 2 := by
     apply (div_le_iff₀ hr).mpr
@@ -255,9 +255,9 @@ theorem unitRates_density_profile (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
           quadraticScale (graphNorm (y - x)) := by
         unfold latticeVolumeProfile quadraticScale
         positivity
-      rw [JumpChain.BoundedRates.p, if_neg h]
+      rw [JumpChain.BoundedRates.p, ite_eq_right h]
       change _ ≤ unitRate a x y / R
-      rw [unitRate, dif_neg hw]
+      rw [unitRate, dite_eq_right hw]
       calc
         _ ≤ (lam / R) / _ := div_le_div_of_nonneg_right hlow hD
         _ = lam * (1 / (latticeVolumeProfile d (graphNorm (y - x)) *
@@ -269,7 +269,7 @@ theorem unitRates_density_profile (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
     · subst y
       simp only [sub_self, graphNorm_zero, Nat.cast_zero, latticeVolumeProfile,
         quadraticScale, add_zero, one_pow, mul_one, div_one]
-      rw [JumpChain.BoundedRates.p, if_pos rfl]
+      rw [JumpChain.BoundedRates.p, ite_eq_left rfl]
       have ht : 0 ≤ (∑' k, (unitRates hd hlam a ha).q x k) /
           (unitRates hd hlam a ha).R :=
         div_nonneg (tsum_nonneg ((unitRates hd hlam a ha).q_nonneg x)) hR.le
@@ -280,9 +280,9 @@ theorem unitRates_density_profile (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam)
           quadraticScale (graphNorm (y - x)) := by
         unfold latticeVolumeProfile quadraticScale
         positivity
-      rw [JumpChain.BoundedRates.p, if_neg h]
+      rw [JumpChain.BoundedRates.p, ite_eq_right h]
       change unitRate a x y / R ≤ _
-      rw [unitRate, dif_neg hw]
+      rw [unitRate, dite_eq_right hw]
       calc
         _ ≤ (lam⁻¹ * (B / (latticeVolumeProfile d (graphNorm (y - x)) *
             quadraticScale (graphNorm (y - x))))) / R := by

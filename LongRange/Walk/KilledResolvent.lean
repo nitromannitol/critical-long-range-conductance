@@ -1,7 +1,7 @@
 import LongRange.Walk.CellAverageLp
 import LongRange.Walk.Rates
-import LatticeProb.Prob.JumpChain.KilledGenerator
-import LatticeProb.Analysis.ContractionSemigroupResolvent
+import LongRange.Support.Prob.JumpChain.KilledGenerator
+import LongRange.Support.Analysis.ContractionSemigroupResolvent
 
 /-!
 # The discrete killed resolvent

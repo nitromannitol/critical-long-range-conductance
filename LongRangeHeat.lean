@@ -3,5 +3,8 @@ import LongRangeHeat.Dirichlet
 import LongRangeHeat.Statements.Dirichlet
 import LongRangeHeat.StochasticO
 import LongRangeHeat.Statements.StochasticO
+import LongRangeHeat.Continuum
+import LongRangeHeat.Sampling
+import LongRangeHeat.Statements.Sampling
 import LongRangeHeat.LatticeSemigroup
 import LongRangeHeat.Energy

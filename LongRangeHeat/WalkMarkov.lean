@@ -1,4 +1,5 @@
 import LongRangeHeat.WalkSemigroup
+import LongRange.Support.Prob.JumpChain.PositionFdd
 
 /-!
 # Iterated expectations along a Markov chain
@@ -166,6 +167,97 @@ theorem hasSum_chainMass_mul_prod (rates : BoundedRates S) {M : ℝ} (hM0 : 0 �
       refine (Equiv.hasSum_iff (consEquiv k S)).mp ?_
       rw [← htot]
       exact hsume.hasSum
+
+/-- The chain mass as a product of one-step transition probabilities along the path
+`z, y_1, …, y_k`. -/
+theorem chainMass_eq_prod (rates : BoundedRates S) :
+    ∀ (k : ℕ) (s : Fin k → ℝ≥0) (z : S) (y : Fin k → S),
+      chainMass rates k s z y = ∏ i : Fin k,
+        (rates.transitionKernel (s i) ((Fin.cons z y : Fin (k + 1) → S) i.castSucc)).real
+          {(Fin.cons z y : Fin (k + 1) → S) i.succ}
+  | 0, s, z, y => by simp [chainMass]
+  | k + 1, s, z, y => by
+      rw [chainMass, chainMass_eq_prod rates k (Fin.tail s) (y 0) (Fin.tail y),
+        Fin.prod_univ_succ]
+      simp only [Fin.cons_self_tail]
+      congr 1
+
+/-- The increments `t_1 - 0, t_2 - t_1, …, t_k - t_{k-1}` of the observation times. -/
+def timeIncr {k : ℕ} (t : Fin k → ℝ≥0) : Fin k → ℝ≥0 := fun i =>
+  (Fin.cons 0 t : Fin (k + 1) → ℝ≥0) i.succ - (Fin.cons 0 t : Fin (k + 1) → ℝ≥0) i.castSucc
+
+theorem monotone_cons_zero {k : ℕ} {t : Fin k → ℝ≥0} (ht : Monotone t) :
+    Monotone (Fin.cons 0 t : Fin (k + 1) → ℝ≥0) := by
+  rw [Fin.monotone_iff_le_succ]
+  intro i
+  cases k with
+  | zero => exact i.elim0
+  | succ n =>
+    refine Fin.cases ?_ (fun j => ?_) i
+    · simp
+    · simpa using ht (Fin.castSucc_le_succ j)
+
+/-- The law of the observations `(X_{t_1}, …, X_{t_k})` of the walk started at `z` charges the
+path `y` with its chain mass. -/
+theorem regularLaw_map_position_singleton (rates : BoundedRates S) (z : S) {k : ℕ}
+    (t : Fin k → ℝ≥0) (ht : Monotone t) (y : Fin k → S) :
+    (rates.regularLaw (Measure.dirac z)).map (fun h i => RegularHistory.position h (t i)) {y} =
+      ENNReal.ofReal (chainMass rates k (timeIncr t) z y) := by
+  have hmeas : Measurable (fun (h : RegularHistory S) (i : Fin k) =>
+      RegularHistory.position h (t i)) :=
+    measurable_pi_iff.mpr fun i => RegularHistory.measurable_position _
+  rw [Measure.map_apply hmeas (measurableSet_singleton y)]
+  have hset : (fun (h : RegularHistory S) (i : Fin k) => RegularHistory.position h (t i)) ⁻¹' {y} =
+      {h | ∀ i : Fin (k + 1), 0 < i → RegularHistory.position h
+        ((Fin.cons 0 t : Fin (k + 1) → ℝ≥0) i) = (Fin.cons z y : Fin (k + 1) → S) i} := by
+    ext h
+    simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_ofPred_eq]
+    constructor
+    · intro hy i hi
+      obtain ⟨j, rfl⟩ := Fin.exists_succ_eq.mpr (Fin.pos_iff_ne_zero.mp hi)
+      simp [← hy]
+    · intro hy
+      funext j
+      simpa using hy j.succ (Fin.succ_pos j)
+  rw [hset, rates.regularLaw_position_fdd (Measure.dirac z) k (Fin.cons 0 t)
+    (monotone_cons_zero ht) rfl (Fin.cons z y), tsum_eq_single z]
+  · rw [Measure.dirac_apply_of_mem (Set.mem_singleton z), one_mul]
+    rw [chainMass_eq_prod, ENNReal.ofReal_prod_of_nonneg (fun i _ => measureReal_nonneg)]
+    have hup : Function.update (Fin.cons z y : Fin (k + 1) → S) 0 z = Fin.cons z y :=
+      Function.update_eq_self_iff.mpr (by simp)
+    simp only [hup]
+    refine Finset.prod_congr rfl fun i _ => ?_
+    rw [ofReal_measureReal (measure_ne_top _ _)]
+    rfl
+  · intro x₀ hx₀
+    rw [Measure.dirac_apply' _ (measurableSet_singleton x₀)]
+    simp [Ne.symm hx₀]
+
+/-- The Markov property for products of observations of the walk started at `z`:
+`E_z[∏ g_i(X_{t_i})] = e^{t_1 L}(g_1 e^{(t_2 - t_1) L}(g_2 ⋯))(z)` for bounded `g_i`. -/
+theorem integral_regularLaw_prod_position (rates : BoundedRates S) (z : S) {k : ℕ}
+    (t : Fin k → ℝ≥0) (ht : Monotone t) {M : ℝ} (hM0 : 0 ≤ M) (g : Fin k → S → ℝ)
+    (hg : ∀ i y, |g i y| ≤ M) :
+    ∫ h, ∏ i, g i (RegularHistory.position h (t i)) ∂rates.regularLaw (Measure.dirac z) =
+      chainExp rates k (timeIncr t) g z := by
+  have hmeas : Measurable (fun (h : RegularHistory S) (i : Fin k) =>
+      RegularHistory.position h (t i)) :=
+    measurable_pi_iff.mpr fun i => RegularHistory.measurable_position _
+  have : IsProbabilityMeasure
+      ((rates.regularLaw (Measure.dirac z)).map (fun h i => RegularHistory.position h (t i))) :=
+    (Measure.isProbabilityMeasure_map_iff hmeas.aemeasurable).mpr inferInstance
+  have hbd : ∀ y : Fin k → S, |∏ i, g i (y i)| ≤ M ^ k := fun y => by
+    calc |∏ i, g i (y i)| = ∏ i, |g i (y i)| := Finset.abs_prod _ _
+      _ ≤ ∏ _i : Fin k, M := Finset.prod_le_prod₀ (fun _ _ => abs_nonneg _) fun i _ => hg i (y i)
+      _ = M ^ k := by simp
+  have hint := integral_map (μ := rates.regularLaw (Measure.dirac z)) hmeas.aemeasurable
+    (f := fun y : Fin k → S => ∏ i, g i (y i)) (measurable_of_countable _).aestronglyMeasurable
+  refine hint.symm.trans ?_
+  rw [integral_countable (integrable_of_abs_le _ _ hbd)]
+  refine Eq.trans (tsum_congr fun y => ?_)
+    (hasSum_chainMass_mul_prod rates hM0 k (timeIncr t) g hg z).tsum_eq
+  rw [measureReal_def, regularLaw_map_position_singleton rates z t ht y,
+    ENNReal.toReal_ofReal (chainMass_nonneg rates _ _ _ _), smul_eq_mul]
 
 end Chain
 

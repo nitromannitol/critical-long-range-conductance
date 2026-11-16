@@ -6,3 +6,5 @@ import LongRangeHeat.Statements.StochasticO
 import LongRangeHeat.CanonicalPath
 import LongRangeHeat.Forcing
 import LongRangeHeat.Statements.Forcing
+import LongRangeHeat.GaussianTails
+import LongRangeHeat.Statements.GaussianTails

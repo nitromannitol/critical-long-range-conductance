@@ -1,3 +1,5 @@
 import LongRangeHeat.Defs
 import LongRangeHeat.Dirichlet
 import LongRangeHeat.Statements.Dirichlet
+import LongRangeHeat.StochasticO
+import LongRangeHeat.Statements.StochasticO

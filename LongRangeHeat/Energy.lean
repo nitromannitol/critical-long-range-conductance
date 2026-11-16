@@ -345,4 +345,125 @@ theorem latticeNormSq_sub_eq_integral_of_coordinates {d : ℕ} (ε : ℝ) (w w' 
         ring
       rw [heq, intervalIntegral.integral_const_mul]
 
+private theorem sSup_le_of_integrated_coercive_energy (v p G D B : ℝ → ℝ) {T A c κ : ℝ} (hT : 0 ≤ T) (hA : 0 ≤ A)
+    (hc : 0 < c) (hκ : 0 < κ)
+    (hv : ∀ t ∈ Set.Icc 0 T, 0 ≤ v t)
+    (hb : BddAbove (v '' Set.Icc 0 T))
+    (hdi : ∀ t ∈ Set.Icc 0 T, IntervalIntegrable (fun s => 2 * p s) volume 0 t)
+    (hGi : ∀ t ∈ Set.Icc 0 T, IntervalIntegrable (fun s => G s ^ 2) volume 0 t)
+    (hidentity : ∀ t ∈ Set.Icc 0 T, v t ^ 2 = ∫ s in (0 : ℝ)..t, 2 * p s)
+    (hcoercive : ∀ t ∈ Set.Icc 0 T, c / κ * D t ^ 2 ≤ B t)
+    (henergy : ∀ t ∈ Set.Icc 0 T,
+      p t + B t ≤ A / κ * v t + G t * D t / κ) :
+    sSup (v '' Set.Icc 0 T) ≤
+      2 * (A / κ) * T + Real.sqrt (2 * (1 / (4 * c * κ)) * ∫ s in (0 : ℝ)..T, G s ^ 2) := by
+  let S := sSup (v '' Set.Icc 0 T)
+  have hS : 0 ≤ S := (hv 0 ⟨le_rfl, hT⟩).trans (le_csSup hb ⟨0, ⟨le_rfl, hT⟩, rfl⟩)
+  have hQ : 0 ≤ ∫ s in (0 : ℝ)..T, G s ^ 2 :=
+    intervalIntegral.integral_nonneg_of_forall hT (fun _ => sq_nonneg _)
+  have hG : ∀ t ∈ Set.Icc 0 T, (∫ s in (0 : ℝ)..t, G s ^ 2) ≤
+      ∫ s in (0 : ℝ)..T, G s ^ 2 := by
+    intro t ht
+    exact intervalIntegral.integral_mono_interval le_rfl ht.1 ht.2
+      (Filter.Eventually.of_forall fun _ => sq_nonneg _) (hGi T ⟨hT, le_rfl⟩)
+  apply sSup_le_add_sqrt_of_sq_le (Set.Icc 0 T) v ⟨0, ⟨le_rfl, hT⟩⟩ hb hv
+    (by positivity) (by positivity)
+  intro t ht
+  have hsub : Set.Icc 0 t ⊆ Set.Icc 0 T := fun s hs => ⟨hs.1, hs.2.trans ht.2⟩
+  have hi : IntervalIntegrable (fun s => 2 * (A / κ * S + (1 / (4 * c * κ)) * G s ^ 2))
+      volume 0 t := by
+    exact (intervalIntegrable_const.add ((hGi t ht).const_mul _)).const_mul 2
+  have hpoint : ∀ s ∈ Set.Icc 0 t,
+      2 * p s ≤ 2 * (A / κ * S + (1 / (4 * c * κ)) * G s ^ 2) := by
+    intro s hs
+    have ht' := hsub hs
+    have hsup : v s ≤ S := le_csSup hb ⟨s, ht', rfl⟩
+    have hmul := mul_le_mul_of_nonneg_left hsup (div_nonneg hA hκ.le)
+    have hforce := forcing_le_coercive_add (G := G s) hc hκ (hcoercive s ht')
+    have he := henergy s ht'
+    have heq : 1 / (4 * c * κ) * G s ^ 2 = G s ^ 2 / (4 * c * κ) := by ring
+    rw [heq]
+    linarith
+  have hm := intervalIntegral.integral_mono_on ht.1 (hdi t ht) hi hpoint
+  rw [← hidentity t ht] at hm
+  rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_add
+    intervalIntegrable_const ((hGi t ht).const_mul _), intervalIntegral.integral_const_mul] at hm
+  rw [intervalIntegral.integral_const_mul] at hm
+  simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul] at hm
+  have htime : A / κ * S * t ≤ A / κ * S * T :=
+    mul_le_mul_of_nonneg_left ht.2 (mul_nonneg (div_nonneg hA hκ.le) hS)
+  have hforce : (1 / (4 * c * κ)) * (∫ s in (0 : ℝ)..t, G s ^ 2) ≤
+      (1 / (4 * c * κ)) * ∫ s in (0 : ℝ)..T, G s ^ 2 :=
+    mul_le_mul_of_nonneg_left (hG t ht) (by positivity)
+  dsimp [S] at *
+  nlinarith
+
+/-- The deterministic lattice estimate using coordinate derivatives. -/
+theorem sSup_latticeNorm_le_of_forcing_coordinates {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) (hκ : 0 < kappa d ε)
+    (w w' p r : ℝ → Site d → ℝ) (G : ℝ → ℝ) {T A₁ A₂ : ℝ}
+    (hT : 0 ≤ T) (hA₁ : 0 ≤ A₁) (hA₂ : 0 ≤ A₂) (hw0 : w 0 = 0)
+    (hb : BddAbove ((fun t => latticeNorm ε (w t)) '' Set.Icc 0 T))
+    (hw : ∀ t ∈ Set.Icc 0 T, MemL2 (w t))
+    (hw' : ∀ t ∈ Set.Icc 0 T, MemL2 (w' t))
+    (hc : ∀ q, ContinuousOn (fun t => w t q) (Set.Icc 0 T))
+    (hdiff : ∀ q t, t ∈ Set.Ioo 0 T → HasDerivAt (fun s => w s q) (w' t q) t)
+    (hci : ∀ t ∈ Set.Icc 0 T, ∀ q,
+      IntervalIntegrable (fun s => 2 * w s q * w' s q) volume 0 t)
+    (habs : ∀ t ∈ Set.Icc 0 T,
+      IntervalIntegrable (fun s => ∑' q, |2 * w s q * w' s q|) volume 0 t)
+    (hdi : ∀ t ∈ Set.Icc 0 T,
+      IntervalIntegrable (fun s => 2 * latticeInner ε (w s) (w' s)) volume 0 t)
+    (hGi : ∀ t ∈ Set.Icc 0 T, IntervalIntegrable (fun s => G s ^ 2) volume 0 t)
+    (hs : ∀ t ∈ Set.Icc 0 T, MemL2 (p t) ∧ MemL2 (r t))
+    (hode : ∀ t ∈ Set.Icc 0 T, ∀ q, w' t q = generator ε a (w t) q - p t q - r t q)
+    (hmean : ∀ t ∈ Set.Icc 0 T, |latticeInner ε (p t) (w t)| ≤
+      A₁ / kappa d ε * latticeNorm ε (w t))
+    (hforce : ∀ t ∈ Set.Icc 0 T, |latticeInner ε (r t) (w t)| ≤
+      A₂ / kappa d ε * latticeNorm ε (w t) +
+        G t * Real.sqrt (gradNormSq ε (w t)) / kappa d ε) :
+    sSup ((fun t => latticeNorm ε (w t)) '' Set.Icc 0 T) ≤
+      2 * ((A₁ + A₂) / kappa d ε) * T +
+        Real.sqrt (2 * (1 / (4 * (lam / 2) * kappa d ε)) * ∫ s in (0 : ℝ)..T, G s ^ 2) := by
+  have hgrad : ∀ t, 0 ≤ gradNormSq ε (w t) := by
+    intro t
+    unfold gradNormSq latticeNormSq
+    apply Finset.sum_nonneg
+    intro i hi
+    exact mul_nonneg (pow_nonneg hε.le _) (tsum_nonneg fun q => sq_nonneg _)
+  have hcoerc : ∀ t ∈ Set.Icc 0 T,
+      (lam / 2) / kappa d ε * Real.sqrt (gradNormSq ε (w t)) ^ 2 ≤
+        bilinForm ε a (w t) (w t) := by
+    intro t ht
+    rw [Real.sq_sqrt (hgrad t)]
+    exact bilinForm_self_ge hd hε hlam ha (hw t ht)
+  have hidentity : ∀ t ∈ Set.Icc 0 T, latticeNorm ε (w t) ^ 2 =
+      ∫ s in (0 : ℝ)..t, 2 * latticeInner ε (w s) (w' s) := by
+    intro t ht
+    have hsub : Set.Icc 0 t ⊆ Set.Icc 0 T := fun s hs => ⟨hs.1, hs.2.trans ht.2⟩
+    have hcont : ∀ q, ContinuousOn (fun s => w s q) (Set.Icc 0 t) :=
+      fun q => (hc q).mono hsub
+    have hder : ∀ q s, s ∈ Set.Ioo 0 t → HasDerivAt (fun r => w r q) (w' s q) s :=
+      fun q s hs => hdiff q s ⟨hs.1, hs.2.trans_le ht.2⟩
+    have hh := latticeNormSq_sub_eq_integral_of_coordinates ε w w' ht.1
+      (fun s hs => hw s (hsub hs)) (fun s hs => hw' s (hsub hs)) hcont hder
+      (hci t ht) (habs t ht)
+    have hzero : latticeNormSq ε (w 0) = 0 := by simp [hw0, latticeNormSq]
+    rw [hzero, sub_zero] at hh
+    have hn : 0 ≤ latticeNormSq ε (w t) := by
+      unfold latticeNormSq
+      exact mul_nonneg (pow_nonneg hε.le _) (tsum_nonneg fun q => sq_nonneg _)
+    rw [latticeNorm, Real.sq_sqrt hn]
+    exact hh
+  apply sSup_le_of_integrated_coercive_energy (fun t => latticeNorm ε (w t))
+    (fun t => latticeInner ε (w t) (w' t)) G (fun t => Real.sqrt (gradNormSq ε (w t)))
+    (fun t => bilinForm ε a (w t) (w t)) hT (add_nonneg hA₁ hA₂)
+    (by positivity : 0 < lam / 2) hκ (fun t ht => Real.sqrt_nonneg _) hb hdi hGi hidentity hcoerc
+  intro t ht
+  have hm := (abs_le.mp (hmean t ht)).1
+  have hr := (abs_le.mp (hforce t ht)).1
+  have hp := lattice_energy_identity hd hε hlam ha (hw t ht) (hs t ht).1 (hs t ht).2 (hode t ht)
+  rw [add_div, add_mul]
+  linarith
+
 end LongRangeHeat

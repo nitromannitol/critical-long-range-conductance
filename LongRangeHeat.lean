@@ -11,3 +11,5 @@ import LongRangeHeat.Energy
 import LongRangeHeat.CanonicalPath
 import LongRangeHeat.Forcing
 import LongRangeHeat.Statements.Forcing
+import LongRangeHeat.SecondMoment
+import LongRangeHeat.MeanOperator

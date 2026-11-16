@@ -135,18 +135,18 @@ def DisplacementBound (hd : 1 ≤ d) (hε : 0 < ε) (hlam : 0 < lam)
         {z | R < radius (physical ε (z - 0))} ≤
       C * h * (1 + Real.log (1 + R)) / R ^ 2
 
-/-- Passing from `ℓ²` to the value at the origin: the difference of the expectations at time `h`
-of two bounded observables is controlled by the `ℓ²` distance of the observables and the
-on-diagonal bound. -/
+/-- Passing from `ℓ²` to the value at the origin: the difference of the expectations at a time
+`t ≥ h` of two bounded observables is controlled by the `ℓ²` distance of the observables and the
+on-diagonal bound at time `2h`. -/
 theorem abs_walkOp_sub_le_of_onDiagonal (hd : 1 ≤ d) (hε : 0 < ε) (hlam : 0 < lam)
     (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) {C : ℝ} (hC : 0 ≤ C)
-    (hdiag : OnDiagonalBound hd hε hlam ha C) {h : ℝ≥0} (hεh : ε ≤ h + h)
+    (hdiag : OnDiagonalBound hd hε hlam ha C) {h t : ℝ≥0} (hht : h ≤ t) (hεh : ε ≤ h + h)
     {U G : Site d → ℝ} (hmem : MemL2 fun q => U q - G q) :
-    |walkOp (LongRange.walkRates hd hε hlam a ha) h (fun q => U q - G q) 0| ≤
+    |walkOp (LongRange.walkRates hd hε hlam a ha) t (fun q => U q - G q) 0| ≤
       Real.sqrt (C / ((h + h : ℝ≥0) : ℝ) ^ ((d : ℝ) / 2)) * latticeNorm ε (fun q => U q - G q) := by
   set rates := LongRange.walkRates hd hε hlam a ha with hrates
   have hs := walkRates_q_symm hd hε hlam ha
-  refine (abs_walkOp_le_sqrt rates hs h hmem 0).trans ?_
+  refine (abs_walkOp_le_sqrt_of_le rates hs hht hmem 0).trans ?_
   have hεd : 0 < ε ^ d := pow_pos hε d
   have hQ : (rates.transitionKernel (h + h) 0).real {0} ≤
       ε ^ d * (C / ((h + h : ℝ≥0) : ℝ) ^ ((d : ℝ) / 2)) := by
@@ -247,7 +247,7 @@ theorem abs_latticeHeat_sub_continuumHeat_le (hd : 1 ≤ d) (hε : 0 < ε) (hlam
   have h1 : latticeHeat ε a F ((h + s : ℝ≥0) : ℝ) 0 =
       walkOp rates h (walkOp rates s (restrict ε F)) 0 := by
     rw [hheat, walkOp_add rates h s hFq]
-  have hT1 := abs_walkOp_sub_le_of_onDiagonal hd hε hlam ha hC hdiag hεh hmem
+  have hT1 := abs_walkOp_sub_le_of_onDiagonal hd hε hlam ha hC hdiag le_rfl hεh hmem
   rw [walkOp_sub rates h hU hG] at hT1
   have hT2 := abs_walkOp_continuumHeat_sub_le hd hε hlam ha hC hdisp hF hFc hM hL s.coe_nonneg hh hh1 hεR
   rw [← hrates] at hT2

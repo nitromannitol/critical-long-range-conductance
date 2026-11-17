@@ -61,7 +61,7 @@ theorem markovOperatorCLM_pow_summable_abs {X : Type*} (k : X → X → ℝ≥0�
   | succ n ih =>
       have h := markovOperatorCLM_summable_abs k hk hsym
         ((markovOperatorCLM k hk hsym ^ n) f) ih.1
-      rw [pow_succ', ContinuousLinearMap.mul_apply]
+      rw [pow_succ', mul_apply_eq_comp]
       exact ⟨h.1, h.2.trans ih.2⟩
 
 end LatticeProb.Graph.LongRangeKernel

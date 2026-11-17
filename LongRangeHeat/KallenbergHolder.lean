@@ -96,4 +96,36 @@ theorem lintegral_exp_neg_sum_le {Ω : Type} [MeasurableSpace Ω] (P : Measure �
       ← Real.exp_sum, ← Finset.sum_neg_distrib]
   simpa only [heq] using lintegral_geometricMean_le P hn f B hf hbound
 
+
+/-- The exponential sum bound controls the probability that the sum stays below
+an arbitrary threshold. -/
+theorem measure_sum_le_of_lower_tail {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω)
+    [IsProbabilityMeasure P] {n : ℕ} (hn : 0 < n) (ξ : Fin n → Ω → ℝ)
+    (hξ : ∀ i, Measurable (ξ i)) (hξ0 : ∀ i w, 0 ≤ ξ i w) (t c : ℝ) (p : ℝ≥0∞)
+    (hp : ∀ i, P {w | ξ i w < c} ≤ p) :
+    P {w | ∑ i, ξ i w ≤ t} ≤ ENNReal.ofReal (Real.exp t) *
+      (ENNReal.ofReal (Real.exp (-(n : ℝ) * c)) + p) := by
+  let A := {w | ∑ i, ξ i w ≤ t}
+  let F : Ω → ℝ≥0∞ := fun w => ENNReal.ofReal (Real.exp (-(∑ i, ξ i w)))
+  have hA : MeasurableSet A := measurableSet_le (Finset.measurable_sum _ fun i _ => hξ i)
+    measurable_const
+  have hF : Measurable F := ENNReal.measurable_ofReal.comp
+    (Real.continuous_exp.measurable.comp (Finset.measurable_sum _ fun i _ => hξ i).neg)
+  calc
+    P A = ∫⁻ w, A.indicator (fun _ => (1 : ℝ≥0∞)) w ∂P := by
+      rw [lintegral_indicator_const hA, one_mul]
+    _ ≤ ∫⁻ w, ENNReal.ofReal (Real.exp t) * F w ∂P := by
+      apply lintegral_mono
+      intro w
+      by_cases hw : w ∈ A
+      · rw [Set.indicator_of_mem hw]
+        dsimp only [F]
+        rw [← ENNReal.ofReal_mul (Real.exp_pos t).le, ← Real.exp_add]
+        have hw' : ∑ i, ξ i w ≤ t := hw
+        exact ENNReal.one_le_ofReal.mpr (Real.one_le_exp (by linarith))
+      · rw [Set.indicator_of_notMem hw]
+        exact zero_le
+    _ = ENNReal.ofReal (Real.exp t) * ∫⁻ w, F w ∂P := lintegral_const_mul _ hF
+    _ ≤ _ := by gcongr; exact lintegral_exp_neg_sum_le P hn ξ hξ hξ0 c p hp
+
 end LatticeProb.Cadlag.HalfLine

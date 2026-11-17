@@ -84,6 +84,7 @@ Names below are in `LongRangeHeat.Statements`. A pending entry has no statement 
 | Proposition 4.1 | `heat_kernel_bounds` |
 | Proposition 4.2 | `aldous_condition` |
 | Proposition 4.3 | Pending |
+| (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving` |
 | (2.3) | `second_moment` |
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |

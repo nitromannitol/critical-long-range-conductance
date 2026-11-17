@@ -342,33 +342,42 @@ theorem annealed_invariance_of_brownian_fdd
       rw [jointLaw_map_scaledBrownianPath]
       exact hfdd (fun n => (ε n : ℝ)) (fun n => (ε n).2) hε0' ts hts hpos)
 
-/-- **The annealed invariance principle from finite-dimensional convergence in filter form.**
-If the finite-dimensional marginals of the annealed laws at strictly increasing times converge
-weakly, as `ε → 0` in `(0, 1/2)`, to those of `s W`, then the annealed laws converge weakly, as
-`ε → 0` in `(0, 1/2)`, to the law of `s W`. -/
-theorem annealed_invariance_of_filter_fdd
+/-- A probability measure on a space with at most one point is determined: there is only one. -/
+theorem subsingleton_probabilityMeasure {X : Type*} [MeasurableSpace X] [Subsingleton X] :
+    Subsingleton (ProbabilityMeasure X) := by
+  refine ⟨fun μ ν => ?_⟩
+  apply ProbabilityMeasure.toMeasure_injective
+  ext s _
+  rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
+  · simp
+  · have hs : s = Set.univ := Set.eq_univ_of_forall fun x => Subsingleton.elim x y ▸ hy
+    subst hs
+    simp
+
+/-- **The annealed invariance principle from finite-dimensional convergence.** If, along every
+sequence `ε_n → 0` in `(0, 1/2)`, the finite-dimensional marginals of the annealed laws at
+strictly increasing times `t_1 < ⋯ < t_k` with `k ≥ 1` converge weakly to those of `s W`, then
+the annealed laws converge weakly, as `ε → 0` in `(0, 1/2)`, to the law of `s W`. -/
+theorem annealed_invariance_of_fdd_convergence
     (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
     (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)
     (hEK : LatticeProb.External.EthierKurtzRelativeCompactnessStopping)
     (hFdd : LatticeProb.External.EthierKurtzConvergenceFromFdd)
     (hP : ConductanceLaw P lam a) (B : ProbabilityMeasure (BrownianPath d)) (s : ℝ)
-    (hfdd : ∀ {k : ℕ} (ts : Fin k → ℝ≥0), StrictMono ts →
-      Tendsto (fun ε : Set.Ioo (0 : ℝ) (1 / 2) => (annealedLaw hd P a hP ε.2.1).map
-          (fun X : PathSpace d => fun j => X.1 (ts j)))
-        (Filter.comap Subtype.val (𝓝 0))
-        (𝓝 (B.map (fun w : BrownianPath d => fun j => s • w (ts j))))) :
+    (hfdd : ∀ (ε : ℕ → ℝ) (hε : ∀ n, ε n ∈ Set.Ioo (0 : ℝ) (1 / 2)), Tendsto ε atTop (𝓝 0) →
+      ∀ {k : ℕ}, 1 ≤ k → ∀ ts : Fin k → ℝ≥0, StrictMono ts →
+        Tendsto (fun n => (annealedLaw hd P a hP (hε n).1).map
+          (fun X : PathSpace d => fun j => X.1 (ts j))) atTop
+          (𝓝 (B.map (fun w : BrownianPath d => fun j => s • w (ts j))))) :
     Tendsto (fun ε : Set.Ioo (0 : ℝ) (1 / 2) => annealedLaw hd P a hP ε.2.1)
       (Filter.comap Subtype.val (𝓝 0)) (𝓝 (B.map (scaledBrownianPath s))) := by
-  rw [Filter.tendsto_iff_seq_tendsto]
-  intro ε hε0
-  have hε0' : Tendsto (fun n => ((ε n : Set.Ioo (0 : ℝ) (1 / 2)) : ℝ)) atTop (𝓝 0) :=
-    Filter.tendsto_comap_iff.1 hε0
-  exact annealed_invariance_of_fdd (hP := hP) hMSC hNash hDavies hEK hFdd
-    (fun n => (ε n).2) hε0' (B.map (scaledBrownianPath s))
-    (fun {k} ts hts _ => by
-      rw [jointLaw_map_scaledBrownianPath]
-      exact (hfdd ts hts).comp hε0)
+  refine annealed_invariance_of_brownian_fdd hMSC hNash hDavies hEK hFdd hP B s ?_
+  intro ε hε hε0 k ts hts _
+  rcases Nat.eq_zero_or_pos k with rfl | hk
+  · have : Subsingleton (ProbabilityMeasure (Fin 0 → EuclideanSpace ℝ (Fin d))) := subsingleton_probabilityMeasure
+    exact tendsto_const_nhds.congr fun n => Subsingleton.elim _ _
+  · exact hfdd ε hε hε0 hk ts hts
 
 end Brownian
 

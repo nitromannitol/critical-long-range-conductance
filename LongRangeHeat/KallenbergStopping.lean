@@ -188,6 +188,53 @@ theorem stoppingIncrementCondition_of_stopping_increment
   intro H hH η hη φ hφ τ hτ u hu
   exact tendsto_subsequence_stopping_increment P Y hH (h H hH η hη) φ hφ τ hτ u hu
 
+/-- Positive deterministic increments suffice for the stopping-increment condition. -/
+theorem stoppingIncrementCondition_of_positive_stopping_increment
+    (P : ∀ n, ProbabilityMeasure (Ω n)) (Y : ∀ n, Ω n → D E)
+    (h : ∀ H : ℝ, 0 < H → ∀ η : ℝ, 0 < η →
+      ∀ τ : (n : ℕ) → Ω n → Time,
+      (∀ n, discreteNaturalStopping (Y n) H (τ n)) →
+      ∀ u : ℕ → Time, (∀ n, 0 < u n) →
+      Tendsto (fun n => (u n : ℝ)) atTop (𝓝 0) →
+        Tendsto (fun n => (P n : Measure (Ω n))
+          {w | η ≤ dist ((Y n w).1 (τ n w + u n)) ((Y n w).1 (τ n w))})
+          atTop (𝓝 0)) :
+    stoppingIncrementCondition P Y := by
+  apply stoppingIncrementCondition_of_stopping_increment P Y
+  intro H hH η hη τ hτ u hu
+  let v : ℕ → Time := fun n => if u n = 0 then 1 / (n + 1 : Time) else u n
+  have hvpos (n : ℕ) : 0 < v n := by
+    dsimp [v]
+    split
+    · positivity
+    · exact pos_iff_ne_zero.mpr ‹u n ≠ 0›
+  have hv : Tendsto (fun n => (v n : ℝ)) atTop (𝓝 0) := by
+    have hb : Tendsto (fun n : ℕ => (u n : ℝ) + 1 / ((n : ℝ) + 1)) atTop (𝓝 0) := by
+      simpa only [add_zero] using hu.add tendsto_one_div_add_atTop_nhds_zero_nat
+    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hb
+    · intro n
+      exact (v n).2
+    · intro n
+      dsimp [v]
+      split
+      · simp only [NNReal.coe_div, NNReal.coe_one, NNReal.coe_add, NNReal.coe_natCast]
+        linarith [(u n).2]
+      · have : 0 ≤ 1 / ((n : ℝ) + 1) := by positivity
+        linarith
+  have hlim := h H hH η hη τ hτ v hvpos hv
+  apply ENNReal.tendsto_nhds_zero.mpr
+  intro ε hε
+  filter_upwards [ENNReal.tendsto_nhds_zero.mp hlim ε hε] with n hn
+  by_cases hz : u n = 0
+  · have hempty : {w | η ≤ dist ((Y n w).1 (τ n w + u n)) ((Y n w).1 (τ n w))} = ∅ := by
+      ext w
+      simp only [Set.mem_ofPred_eq, hz, add_zero, dist_self, Set.mem_empty_iff_false,
+        iff_false, not_le]
+      exact hη
+    rw [hempty, measure_empty]
+    exact zero_le
+  · simpa only [v, if_neg hz] using hn
+
 /-- The uniform stopped-increment bound yields the sequential condition in
 Kallenberg (2002), Lemma 16.12. -/
 theorem tendsto_stopping_increment_of_stoppingIncrementCondition

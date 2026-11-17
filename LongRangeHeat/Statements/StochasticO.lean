@@ -44,12 +44,12 @@ theorem O_sums_countable (P : Measure Ω) [IsProbabilityMeasure P] {ι : Type*} 
   isOq_tsum (by omega) hX hA hAs h
 
 /-- **Lemma 2.3 (iv)** (`lem:O`, integrals). Let `q ∈ {1, 2}`, `T > 0`, `A > 0`, and let
-`(X(s))_{s ∈ [0, T]}` be a jointly measurable family of nonnegative random variables. If
-`X(s) ≤ 𝒪_q(A)` for every `s ∈ [0, T]`, then almost surely `s ↦ X(s)` is integrable on `[0, T]`,
-and `∫_0^T X(s) ds ≤ 𝒪_q(T A)`. -/
+`(X(s))_{s ∈ [0, T]}` be a family of nonnegative random variables that is jointly measurable on
+`[0, T] × Ω`. If `X(s) ≤ 𝒪_q(A)` for every `s ∈ [0, T]`, then almost surely `s ↦ X(s)` is
+integrable on `[0, T]`, and `∫_0^T X(s) ds ≤ 𝒪_q(T A)`. -/
 theorem O_integrals (P : Measure Ω) [IsProbabilityMeasure P] {q : ℕ} (hq : q = 1 ∨ q = 2)
-    {X : ℝ → Ω → ℝ} (hXm : Measurable (Function.uncurry X)) {T A : ℝ} (hT : 0 < T)
-    (hA : 0 < A) (hX : ∀ s ∈ Set.Icc 0 T, ∀ ω, 0 ≤ X s ω)
+    {X : ℝ → Ω → ℝ} {T A : ℝ} (hXm : Measurable fun p : Set.Icc 0 T × Ω => X p.1 p.2)
+    (hT : 0 < T) (hA : 0 < A) (hX : ∀ s ∈ Set.Icc 0 T, ∀ ω, 0 ≤ X s ω)
     (h : ∀ s ∈ Set.Icc 0 T, IsOq P q (X s) A) :
     (∀ᵐ ω ∂P, MeasureTheory.IntegrableOn (fun s => X s ω) (Set.Icc 0 T)) ∧
       IsOq P q (fun ω => ∫ s in (0)..T, X s ω) (T * A) :=

@@ -85,6 +85,59 @@ theorem weakNaturalStopping.add_pos {Y : Ω → D E} {H : ℝ} {τ : Ω → Time
       exact @MeasurableSet.empty Ω (naturalSigma Y t)
 
 
+
+/-- Adding a nonnegative deterministic time preserves weak optionality. -/
+theorem weakNaturalStopping.add_const {Y : Ω → D E} {H : ℝ} {τ : Ω → Time}
+    (hτ : weakNaturalStopping Y H τ) (c : Time) :
+    weakNaturalStopping Y (H + (c : ℝ)) (fun w => τ w + c) := by
+  constructor
+  · intro w
+    change (τ w : ℝ) + (c : ℝ) ≤ H + (c : ℝ)
+    linarith [hτ.1 w]
+  · intro t
+    by_cases hct : c < t
+    · have heq : {w | τ w + c < t} = {w | τ w < t - c} := by
+        ext w
+        simp only [mem_ofPred_eq]
+        have hc : c ≤ t := hct.le
+        have hcoe : ((t - c : Time) : ℝ) = (t : ℝ) - c := NNReal.coe_sub hc
+        constructor
+        · intro h
+          have h' : (τ w : ℝ) + (c : ℝ) < t := by exact_mod_cast h
+          apply NNReal.coe_lt_coe.mp
+          rw [hcoe]
+          linarith
+        · intro h
+          have h' : (τ w : ℝ) < (t : ℝ) - c := by
+            rw [← hcoe]
+            exact NNReal.coe_lt_coe.mpr h
+          apply NNReal.coe_lt_coe.mp
+          change (τ w : ℝ) + (c : ℝ) < (t : ℝ)
+          linarith
+      rw [heq]
+      exact naturalSigma_mono Y (tsub_le_self) _ (hτ.2 (t - c))
+    · have heq : {w | τ w + c < t} = ∅ := by
+        ext w
+        simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_lt]
+        exact (le_of_not_gt hct).trans (le_add_of_nonneg_left zero_le)
+      rw [heq]
+      exact @MeasurableSet.empty Ω (naturalSigma Y t)
+
+/-- The minimum of two weakly optional times is weakly optional, with the
+bound of its first argument. -/
+theorem weakNaturalStopping.min_left {Y : Ω → D E} {H K : ℝ} {σ τ : Ω → Time}
+    (hσ : weakNaturalStopping Y H σ) (hτ : weakNaturalStopping Y K τ) :
+    weakNaturalStopping Y H (fun w => min (σ w) (τ w)) := by
+  constructor
+  · intro w
+    exact (NNReal.coe_le_coe.mpr (min_le_left (σ w) (τ w))).trans (hσ.1 w)
+  · intro t
+    have heq : {w | min (σ w) (τ w) < t} = {w | σ w < t} ∪ {w | τ w < t} := by
+      ext w
+      simp only [mem_ofPred_eq, mem_union, min_lt_iff]
+    rw [heq]
+    exact (hσ.2 t).union (hτ.2 t)
+
 variable [TopologicalSpace.SeparableSpace E] [BorelSpace E]
 
 omit [TopologicalSpace.SeparableSpace E] in

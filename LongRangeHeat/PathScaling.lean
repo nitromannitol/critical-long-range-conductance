@@ -1,5 +1,6 @@
 import LongRangeHeat.Annealed
 import LongRange.Support.Prob.Cadlag.HalfLine.Separable
+import LongRange.Support.Prob.Cadlag.HalfLine.RestrictionTight
 
 /-!
 # Space and time changes of paths
@@ -11,6 +12,7 @@ càdlàg path space.
 namespace LongRangeHeat
 
 open LatticeProb.Cadlag.HalfLine TopologicalSpace MeasureTheory
+open scoped NNReal
 
 /-- Apply a continuous state map after an increasing time change. -/
 def transformPath {E F : Type*} [MetricSpace E] [MetricSpace F]
@@ -37,5 +39,24 @@ theorem measurable_transformPath {E F : Type*} [MetricSpace E] [MetricSpace F]
   apply measurable_iff_measurable_eval.mpr
   intro t
   exact hf.measurable.comp (measurable_eval (l t))
+
+/-- Scale the values and the time parameter of a Euclidean càdlàg path. -/
+noncomputable def scaledPath {d : ℕ} (b : ℝ) (c : {c : ℝ≥0 // 0 < c}) (x : PathSpace d) : PathSpace d :=
+  transformPath (fun y => b • y) (continuous_const_smul b) (dilation c.1 c.2) x
+
+/-- Space and time scaling is jointly measurable in the scalars and the path. -/
+theorem measurable_scaledPath {d : ℕ} :
+    Measurable (fun p : (ℝ × {c : ℝ≥0 // 0 < c}) × PathSpace d =>
+      scaledPath p.1.1 p.1.2 p.2) := by
+  apply measurable_iff_measurable_eval.mpr
+  intro t
+  change Measurable (fun p : (ℝ × {c : ℝ≥0 // 0 < c}) × PathSpace d =>
+    p.1.1 • p.2.1 (p.1.2.1 * t))
+  apply Measurable.smul (measurable_fst.comp measurable_fst)
+  have heval : Measurable (fun p : Time × PathSpace d => p.2.1 p.1) :=
+    measurable_eval_uncurry
+  exact heval.comp
+    (((measurable_subtype_coe.comp (measurable_snd.comp measurable_fst)).mul_const t).prodMk
+      measurable_snd)
 
 end LongRangeHeat

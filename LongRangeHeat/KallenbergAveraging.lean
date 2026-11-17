@@ -1,4 +1,5 @@
 import LongRange.Support.Prob.Cadlag.HalfLine.TerminalJump
+import LongRange.Support.Prob.Cadlag.HalfLine.RestrictionTight
 
 /-!
 # Averaging bounded path increments
@@ -65,5 +66,100 @@ theorem averaged_boundedDistance_le (x : D E) (σ τ : Time) {δ : ℝ} (hδ : 0
         ∫ h in (0 : ℝ)..δ, g ((τ : ℝ) + h) := by
       simpa only [intervalIntegral.integral_add hshiftf hshiftg] using htri
     _ ≤ _ := add_le_add hcompare le_rfl
+
+
+/-- Integrating a uniform forward-increment bound over the time window. -/
+theorem integral_averaged_stopped_increment_le
+    {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω) [IsProbabilityMeasure P]
+    (Y : Ω → D E) (hY : Measurable Y) (τ : Ω → Time) (hτ : Measurable τ)
+    {δ c : ℝ} (hδ : 0 ≤ δ)
+    (hb : ∀ h : ℝ, 0 < h → h ≤ δ →
+      ∫ w, boundedDistance ((Y w).1 (τ w)) ((Y w).1 (τ w + h.toNNReal)) ∂P ≤ c) :
+    Integrable (fun w => ∫ h in (0 : ℝ)..δ,
+      boundedDistance ((Y w).1 (τ w)) ((Y w).1 (τ w + h.toNNReal))) P ∧
+    (∫ w, (∫ h in (0 : ℝ)..δ,
+      boundedDistance ((Y w).1 (τ w)) ((Y w).1 (τ w + h.toNNReal))) ∂P) ≤ δ * c := by
+  let ρ : Measure ℝ := volume.restrict (Ioc 0 δ)
+  have : IsFiniteMeasure ρ := isFiniteMeasure_restrict.mpr measure_Ioc_lt_top.ne
+  let F : Ω × ℝ → ℝ := fun z =>
+    boundedDistance ((Y z.1).1 (τ z.1)) ((Y z.1).1 (τ z.1 + z.2.toNNReal))
+  have hfirst : Measurable (fun z : Ω × ℝ => (Y z.1).1 (τ z.1)) := by
+    exact measurable_eval_uncurry.comp
+      ((hτ.comp measurable_fst).prodMk (hY.comp measurable_fst))
+  have hsecond : Measurable (fun z : Ω × ℝ =>
+      (Y z.1).1 (τ z.1 + z.2.toNNReal)) := by
+    exact measurable_eval_uncurry.comp
+      (((hτ.comp measurable_fst).add
+        (continuous_real_toNNReal.measurable.comp measurable_snd)).prodMk (hY.comp measurable_fst))
+  have hF : Measurable F := continuous_boundedDistance.measurable.comp (hfirst.prodMk hsecond)
+  have hFi : Integrable F (P.prod ρ) :=
+    Integrable.of_bound hF.aestronglyMeasurable 1
+      (ae_of_all _ fun z => norm_boundedDistance_le_one _ _)
+  have hmass : ρ.real univ = δ := by
+    simp only [ρ, Measure.real, Measure.restrict_apply_univ, Real.volume_Ioc, sub_zero,
+      ENNReal.toReal_ofReal hδ]
+  have hmem : ∀ᵐ t ∂ρ, t ∈ Ioc 0 δ := ae_restrict_mem measurableSet_Ioc
+  constructor
+  · simpa only [intervalIntegral.integral_of_le hδ] using hFi.integral_prod_left
+  · calc
+      _ = ∫ w, ∫ h, F (w, h) ∂ρ ∂P := by
+        simp only [intervalIntegral.integral_of_le hδ, F, ρ]
+      _ = ∫ h, ∫ w, F (w, h) ∂P ∂ρ := integral_integral_swap hFi
+      _ ≤ ∫ _h, c ∂ρ := by
+        apply integral_mono_ae hFi.integral_prod_right (integrable_const c)
+        filter_upwards [hmem] with t ht
+        exact hb t ht.1 ht.2
+      _ = δ * c := by rw [integral_const, smul_eq_mul, hmass]
+
+
+/-- Two nearby random times are controlled by forward increments at each time. -/
+theorem integral_boundedDistance_le_three_mul
+    {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω) [IsProbabilityMeasure P]
+    (Y : Ω → D E) (hY : Measurable Y) (σ τ : Ω → Time)
+    (hσ : Measurable σ) (hτ : Measurable τ) {δ c : ℝ} (hδ : 0 < δ)
+    (hστ : ∀ w, σ w ≤ τ w) (hnear : ∀ w, (τ w : ℝ) ≤ (σ w : ℝ) + δ)
+    (hσbound : ∀ h : ℝ, 0 < h → h ≤ 2 * δ →
+      ∫ w, boundedDistance ((Y w).1 (σ w)) ((Y w).1 (σ w + h.toNNReal)) ∂P ≤ c)
+    (hτbound : ∀ h : ℝ, 0 < h → h ≤ δ →
+      ∫ w, boundedDistance ((Y w).1 (τ w)) ((Y w).1 (τ w + h.toNNReal)) ∂P ≤ c) :
+    ∫ w, boundedDistance ((Y w).1 (σ w)) ((Y w).1 (τ w)) ∂P ≤ 3 * c := by
+  have hA := integral_averaged_stopped_increment_le P Y hY σ hσ (by linarith) hσbound
+  have hB := integral_averaged_stopped_increment_le P Y hY τ hτ hδ.le hτbound
+  have hxs : Measurable (fun w => (Y w).1 (σ w)) :=
+    measurable_eval_uncurry.comp (hσ.prodMk hY)
+  have hxt : Measurable (fun w => (Y w).1 (τ w)) :=
+    measurable_eval_uncurry.comp (hτ.prodMk hY)
+  have hC : Integrable (fun w => boundedDistance ((Y w).1 (σ w)) ((Y w).1 (τ w))) P :=
+    Integrable.of_bound (continuous_boundedDistance.measurable.comp (hxs.prodMk hxt)).aestronglyMeasurable
+      1 (Filter.Eventually.of_forall fun w => norm_boundedDistance_le_one _ _)
+  have hconv (v : Ω → Time) (w : Ω) {b : ℝ} (hb : 0 ≤ b) :
+      (∫ h in (0 : ℝ)..b, boundedDistance ((Y w).1 (v w))
+        ((Y w).1 ((v w : ℝ) + h).toNNReal)) =
+      ∫ h in (0 : ℝ)..b, boundedDistance ((Y w).1 (v w))
+        ((Y w).1 (v w + h.toNNReal)) := by
+    apply intervalIntegral.integral_congr
+    intro h hh
+    have hh0 : 0 ≤ h := (show h ∈ Icc (0 : ℝ) b by simpa only [uIcc_of_le hb] using hh).1
+    have heq0 : ((v w : ℝ)).toNNReal = v w := Real.toNNReal_coe
+    have heq : ((v w : ℝ) + h).toNNReal = v w + h.toNNReal :=
+      (Real.toNNReal_add (v w).2 hh0).trans (congrArg (fun t : Time => t + h.toNNReal) heq0)
+    simp only [heq]
+  have hpoint (w : Ω) :
+      δ * boundedDistance ((Y w).1 (σ w)) ((Y w).1 (τ w)) ≤
+        (∫ h in (0 : ℝ)..2 * δ, boundedDistance ((Y w).1 (σ w))
+          ((Y w).1 (σ w + h.toNNReal))) +
+        ∫ h in (0 : ℝ)..δ, boundedDistance ((Y w).1 (τ w))
+          ((Y w).1 (τ w + h.toNNReal)) := by
+    have hh := averaged_boundedDistance_le (Y w) (σ w) (τ w) hδ.le (hστ w) (hnear w)
+    rw [hconv σ w (by linarith), hconv τ w hδ.le] at hh
+    exact hh
+  have hint := integral_mono (hC.const_mul δ) (hA.1.add hB.1) hpoint
+  have hint' : δ * (∫ w, boundedDistance ((Y w).1 (σ w)) ((Y w).1 (τ w)) ∂P) ≤
+      (∫ w, (∫ h in (0 : ℝ)..2 * δ, boundedDistance ((Y w).1 (σ w))
+        ((Y w).1 (σ w + h.toNNReal))) ∂P) +
+      (∫ w, (∫ h in (0 : ℝ)..δ, boundedDistance ((Y w).1 (τ w))
+        ((Y w).1 (τ w + h.toNNReal))) ∂P) := by
+    simpa only [Pi.add_apply, integral_const_mul, integral_add hA.1 hB.1] using hint
+  nlinarith [hA.2, hB.2]
 
 end LatticeProb.Cadlag.HalfLine

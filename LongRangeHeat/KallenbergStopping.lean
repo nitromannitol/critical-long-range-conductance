@@ -80,6 +80,74 @@ theorem exists_pos_eventually_uniform_stopping_increment
   intro n hn τ hτ u hu
   exact hN n hn (τ, u) ⟨hτ, hu⟩
 
+/-- The full-sequence stopping-increment condition remains valid on subsequences. -/
+theorem tendsto_subsequence_stopping_increment
+    (P : ∀ n, ProbabilityMeasure (Ω n)) (Y : ∀ n, Ω n → D E)
+    {H η : ℝ} (hH : 0 < H)
+    (h : ∀ τ : (n : ℕ) → Ω n → Time,
+      (∀ n, discreteNaturalStopping (Y n) H (τ n)) →
+      ∀ u : ℕ → Time, Tendsto (fun n => (u n : ℝ)) atTop (𝓝 0) →
+        Tendsto (fun n => (P n : Measure (Ω n))
+          {w | η ≤ dist ((Y n w).1 (τ n w + u n)) ((Y n w).1 (τ n w))})
+          atTop (𝓝 0))
+    (φ : ℕ → ℕ) (hφ : StrictMono φ)
+    (τ : (k : ℕ) → Ω (φ k) → Time)
+    (hτ : ∀ k, discreteNaturalStopping (Y (φ k)) H (τ k))
+    (u : ℕ → Time) (hu : Tendsto (fun k => (u k : ℝ)) atTop (𝓝 0)) :
+    Tendsto (fun k => (P (φ k) : Measure (Ω (φ k)))
+      {w | η ≤ dist ((Y (φ k) w).1 (τ k w + u k)) ((Y (φ k) w).1 (τ k w))})
+      atTop (𝓝 0) := by
+  classical
+  let τ' : (n : ℕ) → Ω n → Time := fun n =>
+    if hn : n ∈ Set.range φ then hn.choose_spec ▸ τ hn.choose else fun _ => 0
+  let u' : ℕ → Time := fun n =>
+    if hn : n ∈ Set.range φ then u hn.choose else 0
+  have hcast {i j : ℕ} (e : i = j) (t : Ω i → Time)
+      (ht : discreteNaturalStopping (Y i) H t) :
+      discreteNaturalStopping (Y j) H (e ▸ t) := by
+    cases e
+    exact ht
+  have htransport (a b : ℕ) (e : φ a = φ b) (hab : a = b) :
+      (e ▸ τ a) = τ b := by
+    subst b
+    rfl
+  have hτ' (n : ℕ) : discreteNaturalStopping (Y n) H (τ' n) := by
+    dsimp [τ']
+    split
+    next hn =>
+      exact hcast hn.choose_spec _ (hτ hn.choose)
+    next => exact discreteNaturalStopping_zero _ hH.le
+  have hτ'φ (k : ℕ) : τ' (φ k) = τ k := by
+    dsimp [τ']
+    split
+    next hn =>
+      have heq : hn.choose = k := hφ.injective hn.choose_spec
+      exact htransport _ _ hn.choose_spec heq
+    next hn => exact (hn ⟨k, rfl⟩).elim
+  have hu'φ (k : ℕ) : u' (φ k) = u k := by
+    dsimp [u']
+    split
+    next hn => rw [hφ.injective hn.choose_spec]
+    next hn => exact (hn ⟨k, rfl⟩).elim
+  have hu' : Tendsto (fun n => (u' n : ℝ)) atTop (𝓝 0) := by
+    rw [Metric.tendsto_atTop]
+    intro ε hε
+    obtain ⟨K, hK⟩ := Metric.tendsto_atTop.mp hu ε hε
+    refine ⟨φ K, fun n hn => ?_⟩
+    dsimp [u']
+    split
+    next hn' =>
+      apply hK
+      apply hφ.le_iff_le.mp
+      rw [hn'.choose_spec]
+      exact hn
+    next => simpa using hε
+  have hh := (h τ' hτ' u' hu').comp hφ.tendsto_atTop
+  change Tendsto (fun k => (P (φ k) : Measure (Ω (φ k)))
+    {w | η ≤ dist ((Y (φ k) w).1 (τ' (φ k) w + u' (φ k)))
+      ((Y (φ k) w).1 (τ' (φ k) w))}) atTop (𝓝 0) at hh
+  simpa only [hτ'φ, hu'φ] using hh
+
 /-- Sequential stopped-increment convergence along every subsequence implies the
 uniform stopping-increment condition. -/
 theorem stoppingIncrementCondition_of_subsequence_stopping_increment
@@ -103,6 +171,22 @@ theorem stoppingIncrementCondition_of_subsequence_stopping_increment
   filter_upwards [eventually_ge_atTop N] with n hn
   refine iSup_le fun u => iSup_le fun hu => ?_
   exact (hN n hn (τ n) (hτ n) u (hu.trans hd.le)).le
+
+/-- Convergence of stopped increments along every admissible sequence implies the
+uniform stopping-increment condition. -/
+theorem stoppingIncrementCondition_of_stopping_increment
+    (P : ∀ n, ProbabilityMeasure (Ω n)) (Y : ∀ n, Ω n → D E)
+    (h : ∀ H : ℝ, 0 < H → ∀ η : ℝ, 0 < η →
+      ∀ τ : (n : ℕ) → Ω n → Time,
+      (∀ n, discreteNaturalStopping (Y n) H (τ n)) →
+      ∀ u : ℕ → Time, Tendsto (fun n => (u n : ℝ)) atTop (𝓝 0) →
+        Tendsto (fun n => (P n : Measure (Ω n))
+          {w | η ≤ dist ((Y n w).1 (τ n w + u n)) ((Y n w).1 (τ n w))})
+          atTop (𝓝 0)) :
+    stoppingIncrementCondition P Y := by
+  apply stoppingIncrementCondition_of_subsequence_stopping_increment P Y
+  intro H hH η hη φ hφ τ hτ u hu
+  exact tendsto_subsequence_stopping_increment P Y hH (h H hH η hη) φ hφ τ hτ u hu
 
 /-- The uniform stopped-increment bound yields the sequential condition in
 Kallenberg (2002), Lemma 16.12. -/

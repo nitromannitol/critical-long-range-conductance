@@ -14,19 +14,20 @@ namespace LatticeProb.Graph.LongRangeKernel
 
 /-- The subordinate lattice kernel is dominated by any kernel with a critical lower bound. -/
 theorem weightedLattice_subordinate_le_of_lower {d : ℕ} (hd : 0 < d)
-    (C : ℝ) (hC : 0 < C) (k : Site d → Site d → ℝ≥0∞)
-    (hk : ∀ x, ∑' y, k x y = 1)
-    (hlower : ∀ x y, ENNReal.ofReal (C⁻¹ /
-      (latticeVolumeProfile d ((weightedLattice d hd).graph.dist x y : ℝ) *
-        quadraticScale ((weightedLattice d hd).graph.dist x y : ℝ))) ≤ k x y) :
-    ∃ D : ℝ, 0 < D ∧ ∀ x y,
+    (C : ℝ) (hC : 0 < C) :
+    ∃ D : ℝ, 0 < D ∧ ∀ (k : Site d → Site d → ℝ≥0∞),
+      (∀ x, ∑' y, k x y = 1) →
+      (∀ x y, ENNReal.ofReal (C⁻¹ /
+        (latticeVolumeProfile d ((weightedLattice d hd).graph.dist x y : ℝ) *
+          quadraticScale ((weightedLattice d hd).graph.dist x y : ℝ))) ≤ k x y) →
+      ∀ x y,
       (criticalSubordinateDensity (weightedLattice d hd).mass
         (averagedDensity (weightedLattice d hd).mass
           (weightedLattice d hd).referenceDensity) x y).toReal ≤ D * (k x y).toReal := by
   obtain ⟨B, hB, hupper⟩ := weightedLattice_criticalSubordinate_volume_profile_upper hd
   let D : ℝ := (B.toReal + 1) * C
   refine ⟨D, by dsimp [D]; positivity, ?_⟩
-  intro x y
+  intro k hk hlower x y
   let r : ℝ := ((weightedLattice d hd).graph.dist x y : ℝ)
   let v : ℝ := latticeVolumeProfile d r * quadraticScale r
   have hv : 0 < v := by dsimp [v, latticeVolumeProfile, quadraticScale, r]; positivity

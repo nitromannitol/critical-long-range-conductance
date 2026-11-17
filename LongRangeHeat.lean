@@ -35,3 +35,5 @@ import LongRangeHeat.FddAnnealed
 import LongRangeHeat.FddLimit
 import LongRangeHeat.FddAlgebra
 import LongRangeHeat.FddWeak
+import LongRangeHeat.ScalingComparison
+import LongRangeHeat.Statements.Scaling

@@ -133,10 +133,96 @@ theorem symmetric_tsum_density (w : ι → ℝ≥0∞) (k : ι → X → X → �
   intro i
   rw [hk]
 
+/-- Convolution of densities with respect to the vertex masses. -/
+noncomputable def densityComp (m : X → ℝ≥0) (a b : X → X → ℝ≥0∞)
+    (x y : X) : ℝ≥0∞ := ∑' z, a x z * b z y * (m z : ℝ≥0∞)
+
+/-- Weighted density convolution is associative. -/
+theorem densityComp_assoc (m : X → ℝ≥0) (a b c : X → X → ℝ≥0∞)
+    (x y : X) : densityComp m (densityComp m a b) c x y =
+      densityComp m a (densityComp m b c) x y := by
+  simp only [densityComp, ← ENNReal.tsum_mul_right, ← ENNReal.tsum_mul_left]
+  calc
+    _ = ∑' z, ∑' w, a x w * (b w z * c z y * (m z : ℝ≥0∞)) *
+        (m w : ℝ≥0∞) := by
+      apply tsum_congr; intro z
+      apply tsum_congr; intro w
+      ac_rfl
+    _ = ∑' w, ∑' z, a x w * (b w z * c z y * (m z : ℝ≥0∞)) *
+        (m w : ℝ≥0∞) := ENNReal.tsum_comm
+    _ = _ := by
+      apply tsum_congr; intro w
+      apply tsum_congr; intro z
+      ac_rfl
+
+/-- The identity density is a left unit when the masses are positive. -/
+theorem densityComp_identity_left (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
+    (k : X → X → ℝ≥0∞) (x y : X) : densityComp m (identityDensity m) k x y = k x y := by
+  classical
+  simp only [densityComp, identityDensity, ite_mul, zero_mul, tsum_ite_eq']
+  have h : (m x : ℝ≥0∞)⁻¹ * (m x : ℝ≥0∞) = 1 :=
+    ENNReal.inv_mul_cancel (by exact_mod_cast hm x) ENNReal.coe_ne_top
+  calc
+    (m x : ℝ≥0∞)⁻¹ * k x y * (m x : ℝ≥0∞) =
+      ((m x : ℝ≥0∞)⁻¹ * (m x : ℝ≥0∞)) * k x y := by ac_rfl
+    _ = k x y := by rw [h, one_mul]
+
+/-- The identity density is a right unit when the masses are positive. -/
+theorem densityComp_identity_right (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
+    (k : X → X → ℝ≥0∞) (x y : X) : densityComp m k (identityDensity m) x y = k x y := by
+  classical
+  simp only [densityComp, identityDensity, mul_ite, mul_zero, ite_mul, zero_mul, tsum_ite_eq]
+  rw [mul_assoc, ENNReal.inv_mul_cancel (by exact_mod_cast hm y) ENNReal.coe_ne_top, mul_one]
+
+/-- Density powers form a semigroup under weighted convolution. -/
+theorem densityPower_add (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
+    (k : X → X → ℝ≥0∞) (a b : ℕ) (x y : X) :
+    densityPower m k (a + b) x y = densityComp m (densityPower m k a) (densityPower m k b) x y := by
+  induction a generalizing x y with
+  | zero => simpa [densityPower] using (densityComp_identity_left m hm (densityPower m k b) x y).symm
+  | succ a ih =>
+    rw [show a + 1 + b = (a + b) + 1 by omega]
+    change densityComp m k (densityPower m k (a + b)) x y = _
+    have heq : densityPower m k (a + b) = densityComp m (densityPower m k a) (densityPower m k b) := by
+      funext x y; exact ih x y
+    rw [heq, ← densityComp_assoc]
+    rfl
+
+/-- Density powers preserve symmetry. -/
+theorem densityPower_symmetric (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
+    (k : X → X → ℝ≥0∞) (hk : ∀ x y, k x y = k y x) (n : ℕ) (x y : X) :
+    densityPower m k n x y = densityPower m k n y x := by
+  classical
+  induction n generalizing x y with
+  | zero =>
+    by_cases h : x = y
+    · subst y; rfl
+    · simp [densityPower, identityDensity, h, Ne.symm h]
+  | succ n ih =>
+    have hone : densityPower m k 1 = k := by
+      funext x y
+      exact densityComp_identity_right m hm k x y
+    calc
+      densityPower m k (n + 1) x y = densityComp m (densityPower m k n) k x y := by
+        rw [densityPower_add m hm k, hone]
+      _ = densityPower m k (n + 1) y x := by
+        change (∑' z, densityPower m k n x z * k z y * (m z : ℝ≥0∞)) =
+          ∑' z, k y z * densityPower m k n z x * (m z : ℝ≥0∞)
+        apply tsum_congr; intro z
+        rw [ih x z, hk z y, mul_comm (densityPower m k n z x) (k y z)]
+
 /-- The quadratic-scale subordination of a density, as in equation (29). -/
 noncomputable def criticalSubordinateDensity (m : X → ℝ≥0) (q : X → X → ℝ≥0∞)
     (x y : X) : ℝ≥0∞ :=
   ∑' n, criticalSubordinationWeight n * densityPower m q (2 * (n + 1) ^ 2) x y
+
+/-- The quadratic-scale subordinate of a symmetric density is symmetric. -/
+theorem criticalSubordinateDensity_symmetric (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
+    (q : X → X → ℝ≥0∞) (hq : ∀ x y, q x y = q y x) (x y : X) :
+    criticalSubordinateDensity m q x y = criticalSubordinateDensity m q y x := by
+  exact symmetric_tsum_density criticalSubordinationWeight
+    (fun n => densityPower m q (2 * (n + 1) ^ 2))
+    (fun n => densityPower_symmetric m hm q hq _) x y
 
 /-- The quadratic-scale subordinated density is Markov. -/
 theorem criticalSubordinateDensity_isMarkov (m : X → ℝ≥0)
@@ -161,6 +247,12 @@ theorem criticalSubordinateDensity_energy (m : X → ℝ≥0) (q : X → X → �
 noncomputable def averagedDensity (m : X → ℝ≥0) (p : X → X → ℝ≥0∞)
     (x y : X) : ℝ≥0∞ :=
   (2 : ℝ≥0∞)⁻¹ * (p x y + densityPower m p 2 x y)
+
+/-- Averaging a symmetric density with its two-step power preserves symmetry. -/
+theorem averagedDensity_symmetric (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
+    (p : X → X → ℝ≥0∞) (hp : ∀ x y, p x y = p y x) (x y : X) :
+    averagedDensity m p x y = averagedDensity m p y x := by
+  simp only [averagedDensity, hp x y, densityPower_symmetric m hm p hp 2 x y]
 
 /-- Averaging a Markov density with its two-step power preserves normalization. -/
 theorem averagedDensity_isMarkov (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)

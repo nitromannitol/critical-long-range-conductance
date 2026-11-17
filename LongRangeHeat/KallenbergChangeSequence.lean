@@ -78,6 +78,39 @@ theorem exists_tendstoUniformlyOn_changePrefix (l : ℕ → Lambda) {C : ℝ} (h
         mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_right ht' hnonneg)
           (Real.exp_pos C).le
 
+/-- Finite total logarithmic distortion implies local uniform convergence
+of the successive compositions. -/
+theorem exists_tendstoUniformlyOn_changePrefix_of_tsum_ne_top (l : ℕ → Lambda)
+    (hs : (∑' n, gamma (l n).1) ≠ ∞) :
+    ∃ L : Time → Time, ∀ T : Time,
+      TendstoUniformlyOn (fun n => (changePrefix l n).1) L atTop (Iic T) := by
+  let C : ℝ := (∑' n, gamma (l n).1).toReal
+  have hC : 0 ≤ C := ENNReal.toReal_nonneg
+  have hbound : ∀ n, ∑ k ∈ Finset.range n, gamma (l k).1 ≤ ENNReal.ofReal C := by
+    intro n
+    rw [show ENNReal.ofReal C = ∑' n, gamma (l n).1 by
+      exact ENNReal.ofReal_toReal hs]
+    exact ENNReal.sum_le_tsum _
+  have hg (n : ℕ) : (gamma (l n).1).toReal ≤ C := by
+    apply ENNReal.toReal_mono hs
+    exact ENNReal.le_tsum (f := fun k => gamma (l k).1) n
+  have hexp : Summable (fun n => Real.exp (gamma (l n).1).toReal - 1) := by
+    apply ((ENNReal.summable_toReal hs).mul_left (Real.exp C)).of_nonneg_of_le
+    · intro n
+      have hx : 0 ≤ (gamma (l n).1).toReal := ENNReal.toReal_nonneg
+      linarith [Real.add_one_le_exp (gamma (l n).1).toReal]
+    · intro n
+      have hx : 0 ≤ (gamma (l n).1).toReal := ENNReal.toReal_nonneg
+      have he : Real.exp (-(gamma (l n).1).toReal) ≥ 1 - (gamma (l n).1).toReal := by
+        linarith [Real.add_one_le_exp (-(gamma (l n).1).toReal)]
+      have hp := mul_le_mul_of_nonneg_left he (Real.exp_pos (gamma (l n).1).toReal).le
+      rw [← Real.exp_add, add_neg_cancel, Real.exp_zero] at hp
+      have hh : Real.exp (gamma (l n).1).toReal - 1 ≤
+          Real.exp (gamma (l n).1).toReal * (gamma (l n).1).toReal := by
+        nlinarith [hp]
+      exact hh.trans (mul_le_mul_of_nonneg_right (Real.exp_le_exp.mpr (hg n)) hx)
+  exact exists_tendstoUniformlyOn_changePrefix l hC hbound hexp
+
 end
 
 end LatticeProb.Cadlag.HalfLine

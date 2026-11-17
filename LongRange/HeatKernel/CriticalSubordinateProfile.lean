@@ -84,4 +84,18 @@ theorem weightedLattice_criticalSubordinate_jump_lower {d : ℕ} (hd : 0 < d) :
   simpa only [Nat.cast_add, Nat.cast_one, add_comm] using
     h x y ((weightedLattice d hd).graph.dist x y + 1) (by omega) (by omega)
 
+/-- The subordinate lower bound in volume-profile and scale form. -/
+theorem weightedLattice_criticalSubordinate_volume_profile_lower {d : ℕ} (hd : 0 < d) :
+    ∃ A : ℝ≥0∞, 0 < A ∧ ∀ x y,
+      A * ENNReal.ofReal
+        (1 / (latticeVolumeProfile d ((weightedLattice d hd).graph.dist x y : ℝ) *
+          quadraticScale ((weightedLattice d hd).graph.dist x y : ℝ))) ≤
+        criticalSubordinateDensity (weightedLattice d hd).mass
+          (averagedDensity (weightedLattice d hd).mass
+            (weightedLattice d hd).referenceDensity) x y := by
+  obtain ⟨A, hA, h⟩ := weightedLattice_criticalSubordinate_jump_lower hd
+  refine ⟨A, hA, ?_⟩
+  intro x y
+  simpa only [latticeVolumeProfile, quadraticScale, pow_add] using h x y
+
 end LatticeProb.Graph.LongRangeKernel

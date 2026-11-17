@@ -139,5 +139,31 @@ theorem heat_scaling_error_comparison_of_compact_support (hd : 1 ≤ d) {ε lam 
   exact heat_scaling_error_comparison hd hε a f ht
     (memL2_sub hu (hc (4 * t) (by positivity))) (memL2_sub hu (hc _ hk))
 
+/-- The continuum mismatch is bounded by the two errors maximized over a time interval. -/
+theorem heat_scaling_error_le_sup (hd : 1 ≤ d) {ε lam T : ℝ}
+    (hε : ε ∈ Set.Ioo (0 : ℝ) (1 / 2)) (hlam : 0 < lam)
+    {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
+    {f : (Fin d → ℝ) → ℝ} (hf : Continuous f) (hfc : HasCompactSupport f)
+    {t : ℝ} (ht : 0 ≤ t) (hT : 4 * t ≤ T)
+    (hB : BddAbove ((fun s => latticeNorm ε (fun q => latticeHeat ε a f s q -
+      continuumHeat f s (physical ε q))) '' Set.Icc 0 T))
+    (hBh : BddAbove ((fun s => latticeNorm (ε / 2)
+      (fun q => latticeHeat (ε / 2) a (fun x => f (2 • x)) s q -
+        continuumHeat (fun x => f (2 • x)) s (physical (ε / 2) q))) '' Set.Icc 0 T)) :
+    Real.sqrt ((2 : ℝ)⁻¹ ^ d) *
+        latticeNorm ε (fun q => continuumHeat f (4 * t) (physical ε q) -
+          continuumHeat f ((4 * kappa d ε / kappa d (ε / 2)) * t) (physical ε q)) ≤
+      sSup ((fun s => latticeNorm (ε / 2)
+        (fun q => latticeHeat (ε / 2) a (fun x => f (2 • x)) s q -
+          continuumHeat (fun x => f (2 • x)) s (physical (ε / 2) q))) '' Set.Icc 0 T) +
+      Real.sqrt ((2 : ℝ)⁻¹ ^ d) * sSup ((fun s => latticeNorm ε
+        (fun q => latticeHeat ε a f s q - continuumHeat f s (physical ε q))) '' Set.Icc 0 T) := by
+  have h1 := heat_scaling_error_comparison_of_compact_support hd hε hlam ha hf hfc ht
+  have htT : t ∈ Set.Icc (0 : ℝ) T := ⟨ht, by linarith⟩
+  have hsT := scaled_heat_time_mem hd hε ht hT
+  have h2 := le_csSup hBh ⟨t, htT, rfl⟩
+  have h3 := le_csSup hB ⟨_, hsT, rfl⟩
+  exact h1.trans (add_le_add h2 (mul_le_mul_of_nonneg_left h3 (Real.sqrt_nonneg _)))
+
 end
 end LongRangeHeat

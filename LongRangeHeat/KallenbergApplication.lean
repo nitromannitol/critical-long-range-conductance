@@ -1,7 +1,7 @@
 import LongRangeHeat.KallenbergStopping
 import LongRangeHeat.Statements.Aldous
 import LongRangeHeat.KallenbergWeakStopping
-import LongRangeHeat.KallenbergModulusProbability
+import LongRangeHeat.KallenbergFixedLaw
 
 /-!
 # Stopping increments of the annealed walks
@@ -137,5 +137,27 @@ theorem annealed_exists_oscillation_partition
   intro H hH η hη τ hτ u hupos hu
   exact annealed_tendsto_optional_increment hMSC hNash hDavies hd P a hP ε hε hε0
     hH hη τ hτ u hupos hu
+
+
+/-- Proposition 4.2 supplies oscillation partitions uniformly over the
+entire sequence of annealed walk laws. -/
+theorem annealed_exists_uniform_oscillation_partition
+    (hMSC : MuruganSaloffCosteUniform)
+    (hNash : ChenKimKumagaiWangNash)
+    (hDavies : ChenKimKumagaiWangDavies)
+    {d : ℕ} (hd : 1 ≤ d) {lam : ℝ}
+    {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ)
+    (hP : ConductanceLaw P lam a)
+    (ε : ℕ → ℝ) (hε : ∀ n, ε n ∈ Set.Ioo (0 : ℝ) (1 / 2))
+    (hε0 : Tendsto ε atTop (𝓝 0)) (t : Time) (ht : 0 < t)
+    {η : ℝ} (hη : 0 < η) {p : ℝ≥0∞} (hp : 0 < p) :
+    ∃ δ : ℝ, 0 < δ ∧ ∀ n,
+      (annealedLaw hd P a hP (hε n).1 : Measure (PathSpace d))
+        {X | ¬ HasOscillationPartition X t δ η} < p := by
+  apply exists_pos_uniform_oscillation_partition_of_optional_increment
+    (fun n => annealedLaw hd P a hP (hε n).1) (fun _ => id) (fun _ => measurable_id) t ht ?_ hη hp
+  intro H hH ζ hζ τ hτ u hupos hu
+  exact annealed_tendsto_optional_increment hMSC hNash hDavies hd P a hP ε hε hε0
+    hH hζ τ hτ u hupos hu
 
 end LongRangeHeat

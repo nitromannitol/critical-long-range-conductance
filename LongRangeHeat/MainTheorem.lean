@@ -84,7 +84,9 @@ theorem isOq_sqrt_integral {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) [I
   have hm' : Measurable (Function.uncurry fun s r => H s r ^ 2) := hm.pow_const 2
   have hs : ∀ s ∈ Set.Icc 0 T, IsOq P 1 (fun r => H s r ^ 2) (C ^ 2) :=
     fun s hs => (isOq_two_iff (hH s) C).mp (hO s hs)
-  have hi := isOq_intervalIntegral (P := P) (q := 1) (by decide) hm' hT
+  have hm'' : Measurable (fun p : Set.Icc 0 T × Ω => H p.1 p.2 ^ 2) :=
+    hm'.comp ((measurable_subtype_coe.comp measurable_fst).prodMk measurable_snd)
+  have hi := isOq_intervalIntegral (P := P) (q := 1) (by decide) hm'' hT
     (sq_pos_of_pos hC) (fun s hs r => sq_nonneg _) hs
   refine ⟨hi.1, ?_⟩
   have hnonneg : ∀ r, 0 ≤ ∫ s in (0 : ℝ)..T, H s r ^ 2 := fun r =>

@@ -132,6 +132,38 @@ theorem dist_le_of_lt_nextOscillationTime {Ω : Type} (Y : Ω → D E) (τ : Ω 
     exact (not_lt_of_ge hle) hs
 
 
+
+/-- Before the cap, the next positive-threshold oscillation occurs strictly
+later than its starting time. -/
+theorem lt_nextOscillationTime {Ω : Type} (Y : Ω → D E) (τ : Ω → Time)
+    (T : Time) {η : ℝ} (hη : 0 < η) (w : Ω) (hτT : τ w < T) :
+    τ w < nextOscillationTime Y τ T η w := by
+  obtain ⟨d, hd, hclose⟩ := Metric.continuousWithinAt_iff.mp ((Y w).2.1 (τ w)) η hη
+  let r : Time := min T (τ w + (d / 2).toNNReal)
+  have hd2 : 0 < d / 2 := half_pos hd
+  have hτr : τ w < r := by
+    apply lt_min hτT
+    exact lt_add_of_pos_right _ (Real.toNNReal_pos.mpr hd2)
+  have hbound : r ≤ nextOscillationTime Y τ T η w := by
+    apply le_csInf ⟨T, mem_insert _ _⟩
+    intro u hu
+    rcases mem_insert_iff.mp hu with rfl | hu
+    · exact min_le_left _ _
+    · by_contra hru
+      have hur : u < r := lt_of_not_ge hru
+      have hud : dist u (τ w) < d := by
+        have hle : u < τ w + (d / 2).toNNReal := hur.trans_le (min_le_right _ _)
+        change dist (u : ℝ) (τ w : ℝ) < d
+        rw [Real.dist_eq, abs_of_pos (sub_pos.mpr (NNReal.coe_lt_coe.mpr hu.1))]
+        have hle' : (u : ℝ) < (τ w : ℝ) + d / 2 := by
+          have hh := NNReal.coe_lt_coe.mpr hle
+          simpa only [NNReal.coe_add, Real.coe_toNNReal _ hd2.le] using hh
+        linarith
+      have hdist := hclose hu.1.le hud
+      rw [dist_comm] at hdist
+      exact (not_lt_of_ge hdist.le) hu.2
+  exact hτr.trans_le hbound
+
 variable [MeasurableSpace E] [BorelSpace E] [SeparableSpace E]
 
 /-- A capped first oscillation after a weakly optional time is weakly optional. -/
@@ -255,5 +287,39 @@ theorem dist_le_between_oscillationTimes {Ω : Type} (Y : Ω → D E)
   have hs'' : dist ((Y w).1 s) ((Y w).1 (oscillationTime Y T η k w)) ≤ η := by
     simpa only [dist_comm] using hs'
   linarith
+
+
+omit [MeasurableSpace E] [BorelSpace E] [SeparableSpace E] in
+/-- The successive positive-threshold oscillation times cannot accumulate
+strictly before their cap. -/
+theorem exists_le_oscillationTime {Ω : Type} (Y : Ω → D E) (T t : Time)
+    (ht : t < T) {η : ℝ} (hη : 0 < η) (w : Ω) :
+    ∃ k : ℕ, t ≤ oscillationTime Y T η k w := by
+  classical
+  by_contra hnone
+  push Not at hnone
+  let α : ℕ → Time := fun k => oscillationTime Y T η k w
+  have hα (k : ℕ) : α k < t := hnone k
+  have hstrict : StrictMono α := by
+    apply strictMono_nat_of_lt_succ
+    intro k
+    exact lt_nextOscillationTime Y (oscillationTime Y T η k) T hη w ((hα k).trans ht)
+  have hbdd : BddAbove (range α) := ⟨t, fun _ ⟨k, hk⟩ => hk ▸ (hα k).le⟩
+  let L : Time := ⨆ k, α k
+  have hlim : Tendsto α atTop (𝓝 L) := tendsto_atTop_ciSup hstrict.monotone hbdd
+  have hbelow (k : ℕ) : α k < L := (hstrict (Nat.lt_succ_self k)).trans_le (le_ciSup hbdd (k + 1))
+  have hLpos : 0 < L := by
+    have hzero : α 0 = 0 := rfl
+    simpa only [hzero] using hbelow 0
+  have hwithin : Tendsto α atTop (𝓝[<] L) :=
+    tendsto_nhdsWithin_iff.mpr ⟨hlim, Eventually.of_forall hbelow⟩
+  obtain ⟨v, hv⟩ := (Y w).2.2 L hLpos
+  have hx : Tendsto (fun k => (Y w).1 (α k)) atTop (𝓝 v) := hv.comp hwithin
+  have hdist : Tendsto (fun k => dist ((Y w).1 (α k)) ((Y w).1 (α (k + 1))))
+      atTop (𝓝 0) := by
+    simpa only [dist_self, Function.comp_def] using hx.dist (hx.comp (Filter.tendsto_add_atTop_nat 1))
+  obtain ⟨k, hk⟩ := (hdist.eventually (Iio_mem_nhds hη)).exists
+  have hlarge := le_dist_oscillationTime_succ Y T η k w ((hα (k + 1)).trans ht)
+  exact (not_lt_of_ge hlarge) hk
 
 end LatticeProb.Cadlag.HalfLine

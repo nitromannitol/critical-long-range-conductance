@@ -102,4 +102,40 @@ theorem hasOscillationPartition_of_oscillation_gaps {Ω : Type} (Y : Ω → D E)
     · simpa only [hstart] using hcu
     · exact hu.trans_le hend
 
+
+/-- Every càdlàg path admits a sufficiently fine small-oscillation partition. -/
+theorem exists_pos_hasOscillationPartition (x : D E) (t : Time) (ht : 0 < t)
+    {η : ℝ} (hη : 0 < η) : ∃ δ : ℝ, 0 < δ ∧ HasOscillationPartition x t δ η := by
+  classical
+  let Y : Unit → D E := fun _ => x
+  let T : Time := t + 1
+  let ζ : ℝ := η / 2
+  have hζ : 0 < ζ := half_pos hη
+  have htT : t < T := lt_add_of_pos_right _ zero_lt_one
+  obtain ⟨m, hm⟩ := exists_le_oscillationTime Y T t htT hζ ()
+  let α : ℕ → Time := fun k => oscillationTime Y T ζ k ()
+  have hex : ∃ k, t ≤ α k := ⟨m, hm⟩
+  let K := Nat.find hex
+  have hK : t ≤ α K := Nat.find_spec hex
+  have hKpos : 0 < K := by
+    apply (Nat.find_pos hex).mpr
+    change ¬ t ≤ 0
+    exact not_le_of_gt ht
+  have hbefore (i : ℕ) (hi : i < K) : α i < t := lt_of_not_ge (Nat.find_min hex hi)
+  let gap : ℕ → ℝ := fun i => (α (i + 1) : ℝ) - (α i : ℝ)
+  have hgap (i : ℕ) (hi : i ∈ Finset.range K) : 0 < gap i := by
+    have hi' : i < K := Finset.mem_range.mp hi
+    have hstrict := lt_nextOscillationTime Y (oscillationTime Y T ζ i) T hζ ()
+      ((hbefore i hi').trans htT)
+    have hreal : (α i : ℝ) < (α (i + 1) : ℝ) := by exact_mod_cast hstrict
+    dsimp [gap]
+    linarith
+  have hnonempty : (Finset.range K).Nonempty := ⟨0, Finset.mem_range.mpr hKpos⟩
+  let δ : ℝ := (Finset.range K).inf' hnonempty gap
+  have hδ : 0 < δ := (Finset.lt_inf'_iff hnonempty).mpr hgap
+  have hp := hasOscillationPartition_of_oscillation_gaps Y T t ht hζ.le hδ K () hK
+    (fun i hi _ => Finset.inf'_le gap (Finset.mem_range.mpr hi))
+  refine ⟨δ, hδ, ?_⟩
+  simpa only [Y, ζ, show 2 * (η / 2) = η by ring] using hp
+
 end LatticeProb.Cadlag.HalfLine

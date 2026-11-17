@@ -44,6 +44,8 @@ theorem eventually_latticeNorm_continuumHeat_increment_lower_bound (hd : 1 ≤ d
     {x : Fin d → ℝ} (hx : f x ≠ 0) {T : ℝ} (hT : 0 < T) :
     ∃ t ∈ Set.Ioo (0 : ℝ) T, ∃ C > 0, ∃ δ > 0,
       ∀ᶠ ε : ℝ in 𝓝[>] 0, ∀ s ∈ Set.Ioo (max 0 (t - δ)) t,
+        MemL2 (fun q => continuumHeat f t (physical ε q) -
+          continuumHeat f s (physical ε q)) ∧
         C * (t - s) ≤ latticeNorm ε (fun q =>
           continuumHeat f t (physical ε q) - continuumHeat f s (physical ε q)) := by
   obtain ⟨t, ht, y, c, hc, r, hr, δ, hδ, hb⟩ :=
@@ -66,6 +68,7 @@ theorem eventually_latticeNorm_continuumHeat_increment_lower_bound (hd : 1 ≤ d
   have hw : MemL2 (fun q => continuumHeat f t (physical ε q) -
       continuumHeat f s (physical ε q)) := by
     simpa only [restrict] using memL2_sub (hR t ht.1.le).1 (hR s hs0.le).1
+  refine ⟨hw, ?_⟩
   have ha : 0 ≤ c * (t - s) := mul_nonneg hc.le (sub_nonneg.mpr hs.2.le)
   have hp (q : Site d) : c * (t - s) * |χ (physical ε q)| ≤
       |continuumHeat f t (physical ε q) - continuumHeat f s (physical ε q)| := by

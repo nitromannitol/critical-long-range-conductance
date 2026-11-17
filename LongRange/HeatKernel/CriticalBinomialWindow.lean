@@ -100,4 +100,30 @@ theorem densityPower_averaged_ge_central_pairs {X : Type*} (m : X → ℝ≥0)
               densityPower m p (n + k) x y := by ac_rfl
         _ = _ := by rw [h8, mul_one]
 
+/-- A lower bound on paired powers transfers through any central window of positive mass. -/
+theorem densityPower_averaged_ge_of_central_mass {X : Type*} (m : X → ℝ≥0)
+    (hm : ∀ x, m x ≠ 0) (p : X → X → ℝ≥0∞) {n : ℕ} (hn : 0 < n)
+    (s : Finset ℕ) (hs : ∀ k ∈ s, n / 4 ≤ k ∧ k ≤ 3 * n / 4) (x y : X)
+    (δ B : ℝ≥0∞)
+    (hδ : δ ≤ (2 : ℝ≥0∞)⁻¹ ^ n * ∑ k ∈ s, (n.choose k : ℝ≥0∞))
+    (hB : ∀ k ∈ s, B ≤ densityPower m p (n + k) x y +
+      densityPower m p (n + (k + 1)) x y) :
+    (8⁻¹ * δ) * B ≤ densityPower m (averagedDensity m p) n x y := by
+  have hsum : (∑ k ∈ s, (n.choose k : ℝ≥0∞)) * B ≤
+      ∑ k ∈ s, (n.choose k : ℝ≥0∞) *
+        (densityPower m p (n + k) x y + densityPower m p (n + (k + 1)) x y) := by
+    rw [Finset.sum_mul]
+    exact Finset.sum_le_sum fun k hk =>
+      mul_le_mul_of_nonneg_left (hB k hk) (bot_le : (0 : ℝ≥0∞) ≤ _)
+  calc
+    _ ≤ (8⁻¹ * ((2 : ℝ≥0∞)⁻¹ ^ n * ∑ k ∈ s, (n.choose k : ℝ≥0∞))) * B := by
+      gcongr
+    _ = ((2 : ℝ≥0∞)⁻¹ ^ n * 8⁻¹) *
+        ((∑ k ∈ s, (n.choose k : ℝ≥0∞)) * B) := by ac_rfl
+    _ ≤ ((2 : ℝ≥0∞)⁻¹ ^ n * 8⁻¹) *
+        (∑ k ∈ s, (n.choose k : ℝ≥0∞) *
+          (densityPower m p (n + k) x y + densityPower m p (n + (k + 1)) x y)) :=
+      mul_le_mul_of_nonneg_left hsum (bot_le : (0 : ℝ≥0∞) ≤ _)
+    _ ≤ _ := densityPower_averaged_ge_central_pairs m hm p hn s hs x y
+
 end LatticeProb.Graph.LongRangeKernel

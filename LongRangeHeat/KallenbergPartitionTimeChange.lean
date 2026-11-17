@@ -60,4 +60,23 @@ theorem dist_timeChange_le_of_interval_oscillation {E : Type*} [MetricSpace E]
   have hright : l.1 t < d := by simpa only [hb] using l.1.strictMono htb
   exact hosc (l.1 t) c hleft hright le_rfl hcd
 
+
+/-- When a stopping time is on the same side of two aligned cuts, stopping
+a time and its image keeps both stopped times in the aligned intervals. -/
+theorem stopped_timeChange_mem_interval (l : LambdaPrime)
+    (a b c d t u : Time) (ha : l a = c) (hb : l b = d)
+    (hua : u < a ↔ u < c) (hub : u < b ↔ u < d)
+    (hlo : a ≤ min t u) (hhi : min t u < b) :
+    c ≤ min (l t) u ∧ min (l t) u < d := by
+  have hat : a ≤ t := hlo.trans (min_le_left _ _)
+  have hau : a ≤ u := hlo.trans (min_le_right _ _)
+  have hcu : c ≤ u := le_of_not_gt (fun h => (not_lt_of_ge hau) (hua.mpr h))
+  constructor
+  · apply le_min _ hcu
+    simpa only [ha] using l.monotone hat
+  · rcases min_lt_iff.mp hhi with htb | hub'
+    · apply (min_le_left _ _).trans_lt
+      simpa only [hb] using l.strictMono htb
+    · exact (min_le_right _ _).trans_lt (hub.mp hub')
+
 end LatticeProb.Cadlag.HalfLine

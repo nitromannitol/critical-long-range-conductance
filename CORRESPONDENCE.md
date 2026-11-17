@@ -92,14 +92,14 @@ Names below are in `LongRangeHeat.Statements`.
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |
 
-`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`, and
-`annealed_invariance_principle` and `unscaled_invariance_principle` take three explicit cited
-propositions:
-Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
+`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`,
+`annealed_invariance_principle`, and `unscaled_invariance_principle` take three explicit
+cited propositions: Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
 uniform form; and Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
 Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other heat exports do not
-take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
-Nash and Davies inputs above for that bound instead.
+take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15
+together with Malmquist (2023) for (4.5); the formalization uses the Nash and Davies inputs
+above for that bound instead.
 
 Both forms of Theorem 1.2 additionally assume the stopping-time relative compactness and
 finite-dimensional convergence criteria of Ethier–Kurtz (1986), Chapter 3,

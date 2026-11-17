@@ -1,4 +1,5 @@
 import LongRangeHeat.MainTheorem
+import LongRangeHeat.ScalingGaussian
 
 /-!
 # Nonvanishing of the heat-flow derivative
@@ -64,6 +65,32 @@ theorem continuumHeat_eq_of_contOp_eq_zero (hd : 1 ≤ d)
     simpa [continuumHeat] using h
   simpa only [continuumHeat_zero, Pi.zero_apply] using
     constant_of_has_deriv_right_zero hcont hderiv t ⟨ht, le_rfl⟩
+
+
+/-- A nonzero compactly supported smooth function has a nonzero generator somewhere. -/
+theorem exists_contOp_ne_zero (hd : 1 ≤ d)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    {x : Fin d → ℝ} (hx : f x ≠ 0) : ∃ y, contOp d f y ≠ 0 := by
+  by_contra h
+  push Not at h
+  have hzero : contOp d f = 0 := funext h
+  have he : (fun t : ℝ => continuumHeat f t x) =ᶠ[atTop] fun _ => f x := by
+    filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
+    exact continuumHeat_eq_of_contOp_eq_zero hd hf hfc hzero ht x
+  have hlim : Tendsto (fun t : ℝ => continuumHeat f t x) atTop (𝓝 (f x)) :=
+    tendsto_const_nhds.congr' he.symm
+  exact hx (tendsto_nhds_unique hlim (tendsto_continuumHeat_atTop hd hf.continuous hfc x))
+
+/-- Before any positive time, the time derivative is bounded away from zero on a spatial ball. -/
+theorem exists_continuumHeat_deriv_abs_lower_bound_of_ne_zero (hd : 1 ≤ d)
+    {f : (Fin d → ℝ) → ℝ} (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
+    {x : Fin d → ℝ} (hx : f x ≠ 0) {T : ℝ} (hT : 0 < T) :
+    ∃ t ∈ Set.Ioo (0 : ℝ) T, ∃ y, ∃ c > 0, ∃ r > 0,
+      ∀ z ∈ Metric.ball y r, c ≤ |contOp d (continuumHeat f t) z| := by
+  obtain ⟨y, hy⟩ := exists_contOp_ne_zero hd hf hfc hx
+  obtain ⟨t, ht, c, hc, r, hr, hbound⟩ :=
+    exists_continuumHeat_deriv_abs_lower_bound hd hf hfc hy hT
+  exact ⟨t, ht, y, c, hc, r, hr, hbound⟩
 
 end
 end LongRangeHeat

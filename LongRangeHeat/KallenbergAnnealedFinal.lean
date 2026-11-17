@@ -1,5 +1,5 @@
 import LongRangeHeat.KallenbergAnnealed
-import LongRangeHeat.KallenbergAnnealedTight
+import LongRangeHeat.KallenbergCriterion
 
 /-!
 # Annealed invariance principle
@@ -34,17 +34,18 @@ theorem annealed_invariance_of_kallenberg
     Filter.tendsto_comap_iff.1 hε0
   have hε : ∀ n, ((ε n : Set.Ioo (0 : ℝ) (1 / 2)) : ℝ) ∈ Set.Ioo (0 : ℝ) (1 / 2) :=
     fun n => (ε n).2
-  apply annealed_tendsto_of_compact_of_fdd hd P a hP hε _
-    (annealedLaw_isCompact_closure_range_of_stopping hMSC hNash hDavies hd P a hP
-      (fun n => (ε n : ℝ)) hε hε0')
-    (fun t => annealedLaw_marginals_isTight hMSC hNash hDavies hε t)
-  intro k ts hmono hpos
-  rcases Nat.eq_zero_or_pos k with rfl | hk
-  · have : Subsingleton (ProbabilityMeasure (Fin 0 → EuclideanSpace ℝ (Fin d))) :=
-      subsingleton_probabilityMeasure
-    exact tendsto_const_nhds.congr fun _ => Subsingleton.elim _ _
-  · rw [jointLaw_map_scaledBrownianPath]
-    exact Statements.fdd_convergence hMSC hNash hDavies hd P a hP B hB hk ts hmono
-      (fun n => (ε n : ℝ)) hε hε0'
+  apply tendsto_of_ordered_fdd_of_optional_increment
+    (fun n => annealedLaw hd P a hP (hε n).1) _ 0
+  · intro k ts hmono
+    rcases Nat.eq_zero_or_pos k with rfl | hk
+    · have : Subsingleton (ProbabilityMeasure (Fin 0 → EuclideanSpace ℝ (Fin d))) :=
+        subsingleton_probabilityMeasure
+      exact tendsto_const_nhds.congr fun _ => Subsingleton.elim _ _
+    · rw [jointLaw_map_scaledBrownianPath]
+      exact Statements.fdd_convergence hMSC hNash hDavies hd P a hP B hB hk ts hmono
+        (fun n => (ε n : ℝ)) hε hε0'
+  · intro H hH η hη τ hτ u hupos hu
+    exact annealed_tendsto_optional_increment hMSC hNash hDavies hd P a hP
+      (fun n => (ε n : ℝ)) hε hε0' hH hη τ hτ u hupos hu
 
 end LongRangeHeat

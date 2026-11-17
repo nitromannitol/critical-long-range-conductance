@@ -49,6 +49,11 @@ Chen–Kim–Kumagai–Wang (2021) Nash and Davies results, recorded in the corr
 The applications to the lattice kernel, truncation, normalization, uniform constants,
 stopping times and finite-horizon laws are proved in the library.
 
+In the heat-kernel version, the kernel bounds, Aldous condition and finite-dimensional
+convergence use `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash` and
+`ChenKimKumagaiWangDavies`. The scaled annealed invariance principle also uses
+`EthierKurtzRelativeCompactnessStopping` and `EthierKurtzConvergenceFromFdd`.
+
 Checking that the public exports use only `propext`, `Classical.choice` and `Quot.sound`
 does not prove these hypotheses: they are ordinary proposition parameters of the theorems.
 Different exports use different subsets, visible directly in their declarations.

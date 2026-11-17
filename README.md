@@ -35,12 +35,12 @@ lists the exact names. The paper's applications and adapters are proved in the l
 
 `LongRangeHeat` contains the formalization of the heat-kernel version in
 [`paper/heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
-Theorem 1.1, the scaled annealed invariance principle (Theorem 1.2), and supporting
-results are listed in [CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version).
-The unscaled formulation following Theorem 1.2 is not yet exported. The heat-kernel,
-Aldous, finite-dimensional convergence and invariance-principle exports take the uniform
+Theorem 1.1, the scaled and unscaled annealed invariance principles (Theorem 1.2),
+and supporting results are listed in
+[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The heat-kernel, Aldous,
+finite-dimensional convergence and invariance-principle exports take the uniform
 Murugan–Saloff-Coste estimate and the Chen–Kim–Kumagai–Wang Nash and Davies estimates
-as explicit hypotheses. The invariance principle also takes two Ethier–Kurtz criteria;
+as explicit hypotheses. Both invariance-principle forms also take two Ethier–Kurtz criteria;
 see [CITED_INPUTS.md](CITED_INPUTS.md).
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability

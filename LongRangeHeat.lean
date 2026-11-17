@@ -45,3 +45,4 @@ import LongRangeHeat.FddBrownian
 import LongRangeHeat.Statements.Fdd
 import LongRangeHeat.InvariancePrinciple
 import LongRangeHeat.Statements.InvariancePrinciple
+import LongRangeHeat.Statements.UnscaledInvariance

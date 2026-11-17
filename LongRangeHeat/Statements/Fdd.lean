@@ -39,7 +39,7 @@ theorem fdd_convergence
       (𝓝 (ProbabilityMeasure.map B
         (fun (ω : BrownianPath d) (j : Fin k) => ((d : ℝ) ^ (-(1 : ℝ) / 2)) • ω (t j)))) :=
   LongRangeHeat.tendsto_fddLaw hMSC hNash hDavies hd P a hP t ht B
-    (fun m t' ψ ht' hψ => LongRangeHeat.integral_brownian_prod hd hB t' ht'.monotone hψ)
+    (fun _ t' _ ht' hψ => LongRangeHeat.integral_brownian_prod hd hB t' ht'.monotone hψ)
     ε hε hε0
 
 end LongRangeHeat.Statements

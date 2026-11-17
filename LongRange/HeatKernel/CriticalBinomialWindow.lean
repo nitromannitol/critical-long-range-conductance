@@ -126,4 +126,34 @@ theorem densityPower_averaged_ge_of_central_mass {X : Type*} (m : X → ℝ≥0)
       mul_le_mul_of_nonneg_left hsum (bot_le : (0 : ℝ≥0∞) ≤ _)
     _ ≤ _ := densityPower_averaged_ge_central_pairs m hm p hn s hs x y
 
+/-- The central binomial window has positive mass at every positive time. -/
+theorem central_binomial_mass_pos (n : ℕ) :
+    0 < (2 : ℝ≥0∞)⁻¹ ^ n *
+      ∑ k ∈ Finset.Icc (n / 4) (3 * n / 4), (n.choose k : ℝ≥0∞) := by
+  apply ENNReal.mul_pos (pow_ne_zero _ (by norm_num))
+  apply ne_of_gt
+  have hmem : n / 2 ∈ Finset.Icc (n / 4) (3 * n / 4) := by
+    simp only [Finset.mem_Icc]
+    omega
+  have hchoose : 0 < (n.choose (n / 2) : ℝ≥0∞) := by
+    exact_mod_cast Nat.choose_pos (show n / 2 ≤ n by omega)
+  exact lt_of_lt_of_le hchoose (Finset.single_le_sum
+    (f := fun k : ℕ => (n.choose k : ℝ≥0∞)) (fun _ _ => bot_le) hmem)
+
+/-- An eventual lower bound on the central mass extends uniformly to every time. -/
+theorem central_binomial_mass_uniform_of_eventually {δ : ℝ≥0∞} (hδ : 0 < δ)
+    (N : ℕ) (hN : ∀ n ≥ N, δ ≤ (2 : ℝ≥0∞)⁻¹ ^ n *
+      ∑ k ∈ Finset.Icc (n / 4) (3 * n / 4), (n.choose k : ℝ≥0∞)) :
+    ∃ ε : ℝ≥0∞, 0 < ε ∧ ∀ n, ε ≤ (2 : ℝ≥0∞)⁻¹ ^ n *
+      ∑ k ∈ Finset.Icc (n / 4) (3 * n / 4), (n.choose k : ℝ≥0∞) := by
+  let f : ℕ → ℝ≥0∞ := fun n => (2 : ℝ≥0∞)⁻¹ ^ n *
+    ∑ k ∈ Finset.Icc (n / 4) (3 * n / 4), (n.choose k : ℝ≥0∞)
+  obtain ⟨m, hm, hmin⟩ := Finset.exists_min_image (Finset.range (N + 1)) f
+    ⟨0, Finset.mem_range.mpr (by omega)⟩
+  refine ⟨min δ (f m), lt_min hδ (central_binomial_mass_pos m), ?_⟩
+  intro n
+  by_cases hn : N ≤ n
+  · exact (min_le_left _ _).trans (hN n hn)
+  · exact (min_le_right _ _).trans (hmin n (Finset.mem_range.mpr (by omega)))
+
 end LatticeProb.Graph.LongRangeKernel

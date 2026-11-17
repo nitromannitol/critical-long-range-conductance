@@ -1,11 +1,12 @@
+import LatticeProb.Analysis.Elliptic.HolderExtensionProved
 import LatticeProb.External.GilbargTrudinger
 import LongRange.Support.Analysis.TaylorHolder
 
 /-!
 # Extension supported in a fixed Euclidean ball
 
-A neighborhood chosen before the datum fixes the support radius in the cited extension
-input. Zero extension preserves the Hölder bound by comparison with a nearest boundary point.
+A neighborhood chosen before the datum fixes the support radius in the extension
+theorem. Zero extension preserves the Hölder bound by comparison with a nearest boundary point.
 -/
 
 noncomputable section
@@ -131,10 +132,10 @@ lemma c2HolderNorm_univ_le_of_tsupport_subset {d : ℕ} {S : Set (Fin d → ℝ)
   · exact Finset.sum_le_sum fun i _ => Finset.sum_le_sum fun j _ =>
       holderSeminorm_univ_le_of_zero_outside hS (hcont i j) (hpp i j) hσ
 
-/-- The cited extension input gives a global coordinate Hölder bound and support in
+/-- The extension theorem gives a global coordinate Hölder bound and support in
 a Euclidean ball whose radius is chosen uniformly before the datum. -/
 theorem regular_extension_of_gt_ball
-    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
+
     {d : ℕ} (hd : 2 ≤ d) {σ : ℝ} (hσ : 0 < σ) (hσ1 : σ < 1)
     {U : Set (Fin d → ℝ)} (hU : LatticeProb.Elliptic.IsC2HolderDomain σ U) :
     ∃ C R : ℝ, 0 < C ∧ 0 < R ∧ (∀ x ∈ U, radius x < R) ∧
@@ -155,7 +156,9 @@ theorem regular_extension_of_gt_ball
     exact lt_of_le_of_lt (hxB.trans (le_abs_self B)) (by dsimp [R]; linarith)
   have hopen : IsOpen {x : Fin d → ℝ | radius x < R} :=
     isOpen_lt (radius_continuous d) continuous_const
-  obtain ⟨C, hC, hext⟩ := h637 d hd σ hσ hσ1 U hU _ hopen hcl
+  obtain ⟨C, hC, hext⟩ :=
+    LatticeProb.Elliptic.HolderExtension.gilbargTrudingerHolderExtension_holds
+      d hd σ hσ hσ1 U hU _ hopen hcl
   refine ⟨C, R, hC, hR, fun x hx => hcl (subset_closure hx), ?_⟩
   intro u hu hnorm
   obtain ⟨v, hv, _, hsupp, heq, hbound⟩ := hext u hu hnorm

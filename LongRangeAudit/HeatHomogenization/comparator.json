@@ -1,0 +1,13 @@
+{
+  "challenge_module": "LongRangeAudit.HeatHomogenization.Challenge",
+  "solution_module": "LongRangeAudit.HeatHomogenization.Solution",
+  "theorem_names": [
+    "LongRangeAudit.HeatHomogenization.main_theorem"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}

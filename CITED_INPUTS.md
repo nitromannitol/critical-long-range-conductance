@@ -1,12 +1,10 @@
 # Explicit cited propositions
 
-These 16 proposition definitions live in `LatticeProb.External` at the pinned
-Lattice-Probability revision `47027b49b6660ee34c323869b0c88b7eb72f1124`.
-They are explicit hypotheses wherever used. Their statements are formalized; the cited
-results themselves remain unproved inputs. The paper's applications are proved.
+These 13 proposition formulations are explicit hypotheses wherever used. The paper's applications are proved. Some formulations are supplied by the pinned
+Lattice-Probability dependency, and others are defined in this repository.
 
 The links below give the complete Lean proposition bodies, their source carriers,
-quantifier order, constants and bibliographic details at the immutable dependency revision.
+quantifier order, constants and bibliographic details at the referenced revision.
 The count is of registered proposition formulations, rather than distinct references or
 logically independent assumptions. In particular, the library proves that the uniform
 Murugan–Saloff-Coste formulation implies the other formulation.
@@ -16,10 +14,7 @@ Murugan–Saloff-Coste formulation implies the other formulation.
 | `GilbargTrudingerExistence` | GT, Theorem 6.14: classical Dirichlet existence | [source](LongRange/Support/External/GilbargTrudingerExistence.lean) |
 | `GilbargTrudingerBoundaryRegularity` | GT, Theorem 6.19: boundary regularity | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
 | `GilbargTrudingerSchauderEstimate` | GT, Theorem 6.6: Schauder estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
-| `GilbargTrudingerSupEstimate` | GT, Theorem 3.7: supremum estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
-| `GilbargTrudingerHolderExtension` | GT, Lemma 6.37: Hölder extension | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
 | `GilbargTrudingerZeroBoundaryApproximation` | GT, §7.5: approximation in the Sobolev space with zero boundary values | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudingerSobolev.lean) |
-| `GilbargTrudingerWeakHomogeneousUniqueness` | GT, Corollary 8.2: uniqueness of homogeneous weak solutions | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudingerSobolev.lean) |
 | `MuruganSaloffCoste` | MSC, Theorem 1.1, estimate (10): discrete on-diagonal bound | [source](LongRange/Support/External/MuruganSaloffCoste.lean) |
 | `MuruganSaloffCosteUniform` | MSC, the same theorem with constant dependence traced through its proof | [source](LongRange/Support/External/MuruganSaloffCosteUniform.lean) |
 | `ChenKimKumagaiWangNash` | CKKW, Proposition 3.1(ii): ultracontractivity implies a Nash inequality | [source](LongRange/Support/External/ChenKimKumagaiWang.lean) |
@@ -29,6 +24,15 @@ Murugan–Saloff-Coste formulation implies the other formulation.
 | `EthierKurtzRelativeCompactnessStopping` | EK, Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b): stopping-time criterion | [source](LongRange/Support/External/EthierKurtzStopping.lean) |
 | `EthierKurtzConvergenceFromFdd` | EK, Chapter 3, Theorem 7.8(b): convergence from finite-dimensional laws | [source](LongRange/Support/External/EthierKurtzSkorokhod.lean) |
 | `BillingsleySkorokhodPolish` | Billingsley, Theorems 12.1–12.2, with pp. 131 and 166: finite-horizon Skorokhod space | [source](LongRange/Support/External/BillingsleySkorokhod.lean) |
+
+The following three formerly explicit inputs are proved by the pinned Lattice-Probability
+revision `721505023bc12a20241c73449ec33339fcf4555f`:
+
+| Proposition | Proof |
+| --- | --- |
+| `GilbargTrudingerSupEstimate` | [proof](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/SupEstimateProved.lean) |
+| `GilbargTrudingerHolderExtension` | [proof](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/HolderExtensionProved.lean) |
+| `GilbargTrudingerWeakHomogeneousUniqueness` | [proof](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/WeakHomogeneousUniquenessProved.lean) |
 
 GT denotes Gilbarg–Trudinger, *Elliptic Partial Differential Equations of Second Order*,
 Springer, Classics in Mathematics (2001 reprint). MSC denotes Murugan–Saloff-Coste,

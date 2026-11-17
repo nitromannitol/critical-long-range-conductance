@@ -7,7 +7,9 @@ Paper labels identify the source statements. The table includes semantic units, 
 proof ingredients, repetitions and context; these categories do not count as additional theorems.
 All 23 theorem exports and three complete definition exports are available through
 `import LongRange.Statements`. A compiling declaration alone does not certify a source match.
-Cited propositions remain explicit assumptions; see [CITED_INPUTS.md](CITED_INPUTS.md).
+Thirteen cited propositions remain explicit assumptions; the supremum estimate, Hölder
+extension and weak homogeneous uniqueness are proved in Lattice-Probability. See
+[CITED_INPUTS.md](CITED_INPUTS.md).
 
 The main export produces an actual `H10 U` weak solution, proves uniqueness among all
 `H10 U` weak solutions, and identifies its unique continuous classical representative.

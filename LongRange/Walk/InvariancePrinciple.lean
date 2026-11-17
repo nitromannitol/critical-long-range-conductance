@@ -92,8 +92,6 @@ theorem walk_marginals_isTight (hMSC : External.MuruganSaloffCoste)
 theorem ae_tendsto_walk_pathLaw
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -122,7 +120,7 @@ theorem ae_tendsto_walk_pathLaw
               inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
           (brownianMixturePath (d := d) s))) := by
   subst hs
-  filter_upwards [ae_tendsto_walk_productTests hTK h619 h66 h37 h637 h614 hd P a hU
+  filter_upwards [ae_tendsto_walk_productTests hTK h619 h66 h614 hd P a hU
     g hg hg0 hgc hg1 B hB] with ξ hξ
   apply tendsto_epsFilter_of_sequences
   intro ε hε
@@ -138,8 +136,6 @@ theorem ae_tendsto_walk_pathLaw
 theorem quenched_invariance_principle_of_cited
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -179,15 +175,13 @@ theorem quenched_invariance_principle_of_cited
   intro ρ s F
   refine ⟨initialDensityEuclidean g (integrable_initial_density hg hgc) hg0 hg1, rfl,
     measurable_brownianMixturePath (d := d) s, ?_⟩
-  exact ae_tendsto_walk_pathLaw h619 h66 h37 h637 h614 hTK hRC hFdd hMSC hNash hDavies hd P a hU
+  exact ae_tendsto_walk_pathLaw h619 h66 h614 hTK hRC hFdd hMSC hNash hDavies hd P a hU
     g hg hg0 hgc hg1 B hB s rfl
 
 /-- Theorem 1.2 (`t.walk.intro`): the amplitude `sqrt (ā / d)` equals `sqrt (2 σ̄²)`. -/
 theorem quenched_invariance_principle_intro_of_cited
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -230,7 +224,7 @@ theorem quenched_invariance_principle_intro_of_cited
   have hs : s = Real.sqrt (2 * (meanConductance P hd a / (2 * (d : ℝ)))) := by
     show Real.sqrt (meanConductance P hd a / (d : ℝ)) = _
     rw [← mul_div_assoc, mul_div_mul_left _ _ two_ne_zero]
-  exact ae_tendsto_walk_pathLaw h619 h66 h37 h637 h614 hTK hRC hFdd hMSC hNash hDavies hd P a hU
+  exact ae_tendsto_walk_pathLaw h619 h66 h614 hTK hRC hFdd hMSC hNash hDavies hd P a hU
     g hg hg0 hgc hg1 B hB s hs
 
 end

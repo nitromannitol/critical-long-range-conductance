@@ -27,3 +27,10 @@ lean_lib «LongRangeHeat» where
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
   ]
+
+lean_lib «LongRangeAudit» where
+  globs := #[.submodules `LongRangeAudit]
+  leanOptions := #[
+    ⟨`autoImplicit, false⟩,
+    ⟨`relaxedAutoImplicit, false⟩
+  ]

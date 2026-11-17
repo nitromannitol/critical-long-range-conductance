@@ -19,8 +19,6 @@ density `g`, `W` is a standard Brownian motion independent of `X₀`, and `σ̄�
 theorem LongRange.Statements.quenched_invariance_principle
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -59,5 +57,5 @@ theorem LongRange.Statements.quenched_invariance_principle
               F)) :=
 
 by
-  exact quenched_invariance_principle_of_cited h619 h66 h37 h637 h614 hTK hRC hFdd hMSC hNash
+  exact quenched_invariance_principle_of_cited h619 h66 h614 hTK hRC hFdd hMSC hNash
     hDavies d hd lam P a hU g hg hg0 hgc hg1 B hB

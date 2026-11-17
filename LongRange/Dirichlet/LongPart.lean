@@ -1,7 +1,7 @@
 import LongRange.Dirichlet.Energies
 import LongRange.Dirichlet.CoefficientBounds
 import LongRange.Dirichlet.Hoeffding
-import LatticeProb.Prob.StochasticO.Sums
+import LongRange.Support.Prob.StochasticO.Sums
 
 /-!
 # Long-range defect energy
@@ -35,7 +35,7 @@ theorem longPart_osBound (d : ℕ) (lam R : ℝ) :
     have hC : 0 ≤ C := by dsimp [C]; positivity
     refine ⟨C + 1, by positivity, ?_⟩
     intro Ω _ P a hA ε hε U hU hdiam p
-    haveI := hA.isProbabilityMeasure
+    have := hA.isProbabilityMeasure
     have hlam := hA.lam_pos
     have heps := hε.1
     have hk := kappa_pos hd hε

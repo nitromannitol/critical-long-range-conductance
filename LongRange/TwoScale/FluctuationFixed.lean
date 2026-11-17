@@ -70,7 +70,7 @@ theorem smoothFluctuation_osBound (d : ℕ) :
       apply tsum_congr
       intro w
       have hw : (w : Site d) ≠ 0 := w.property
-      simp only [c, e, if_neg hw, dif_neg hw]
+      simp only [c, e, ite_eq_right hw, dite_eq_right hw]
       ring
     obtain ⟨hm, ho⟩ := hA.osBound_weighted_tsum e he (fun w : I => c w.1)
       (hc.subtype (fun w => w ≠ 0))

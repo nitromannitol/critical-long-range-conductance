@@ -86,7 +86,7 @@ lemma coordPathPoint_end (v u : Site d) (i : Fin d) :
   funext j
   by_cases hji : j < i
   · simp only [coordPathPoint, hji, ↓reduceIte, coordPrefixPoint]
-    rw [if_pos (by exact Nat.lt_succ_of_lt hji)]
+    rw [ite_eq_left (by exact Nat.lt_succ_of_lt hji)]
   · by_cases he : j = i
     · subst j
       simp only [coordPathPoint, lt_self_iff_false, ↓reduceIte, coordPrefixPoint,
@@ -116,7 +116,7 @@ lemma coordPrefix_last (v u : Site d) (n : ℕ) (hn : n ≤ d) :
     simp only [coordPrefix, List.take_zero, List.flatMap_nil, List.getLast?_singleton,
       Option.some.injEq]
     funext j
-    exact (if_neg (Nat.not_lt_zero j.val)).symm
+    exact (ite_eq_right (Nat.not_lt_zero j.val)).symm
   | succ n ih =>
     have hnd : n < d := by omega
     let i : Fin d := ⟨n, hnd⟩

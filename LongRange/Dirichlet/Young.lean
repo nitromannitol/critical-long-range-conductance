@@ -181,12 +181,12 @@ private theorem correctorFunctional_lower_bound (hd : 1 ≤ d) {ε lam : ℝ}
           (D := w (q.1 + q.2) - w q.1)
         have hdef : fluxDefect ε a p g q ≤ R q + R (edgeReverse d q) := by
           rcases hq with hx | hx
-          · have he : R q = fluxDefect ε a p g q := if_pos hx
+          · have he : R q = fluxDefect ε a p g q := ite_eq_left hx
             rw [he]
             exact le_add_of_nonneg_right (hn _)
           · have he : R (edgeReverse d q) = fluxDefect ε a p g q := by
               dsimp [R, edgeReverse]
-              rw [if_pos hx]
+              rw [ite_eq_left hx]
               exact fluxDefect_reverse ε a p g hanti q
             rw [he]
             exact le_add_of_nonneg_left (hn _)

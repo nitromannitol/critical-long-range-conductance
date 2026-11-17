@@ -67,7 +67,7 @@ theorem generator_zeroExtension_sub_gradient (hd : 1 ≤ d) {ε : ℝ} (hε : 0 
     ext i
     simp only [physical, Pi.add_apply, Int.cast_add, mul_add]
   have hinterior : zeroExtension ε U v q = v (physical ε q) :=
-    if_pos (mem_latticeSet.mp hq)
+    ite_eq_left (mem_latticeSet.mp hq)
   change ε ^ d / kappa d ε * (∑' w, F w) -
     ∑ i, gradientCoeff ε v i q * (ε ^ d / kappa d ε * ∑' w, G i w) = _
   have hswap : (∑ i, gradientCoeff ε v i q *

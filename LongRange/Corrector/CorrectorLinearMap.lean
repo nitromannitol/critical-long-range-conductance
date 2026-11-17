@@ -90,7 +90,7 @@ theorem existsUnique_correctorLinearMap (hd : 1 ≤ d) {ε : ℝ}
       ∀ (p : Fin d → ℝ) (φ : Site d → ℝ),
         ((T p).val = φ ↔ IsCorrectorSolution ε U a p φ) ∧
         ((T p).val = φ ↔ IsCorrectorMinimizer ε U a p φ) := by
-  letI := correctorVariationSpace_finite hε.1 hU
+  let := correctorVariationSpace_finite hε.1 hU
   let B := correctorVariationForm hd hε.1 hU hlam ha
   have hB : B.Nondegenerate := correctorVariationForm_nondegenerate hd hε hU hlam ha
   let T := (B.toDual hB).symm.toLinearMap.comp

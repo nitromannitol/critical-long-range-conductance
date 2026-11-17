@@ -134,7 +134,7 @@ theorem main_theorem
     have hCe : 0 < Ce := by dsimp [Ce]; positivity
     refine ⟨max Ct Ce, c / K, hCt.trans_le (le_max_left _ _), div_pos hc hK, ?_⟩
     intro Ω _ P a hA f hf ū hū
-    letI : IsProbabilityMeasure P := hA.isProbabilityMeasure
+    let : IsProbabilityMeasure P := hA.isProbabilityMeasure
     have hD : (1 : ℝ) ≤ 2 * d := by exact_mod_cast (by omega : 1 ≤ 2 * d)
     have hDpos : (0 : ℝ) < 2 * d := zero_lt_one.trans_le hD
     have hmean := hA.mean_mem_Icc

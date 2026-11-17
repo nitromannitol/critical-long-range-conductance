@@ -165,7 +165,7 @@ private theorem finiteField_finite (s : Finset (Site d)) (v : s → ℝ) :
   intro q hq
   by_contra h
   have hqs : q ∉ s := h
-  exact hq (by simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dif_neg hqs])
+  exact hq (by simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dite_eq_right hqs])
 
 /-- The bilinear energy on the finite coordinate space. -/
 private def finiteBilin (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε) (hlam : 0 < lam)
@@ -221,7 +221,7 @@ private theorem finiteLinear_eq (hd : 1 ≤ d) {ε lam : ℝ}
   rw [hg]
   congr 2
   exact (tsum_eq_sum (s := s) (fun q hq => by
-    simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dif_neg hq, zero_mul])).symm
+    simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dite_eq_right hq, zero_mul])).symm
 
 /-- Continuity of the corrector functional on its finite coordinate space. -/
 private theorem continuous_finiteFunctional (hd : 1 ≤ d) {ε lam : ℝ}
@@ -233,7 +233,7 @@ private theorem continuous_finiteFunctional (hd : 1 ≤ d) {ε lam : ℝ}
     (finiteField_finite s v) (show SupportedIn ε U (finiteField s v) from by
       intro q hq
       have hqs : q ∉ s := by simpa only [← hs, Finset.mem_coe] using hq
-      simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dif_neg hqs])
+      simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dite_eq_right hqs])
   simp_rw [heq, ← finiteLinear_eq hd hε hlam ha p s]
   exact ((IsModuleTopology.continuous_bilinear_of_finite_left
     (finiteBilin hd hε hlam ha s)).comp (continuous_id.prodMk continuous_id)).add
@@ -263,17 +263,17 @@ theorem measurable_correctorEnergy {Ω : Type*} [MeasurableSpace Ω]
       have hw_eq : finiteField s (fun q => w.val q) = w.val := by
         funext q
         by_cases hq : q ∈ s
-        · simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dif_pos hq]
+        · simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dite_eq_left hq]
         · have hqU : q ∉ latticeSet ε U := by
             simpa only [← hs, Finset.mem_coe] using hq
-          simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dif_neg hq,
+          simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dite_eq_right hq,
             w.property q hqU]
       exact congrArg (correctorFunctional ε U (a ω) p) hw_eq
     · rintro ⟨v, rfl⟩
       refine ⟨⟨finiteField s v, ?_⟩, rfl⟩
       intro q hq
       have hqs : q ∉ s := by simpa only [← hs, Finset.mem_coe] using hq
-      simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dif_neg hqs]
+      simp only [finiteField, LinearMap.coe_mk, AddHom.coe_mk, dite_eq_right hqs]
   have heq (ω : Ω) : correctorEnergy ε U (a ω) p =
       -(⨅ v : D, correctorFunctional ε U (a ω) p (finiteField s v.val)) := by
     unfold correctorEnergy
@@ -281,7 +281,7 @@ theorem measurable_correctorEnergy {Ω : Type*} [MeasurableSpace Ω]
     exact congrArg Neg.neg (hdense.ciInf'
       (continuous_finiteFunctional hd hε hlam (hb ω) p s hs)).symm
   simp_rw [heq]
-  letI : Countable D := hD.to_subtype
+  let : Countable D := hD.to_subtype
   apply Measurable.neg
   apply Measurable.iInf
   intro v
@@ -351,7 +351,7 @@ theorem exists_correctorFunctional_lower_bound (hd : 1 ≤ d) {ε lam : ℝ}
   have hs : (s : Set (Site d)) = latticeSet ε U := Set.Finite.coe_toFinset _
   clear_value s
   by_cases hne : s.Nonempty
-  · letI : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
+  · let : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
     obtain ⟨r, hr⟩ := s.exists_notMem
     have hjump (q : Site d) (hq : q ∈ s) : 0 < jumpKernel (physical ε (r - q)) := by
       have hz : r - q ≠ 0 := sub_ne_zero.mpr (fun h => hr (h.symm ▸ hq))

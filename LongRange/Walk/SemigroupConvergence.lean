@@ -1,5 +1,5 @@
 import LongRange.Walk.ResolventConvergence
-import LatticeProb.External.EthierKurtzTrotterKato
+import LongRange.Support.External.EthierKurtzTrotterKato
 
 /-!
 # Convergence of killed semigroups

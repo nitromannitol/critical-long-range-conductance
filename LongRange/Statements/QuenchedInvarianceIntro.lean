@@ -44,7 +44,7 @@ theorem LongRange.Statements.quenched_invariance_principle_intro
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -56,7 +56,7 @@ theorem LongRange.Statements.quenched_invariance_principle_intro
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable)) :=
+              F)) :=
 
 by
   exact quenched_invariance_principle_intro_of_cited h619 h66 h37 h637 h614 hTK hRC hFdd hMSC

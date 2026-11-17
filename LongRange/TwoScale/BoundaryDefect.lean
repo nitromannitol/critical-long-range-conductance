@@ -47,7 +47,7 @@ lemma boundary_endpoint_finite {ε : ℝ} {U : Set (Fin d → ℝ)}
     (hf : ∀ p, r ((p.1 : Site d) + p.2) = 0 → f p = 0) :
     Function.HasFiniteSupport f := by
   have hfinite : Set.Finite (Set.univ : Set (latticeSet ε U)) := by
-    letI := hU.fintype
+    let := hU.fintype
     exact Set.finite_univ
   apply ((hfinite.prod hr).image
     (fun p : latticeSet ε U × Site d => (p.1, p.2 - (p.1 : Site d)))).subset
@@ -181,8 +181,7 @@ theorem boundaryDefectEnergy_le (d : ℕ) (R : ℝ) :
       (A * B) * L ^ 2 / ε ^ d := by
     rw [← tsum_mul_left]
     rw [tsum_eq_sum (s := hrf.toFinset) (fun y hy => by
-      have hz : r y = 0 := by simpa only [Set.Finite.mem_toFinset,
-        Function.mem_support, not_not] using hy
+      have hz : r y = 0 := not_not.mp fun h => hy ((Set.Finite.mem_toFinset hrf).2 h)
       simp only [hz, zero_pow (by decide : 2 ≠ 0), zero_mul, mul_zero])]
     calc
       _ ≤ ∑ y ∈ hrf.toFinset, B * L ^ 2 := by
@@ -302,7 +301,7 @@ lemma boundary_kernel_summable {ε : ℝ} (hε : ε ∈ Set.Ioo (0 : ℝ) 1) :
     apply (unitBallIndices d ε).finite_toSet.subset
     intro w hw
     by_contra hn
-    exact hw (if_neg hn)
+    exact hw (ite_eq_right hn)
   refine ((summable_of_hasFiniteSupport hf).add htail).of_nonneg_of_le
     (fun w => boundary_kernel_nonneg _) ?_
   intro w
@@ -311,11 +310,11 @@ lemma boundary_kernel_summable {ε : ℝ} (hε : ε ∈ Set.Ioo (0 : ℝ) 1) :
     simp [f, (physical_eq_zero_iff hε.1 0).mpr rfl, jumpKernel_zero]
   by_cases hr : radius (physical ε w) ≤ 1
   · have hm := (mem_unitBallIndices hε.1 w).mpr ⟨hw, hr⟩
-    simp only [f, if_pos hm, if_neg (not_lt.mpr hr), add_zero, le_refl]
+    simp only [f, ite_eq_left hm, ite_eq_right (not_lt.mpr hr), add_zero, le_refl]
   · have hm : w ∉ unitBallIndices d ε := by
       intro h
       exact hr ((mem_unitBallIndices hε.1 w).mp h).2
-    simp only [f, if_neg hm, if_pos (lt_of_not_ge hr), zero_add]
+    simp only [f, ite_eq_right hm, ite_eq_left (lt_of_not_ge hr), zero_add]
     exact le_mul_of_one_le_right (boundary_kernel_nonneg _)
       (by linarith [radius_nonneg (physical ε w)])
 
@@ -406,7 +405,7 @@ theorem boundary_defect_pairing_le (hd : 1 ≤ d) {ε lam : ℝ}
     (fun _ h => h)
   let s := huf.toFinset
   have hzero (p : latticeSet ε U × Site d) (hp : p ∉ s) : u p = 0 := by
-    simpa only [s, Set.Finite.mem_toFinset, Function.mem_support, not_not] using hp
+    exact not_not.mp fun h => hp ((Set.Finite.mem_toFinset huf).2 h)
   have hid : ε ^ d * ∑' x : latticeSet ε U, boundaryDefect ε a r x * ψ x =
       -t * ∑ p ∈ s, b p * k p * u p * v p := by
     rw [boundary_defect_pairing_eq hUf a hrf hr hψ]

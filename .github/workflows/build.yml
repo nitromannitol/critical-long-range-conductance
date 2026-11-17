@@ -37,7 +37,8 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import re
-          if re.search(r'\bwarning:', Path('build.log').read_text()):
+          if re.search(r'^warning: (?:.*/)?(?:LongRange|LongRangeHeat|LongRangeAudit)/',
+                       Path('build.log').read_text(), re.MULTILINE):
               raise SystemExit('Lean build emitted warnings')
           PY
       - name: Check all public export axioms

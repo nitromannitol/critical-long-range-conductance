@@ -30,7 +30,7 @@ def cube {d : ℕ} (w : Site d) : Set (Fin d → ℝ) :=
 lemma cube_eq_pi {d : ℕ} (w : Site d) :
     cube w = Set.pi Set.univ (fun k => Set.Ico ((w k : ℝ)-1/2) ((w k : ℝ)+1/2)) := by
   ext x
-  simp only [cube, Set.mem_setOf_eq, Set.mem_pi, Set.mem_univ, Set.mem_Ico, forall_const]
+  simp only [cube, Set.mem_ofPred_eq, Set.mem_pi, Set.mem_univ, Set.mem_Ico, forall_const]
 
 /-- A unit cube is measurable. -/
 lemma cube_measurable {d : ℕ} (w : Site d) : MeasurableSet (cube w) := by

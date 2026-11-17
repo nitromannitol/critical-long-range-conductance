@@ -39,8 +39,8 @@ def EthierKurtzConvergenceFromFdd : Prop :=
 def EthierKurtzRelativeCompactness : Prop :=
   ∀ (E : Type) [MetricSpace E] [CompleteSpace E] [SeparableSpace E] [MeasurableSpace E]
     [BorelSpace E] (A : Type) (Ω : A → Type) (m : ∀ a, MeasurableSpace (Ω a))
-    (P : ∀ a, @ProbabilityMeasure (Ω a) (m a)) (Y : ∀ a, Ω a → D E)
-    (hY : ∀ a, @Measurable (Ω a) (D E) (m a) inferInstance (Y a)),
+    (P : ∀ a, @ProbabilityMeasure (Ω a) (m a)) (Y : ∀ a, Ω a → D E),
+    (∀ a, @Measurable (Ω a) (D E) (m a) inferInstance (Y a)) →
     (∀ a t, @Measurable (Ω a) E (m a) inferInstance (fun w => (Y a w).1 t)) →
     (∀ eta : ℝ, 0 < eta → ∀ t : ℚ, 0 ≤ t → ∃ K : Set E, IsCompact K ∧
       ∀ a, ENNReal.ofReal (1 - eta) ≤
@@ -64,8 +64,7 @@ def EthierKurtzRelativeCompactness : Prop :=
           ∫⁻ w, incrementPower (Y a) beta delta.toNNReal 0 w
             ∂(P a : @Measure (Ω a) (m a))) (𝓝[>] 0) (𝓝 0)) →
     IsCompact (closure (Set.range (fun a =>
-      (P a).map (@Measurable.aemeasurable (Ω a) (D E) (m a) inferInstance
-        (Y a) (P a) (hY a)))))
+      @ProbabilityMeasure.map (Ω a) (D E) (m a) inferInstance (P a) (Y a))))
 
 end LatticeProb.External
 

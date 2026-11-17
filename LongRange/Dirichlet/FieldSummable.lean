@@ -38,7 +38,7 @@ theorem summable_representative_weight (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
       |(a (edgeAdd r.1.1 r.1.2 r.2.2.1) - m) *
         jumpKernel (physical ε r.1.2) * linearFn ε p r.1.2|) := by
   classical
-  letI : Fintype (latticeSet ε U) := (latticeSet_finite hε hU).fintype
+  let : Fintype (latticeSet ε U) := (latticeSet_finite hε hU).fintype
   have hA : 0 ≤ A := (abs_nonneg (a (baseEdge hd))).trans (ha _)
   have hs : Summable (fun q : (latticeSet ε U) × Site d =>
       (A + |m|) * |jumpKernel (physical ε q.2) * linearFn ε p q.2|) := by
@@ -92,7 +92,7 @@ lemma hasSum_walk_count (W : List (Site d × Site d)) (x : Site d) :
           simp only [List.count_cons_self, Nat.cast_add, Nat.cast_one]
           rfl
         · have hp : (x, b) ≠ (x, y) := fun h => hy (congrArg Prod.snd h).symm
-          simp only [List.count_cons_of_ne hp, if_neg hy, add_zero]
+          simp only [List.count_cons_of_ne hp, ite_eq_right hy, add_zero]
       · simp only [List.map_cons, List.count_cons_self, Nat.cast_add, Nat.cast_one]
     · have hp (y : Site d) : (a, b) ≠ (x, y) := fun h => ha (congrArg Prod.fst h)
       simpa only [List.map_cons, List.count_cons_of_ne ha,

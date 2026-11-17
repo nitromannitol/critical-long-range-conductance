@@ -115,16 +115,16 @@ theorem correctorEnergy_le_fluxDefect (hd : 1 ≤ d) {ε : ℝ}
       (hq : q.1 ∉ S ∨ (∀ i, q.2 ≠ unit i ∧ q.2 ≠ -unit i)) : f q = 0 := by
     rcases hq with hx | hn
     · have hx' : q.1 ∉ latticeSet ε U := by simpa only [S, Set.Finite.mem_toFinset] using hx
-      simp only [f, hx', if_false]
+      simp only [f, hx', ite_false]
     · by_cases hx : q.1 ∈ latticeSet ε U
       · by_cases hw : q.2 = 0
         · simp [f, fluxDefect, hw, hx]
         · rw [show f q = (jumpKernel (physical ε q.2))⁻¹ *
-              fluxDefect ε U a m p q.1 q.2 ^ 2 by simp only [f, hx, if_true]]
-          rw [fluxDefect, dif_neg hw,
+              fluxDefect ε U a m p q.1 q.2 ^ 2 by simp only [f, hx, ite_true]]
+          rw [fluxDefect, dite_eq_right hw,
             Dirichlet.gpField_nonnearest ε U a m p q.1 q.2 hx hw hn, sub_self,
             zero_pow (by decide : 2 ≠ 0), mul_zero]
-      · simp only [f, hx, if_false]
+      · simp only [f, hx, ite_false]
   obtain ⟨hs, ht⟩ := tsum_neighbours S f hz
   have he (q : Site d × Site d) :
       (if hw : q.2 = 0 then 0 else if q.1 ∈ latticeSet ε U then
@@ -155,7 +155,7 @@ theorem correctorEnergy_le_fluxDefect (hd : 1 ≤ d) {ε : ℝ}
         (fluxDefect ε U a m p x (unit i) ^ 2 +
           fluxDefect ε U a m p x (-unit i) ^ 2) := by
     have hx' : x ∈ latticeSet ε U := by simpa only [S, Set.Finite.mem_toFinset] using hx
-    simp only [f, hx', if_true, jumpKernel_physical_unit hε.1,
+    simp only [f, hx', ite_true, jumpKernel_physical_unit hε.1,
       jumpKernel_physical_neg_unit hε.1, inv_inv]
     ring
   have hsum : (∑ x ∈ S, ∑ i : Fin d, (f (x, unit i) + f (x, -unit i))) =

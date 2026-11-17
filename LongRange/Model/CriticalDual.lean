@@ -33,7 +33,7 @@ abbrev CriticalDomain.Field (D : CriticalDomain d) :=
 def CriticalDomain.restrict (D : CriticalDomain d) (g : Site d → ℝ) : D.Field := by
   classical
   exact ⟨fun q => if q ∈ latticeSet D.spacing D.domain then g q else 0,
-    fun q hq => if_neg hq⟩
+    fun q hq => ite_eq_right hq⟩
 
 /-- The physical-volume pairing in (e.Hm1crit), indexed by integer lattice sites. -/
 def criticalPairing (ε : ℝ) (g h : Site d → ℝ) : ℝ :=

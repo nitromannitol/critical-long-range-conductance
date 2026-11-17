@@ -38,8 +38,8 @@ theorem shortDefect_eq_sum {ε : ℝ} (hε : 0 < ε)
   apply tsum_eq_sum
   intro r hr
   have hr' : ¬ radius (physical ε r.1.2) < 1 := by
-    simpa only [Set.Finite.mem_toFinset, Set.mem_setOf_eq] using hr
-  simp only [f, shortCoeff, if_neg hr', zero_mul]
+    simpa only [Set.Finite.mem_toFinset, Set.mem_ofPred_eq] using hr
+  simp only [f, shortCoeff, ite_eq_right hr', zero_mul]
 
 /-- The short defect energy is the finite conductance energy evaluated at the edge field. -/
 theorem nnEnergy_shortDefect_eq {ε : ℝ} (hε : 0 < ε)

@@ -32,7 +32,7 @@ namespace BoundedRates
 /-- The exponential clock law gives no mass to nonpositive intervals. -/
 theorem expMeasure_Iic_zero (rates : BoundedRates S) :
     expMeasure rates.R (Iic 0) = 0 := by
-  letI := isProbabilityMeasure_expMeasure rates.R_pos
+  let := isProbabilityMeasure_expMeasure rates.R_pos
   rw [← ofReal_cdf, cdf_expMeasure_eq rates.R_pos]
   simp only [le_refl, ite_true, mul_zero, neg_zero, Real.exp_zero, sub_self,
     ENNReal.ofReal_zero]
@@ -164,8 +164,6 @@ theorem historyLaw_map_clock (rates : BoundedRates S) (μ : Measure S)
     rw [← Measure.map_map measurable_snd (by fun_prop), rates.historyLaw_map_zero,
       Measure.map_snd_prod, measure_univ, one_smul]
   | succ n =>
-    letI : IsProbabilityMeasure ((rates.historyLaw μ).map (frestrictLe n)) :=
-      Measure.isProbabilityMeasure_map (measurable_frestrictLe n).aemeasurable
     have heq := congrArg (fun ν ↦ ν.map Prod.snd) (rates.historyLaw_map_prefix_clock μ n)
     rw [Measure.map_map measurable_snd (by fun_prop), Measure.map_snd_prod,
       measure_univ, one_smul] at heq

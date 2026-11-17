@@ -34,7 +34,7 @@ def regularHistories (S : Type*) : Set (History S) :=
 theorem measurableSet_regularHistories [MeasurableSpace S] :
     MeasurableSet (regularHistories S) := by
   have hpos : MeasurableSet {h : History S | ∀ n, 0 < (h n).2} := by
-    rw [setOf_forall]
+    rw [ofPred_forall]
     exact MeasurableSet.iInter fun n ↦
       measurableSet_lt measurable_const ((measurable_pi_apply n).snd)
   exact hpos.inter (measurableSet_tendsto atTop measurable_jumpTime)

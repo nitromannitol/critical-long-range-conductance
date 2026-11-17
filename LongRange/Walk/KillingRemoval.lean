@@ -1,6 +1,6 @@
 import LongRange.Walk.InitialLaw
 import LongRange.Walk.Compactness
-import LatticeProb.Prob.BrownianDirichlet.LargeBallExit
+import LongRange.Support.Prob.BrownianDirichlet.LargeBallExit
 
 /-!
 # Removal of killing
@@ -126,7 +126,7 @@ theorem tendsto_integral_of_killed_largeBall {ι Ω : Type*} [MeasurableSpace Ω
   have he (R : ℕ) : (B R)ᶜ = {p | LatticeProb.scaledExit
       (Metric.ball 0 (R : ℝ)) s p.1 p.2 ≤ (T : ℝ≥0∞)} := by
     ext p
-    simp only [B, Set.mem_compl_iff, Set.mem_setOf_eq, not_lt]
+    simp only [B, Set.mem_compl_iff, Set.mem_ofPred_eq, not_lt]
   apply tendsto_integral_of_killed μ (ρ.prod β) Z W hC hZ hW hZC hWC A B hA hB hk
   · simpa only [he] using hp
   · simp only [he, Measure.real]
@@ -189,17 +189,19 @@ theorem tendsto_walk_integral_of_killed_largeBall {d : ℕ} (hd : 1 ≤ d)
     (r := fun R => ((initialDensityEuclidean g hg hg0 hg1 : Measure (Euc d)).prod β).real
       {p | scaledExit (Metric.ball 0 (R : ℝ)) s p.1 p.2 ≤ (T : ℝ≥0∞)})
   · intro R ε
-    rw [pathLaw, ProbabilityMeasure.toMeasure_map,
-      integral_map (measurable_halfLinePath (walkEmbed ε)).aemeasurable
+    rw [pathLaw]
+    erw [ProbabilityMeasure.toMeasure_map]
+    rw [integral_map (measurable_halfLinePath (walkEmbed ε)).aemeasurable
         hZ.aestronglyMeasurable]
-    exact abs_integral_sub_killed_le _ (hZ.comp (measurable_halfLinePath _))
+    exact abs_integral_sub_killed_le ((walkRates hd ε.2.1 hlam a ha).regularLaw
+      (initialLaw ε g ε.2.1 hg hg0 hg1)) (hZ.comp (measurable_halfLinePath _))
       (fun h => hZC _) (hA ε R)
   · intro R
     have hB : MeasurableSet {p : Euc d × BrownianPath d |
         (T : ℝ≥0∞) < scaledExit (Metric.ball 0 (R : ℝ)) s p.1 p.2} :=
       measurableSet_lt measurable_const
         (measurable_scaledExit_joint Metric.isOpen_ball s)
-    simpa only [Set.compl_setOf, not_lt] using
+    simpa only [Set.compl_ofPred, not_lt] using
       abs_integral_sub_killed_le
         ((initialDensityEuclidean g hg hg0 hg1 : Measure (Euc d)).prod β) hW hWC hB
   · exact hk

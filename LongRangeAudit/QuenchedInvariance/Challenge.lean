@@ -36,7 +36,7 @@ theorem quenched_invariance_principle
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -48,7 +48,7 @@ theorem quenched_invariance_principle
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable)) := by
+              F)) := by
   sorry
 
 /-- The full quenched invariance principle in its displayed normalization. -/
@@ -80,7 +80,7 @@ theorem quenched_invariance_principle_intro
     D.ofContinuous ⟨(fun t => p.1 + s • p.2 t),
       continuous_const.add (p.2.continuous.const_smul s)⟩
   ∃ ρp : ProbabilityMeasure (EuclideanSpace ℝ (Fin d)), (ρp : Measure _) = ρ ∧
-    ∃ hF : Measurable F,
+    ∃ _ : Measurable F,
       ∀ᵐ ω ∂P,
         Tendsto
           (fun ε : Eps => pathLaw
@@ -92,7 +92,7 @@ theorem quenched_invariance_principle_intro
           (𝓝 (ProbabilityMeasure.map
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
-              hF.aemeasurable)) := by
+              F)) := by
   sorry
 end
 end LongRangeAudit.QuenchedInvariance

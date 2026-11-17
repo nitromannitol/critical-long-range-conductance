@@ -1,8 +1,8 @@
 import LongRange.Model.Conductance
-import LatticeProb.Prob.BrownianDirichlet.KilledStrongContinuity
-import LatticeProb.Prob.BrownianDirichlet.ResolventIdentification
-import LatticeProb.Analysis.ContractionSemigroupResolvent
-import LatticeProb.Analysis.Elliptic.EuclideanTransport
+import LongRange.Support.Prob.BrownianDirichlet.KilledStrongContinuity
+import LongRange.Support.Prob.BrownianDirichlet.ResolventIdentification
+import LongRange.Support.Analysis.ContractionSemigroupResolvent
+import LongRange.Support.Analysis.Elliptic.EuclideanTransport
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
@@ -167,7 +167,7 @@ theorem continuumResolvent_classical {R a₀ μ : ℝ} {μB : Measure (BrownianP
 theorem meanConductance_pos {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
     {lam : ℝ} {a : Ω → Edge d → ℝ} (hU : AssumptionU P lam a) (hd : 1 ≤ d) :
     0 < meanConductance P hd a := by
-  letI := hU.isProbabilityMeasure
+  let := hU.isProbabilityMeasure
   have hi : Integrable (fun ω => a ω (baseEdge hd)) P :=
     (integrable_const (lam⁻¹)).mono'
       (hU.measurable _).aestronglyMeasurable

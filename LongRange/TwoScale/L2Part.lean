@@ -23,7 +23,7 @@ lemma l2NormSq_le_count {ε M : ℝ} (hε : 0 < ε) {U : Set (Fin d → ℝ)}
     (hg : ∀ q ∈ latticeSet ε U, |g q| ≤ M) :
     l2NormSq ε U g ≤ ε ^ d * (latticeSet ε U).ncard * M ^ 2 := by
   classical
-  letI := (latticeSet_finite hε hU).fintype
+  let := (latticeSet_finite hε hU).fintype
   unfold l2NormSq
   rw [tsum_fintype, mul_assoc]
   apply mul_le_mul_of_nonneg_left _ (pow_nonneg hε.le d)

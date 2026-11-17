@@ -1,4 +1,4 @@
-import LatticeProb.Prob.McDiarmidIndep
+import LongRange.Support.Prob.McDiarmidIndep
 
 /-!
 # McDiarmid inequality

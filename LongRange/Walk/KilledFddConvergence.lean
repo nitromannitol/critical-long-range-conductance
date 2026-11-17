@@ -2,9 +2,9 @@ import LongRange.Walk.KilledFdd
 import LongRange.Walk.BoundaryCells
 import LongRange.Walk.Pairing
 import LongRange.Walk.ContinuumSemigroup
-import LatticeProb.Topology.EpsFilter
-import LatticeProb.Analysis.BackwardRecursion
-import LatticeProb.Prob.BrownianDirichlet.KilledFdd
+import LongRange.Support.Topology.EpsFilter
+import LongRange.Support.Analysis.BackwardRecursion
+import LongRange.Support.Prob.BrownianDirichlet.KilledFdd
 
 /-!
 # Convergence of finite killed observations
@@ -28,7 +28,7 @@ theorem continuumDomain_eq_radius (R : ℝ) :
     continuumDomain (d := d) R = {x : Fin d → ℝ | radius x < R} := by
   ext x
   simp only [continuumDomain, Set.mem_image, Metric.mem_ball, dist_zero_right,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
   constructor
   · rintro ⟨y, hy, rfl⟩
     change radius (WithLp.ofLp y) < R
@@ -217,7 +217,7 @@ theorem varyingConverges_killedBackwardProduct (hd : 1 ≤ d)
       (continuumKilledProduct R a₀ hμ k δ φ) := by
   induction k with
   | zero =>
-    letI : IsFiniteMeasure (volume.restrict (continuumDomain (d := d) R)) :=
+    let : IsFiniteMeasure (volume.restrict (continuumDomain (d := d) R)) :=
       isFiniteMeasure_restrict.mpr hb.measure_lt_top.ne
     have h1 : MemLp (fun _ : Fin d → ℝ => (1 : ℝ)) 2
         (volume.restrict (continuumDomain (d := d) R)) := memLp_const 1
@@ -274,7 +274,7 @@ theorem tendsto_killed_product_expectation (hd : 1 ≤ d)
     by_contra hne
     have hs := hsupp (Function.mem_support.mpr hne)
     rw [continuumDomain_eq_radius] at hs hx
-    exact hx (show radius x < R by dsimp only [Set.mem_setOf_eq] at hs; linarith)
+    exact hx (show radius x < R by dsimp only [Set.mem_ofPred_eq] at hs; linarith)
   have hfront : volume (frontier (continuumDomain (d := d) R)) = 0 := by
     rw [continuumDomain_eq_radius]
     exact measure_mono_null (frontier_lt_subset_eq (radius_continuous d) continuous_const)
@@ -298,7 +298,7 @@ theorem tendsto_killed_product_expectation (hd : 1 ≤ d)
     rw [(coord_measurePreserving (d := d) R).integral_comp
       (MeasurableEquiv.toLp 2 (Fin d → ℝ)).symm.measurableEmbedding g]
     rw [setIntegral_eq_integral_of_forall_compl_eq_zero hzero, hg1, ENNReal.ofReal_one]
-  letI : IsFiniteMeasure (volume.restrict
+  let : IsFiniteMeasure (volume.restrict
       (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) R)) :=
     isFiniteMeasure_restrict.mpr Metric.isBounded_ball.measure_lt_top.ne
   have hid := killed_product_density_inner (B := Metric.ball 0 R) Metric.isOpen_ball

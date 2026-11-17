@@ -26,7 +26,7 @@ variable {E : Type*} [MetricSpace E] [MeasurableSpace E] [BorelSpace E]
 /-- The joint law of the evaluations at finitely many times. -/
 def jointLaw (mu : ProbabilityMeasure (D E)) {k : ℕ} (ts : Fin k → Time) :
     ProbabilityMeasure (Fin k → E) :=
-  mu.map (measurable_pi_lambda _ (fun i => measurable_eval (ts i))).aemeasurable
+  mu.map (fun x : D E => fun i => x.1 (ts i))
 
 /-- The Dirac law at a genuine constant path. -/
 def constantLaw (a : E) : ProbabilityMeasure (D E) :=
@@ -54,7 +54,7 @@ def unitLaw : ProbabilityMeasure Unit :=
 
 /-- The path law of a constant process on the one-point space. -/
 def constantProcessLaw (a : E) : ProbabilityMeasure (D E) :=
-  unitLaw.map (measurable_const : Measurable (fun _ : Unit => const a)).aemeasurable
+  unitLaw.map (fun _ : Unit => const a)
 
 end
 

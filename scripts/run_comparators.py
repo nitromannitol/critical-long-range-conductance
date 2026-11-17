@@ -5,16 +5,17 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import shutil
 import subprocess
 
-PROJECT_TOOLCHAIN = "leanprover/lean4:v4.32.0"
+PROJECT_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc2"
 COMPARATOR_TOOLCHAIN = "leanprover/lean4:v4.34.0-rc1"
 PINS = {
     "comparator": "575674928e239f5bc452aab72d1dd7b0f1326494",
-    "exporter": "4e7915201d3f9f04470d9eae002fa695f7cdc589",
+    "exporter": "6cea97789dc088ea47fcea15692db85685aedac5",
     "nanoda": "6ae1f0cd962f081f6c423454c5da729d841236a7",
     "landrun": "811cfff51ceaf3d9843708aa6d22e9b84ccac8b4",
 }
@@ -184,8 +185,9 @@ def main():
             log = work / (module.removeprefix(namespace + ".") + "-build.log")
             command(argv + ["-o", str(olean), str(lean_file)], project, log, audit_env)
             if challenge:
-                warnings = [line for line in log.read_text()
-                            .splitlines()[1:] if "warning:" in line]
+                warnings = [line for line in log.read_text().splitlines()[1:]
+                            if re.match(rf"^(?:{re.escape(str(lean_file))}|"
+                                        rf"{re.escape(str(relative))}):\d+:\d+: warning:", line)]
                 if len(warnings) != len(names) or any(
                     line.split("warning:", 1)[1].strip() not in
                     ("declaration uses `sorry`", "declaration uses 'sorry'")

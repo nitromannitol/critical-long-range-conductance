@@ -3,7 +3,7 @@ import LongRange.Continuum.BallExtension
 import LongRange.Continuum.NormCompare
 import LongRange.Continuum.BoundaryLipschitz
 import LongRange.Continuum.OneDimDomain
-import LatticeProb.Analysis.Elliptic.OneDimCutoff
+import LongRange.Support.Analysis.Elliptic.OneDimCutoff
 
 /-!
 # Continuum extension for the homogenization theorem

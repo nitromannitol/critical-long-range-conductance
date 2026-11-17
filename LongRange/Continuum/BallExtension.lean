@@ -1,5 +1,5 @@
 import LatticeProb.External.GilbargTrudinger
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 
 /-!
 # Extension supported in a fixed Euclidean ball

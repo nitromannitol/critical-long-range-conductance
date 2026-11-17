@@ -50,7 +50,7 @@ lemma shellConstant_pos {d : ℕ} (hd : 1 ≤ d) : 0 < shellConstant d := by
 lemma radialBall_preimage (d : ℕ) (r : ℝ) :
     radialBall d r = WithLp.toLp 2 ⁻¹' Metric.ball (0 : EuclideanSpace ℝ (Fin d)) r := by
   ext x
-  simp only [radialBall, Set.mem_setOf_eq, Set.mem_preimage, Metric.mem_ball,
+  simp only [radialBall, Set.mem_ofPred_eq, Set.mem_preimage, Metric.mem_ball,
     dist_zero_right, ← radius_norm]
 
 /-- The radial ball is measurable. -/
@@ -62,14 +62,14 @@ lemma radialBall_measurable (d : ℕ) (r : ℝ) : MeasurableSet (radialBall d r)
 `unitBallVolume d`. -/
 lemma volume_unit_ball (d : ℕ) (hd : 1 ≤ d) :
     volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) = ENNReal.ofReal (unitBallVolume d) := by
-  letI : Nonempty (Fin d) := ⟨⟨0, by omega⟩⟩
+  let : Nonempty (Fin d) := ⟨⟨0, by omega⟩⟩
   rw [EuclideanSpace.volume_ball, Fintype.card_fin, ENNReal.ofReal_one, one_pow, one_mul]
   rfl
 
 /-- For `r ≥ 0` the radial ball has volume `r^d · unitBallVolume d`. -/
 lemma radialBall_volume (d : ℕ) (hd : 1 ≤ d) (r : ℝ) (hr : 0 ≤ r) :
     volume (radialBall d r) = ENNReal.ofReal (r^d * unitBallVolume d) := by
-  letI : Nonempty (Fin d) := ⟨⟨0, by omega⟩⟩
+  let : Nonempty (Fin d) := ⟨⟨0, by omega⟩⟩
   rw [radialBall_preimage,
     (PiLp.volume_preserving_toLp (Fin d)).measure_preimage measurableSet_ball.nullMeasurableSet,
     EuclideanSpace.volume_ball]

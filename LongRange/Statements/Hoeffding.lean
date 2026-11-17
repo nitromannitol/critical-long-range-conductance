@@ -1,4 +1,4 @@
-import LatticeProb.Prob.HoeffdingSeries.OsForm
+import LongRange.Support.Prob.HoeffdingSeries.OsForm
 
 /-!
 # Hoeffding inequality for infinite sums

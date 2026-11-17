@@ -1,7 +1,7 @@
 import LongRange.Corrector.Definition
 import LongRange.HeatKernel.UnitWalk
-import LatticeProb.Analysis.WeightedSquareSeries
-import LatticeProb.Prob.OrthogonalSeries
+import LongRange.Support.Analysis.WeightedSquareSeries
+import LongRange.Support.Prob.OrthogonalSeries
 
 /-!
 # Weighted square bounds for the corrector equation

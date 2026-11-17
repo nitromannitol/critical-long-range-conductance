@@ -83,7 +83,7 @@ theorem short_column_sq_sum_bound (d : ℕ) (hd : 1 ≤ d) (R : ℝ) :
       mul_nonneg (div_nonneg (mul_nonneg hA.le hp) he0)
         (inv_nonneg.mpr (pow_nonneg (radius_nonneg _) _))
     have hs := (sq_le_sq₀ hn hr).mpr hc
-    simpa only [g, if_neg r.2.2.1, mul_pow, inv_pow, ← pow_mul,
+    simpa only [g, ite_eq_right r.2.2.1, mul_pow, inv_pow, ← pow_mul,
       show d * 2 = 2 * d by omega] using hs
   calc
     _ ≤ ∑ r ∈ T, (A * radius p / ε) ^ 2 * g r.1.2 :=

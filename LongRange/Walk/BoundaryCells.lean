@@ -42,7 +42,7 @@ theorem cellCube_boundaryCells_subset_shell {ε R : ℝ} (hε : 0 < ε)
   have hydiff := abs_le.mp (radius_difference y (physical ε q))
   have hwidth : 0 ≤ Real.sqrt (d : ℝ) * ε :=
     mul_nonneg (Real.sqrt_nonneg _) hε.le
-  constructor <;> dsimp only [Set.mem_setOf_eq] at * <;> linarith
+  constructor <;> dsimp only [Set.mem_ofPred_eq] at * <;> linarith
 
 /-- The weighted number of boundary cells is bounded by the volume of any containing set. -/
 theorem boundaryCells_volume_le {ε : ℝ} (hε : 0 < ε)
@@ -50,7 +50,7 @@ theorem boundaryCells_volume_le {ε : ℝ} (hε : 0 < ε)
     (hS : ∀ q ∈ boundaryCells ε U, cellCube ε q ⊆ S) :
     ENNReal.ofReal (ε ^ d) * (boundaryCells ε U).ncard ≤ volume S := by
   classical
-  letI := (boundaryCells_finite hε hU).fintype
+  let := (boundaryCells_finite hε hU).fintype
   have hd : Pairwise (fun q q' : boundaryCells ε U =>
       Disjoint (cellCube ε q.val) (cellCube ε q'.val)) := by
     intro q q' hne
@@ -96,7 +96,7 @@ theorem volume_radius_eq_zero {R : ℝ} (hR : 0 < R) :
   have he : {x : Fin d → ℝ | radius x = R} =
       WithLp.toLp 2 ⁻¹' Metric.sphere (0 : EuclideanSpace ℝ (Fin d)) R := by
     ext x
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, Metric.mem_sphere,
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, Metric.mem_sphere,
       dist_zero_right, ← radius_norm]
   rw [he, (PiLp.volume_preserving_toLp (Fin d)).measure_preimage
     Metric.isClosed_sphere.measurableSet.nullMeasurableSet]
@@ -114,7 +114,7 @@ theorem tendsto_volume_radius_shell {R : ℝ} (hR : 0 < R) :
       (isClosed_le (radius_continuous d) continuous_const).measurableSet
   have hm : ∀ i j : ℝ, 0 < i → i ≤ j → s i ⊆ s j := by
     intro i j _ hij x hx
-    constructor <;> dsimp only [s, Set.mem_setOf_eq] at * <;> linarith [hx.1, hx.2]
+    constructor <;> dsimp only [s, Set.mem_ofPred_eq] at * <;> linarith [hx.1, hx.2]
   have hf : ∃ t > (0 : ℝ), volume (s t) ≠ ⊤ := by
     refine ⟨1, zero_lt_one, ?_⟩
     have hfinite := (isBounded_radius_le (d := d) (R + 1)).measure_lt_top
@@ -123,20 +123,20 @@ theorem tendsto_volume_radius_shell {R : ℝ} (hR : 0 < R) :
     exact measure_mono (fun _ hx => hx.2)
   have he : (⋂ t > (0 : ℝ), s t) = {x : Fin d → ℝ | radius x = R} := by
     ext x
-    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq]
     constructor
     · intro hx
       apply le_antisymm
       · by_contra! h
         have ht := hx ((radius x - R) / 2) (by linarith)
-        dsimp only [s, Set.mem_setOf_eq] at ht
+        dsimp only [s, Set.mem_ofPred_eq] at ht
         linarith [ht.2]
       · by_contra! h
         have ht := hx ((R - radius x) / 2) (by linarith)
-        dsimp only [s, Set.mem_setOf_eq] at ht
+        dsimp only [s, Set.mem_ofPred_eq] at ht
         linarith [ht.1]
     · intro hx t ht
-      dsimp only [s, Set.mem_setOf_eq]
+      dsimp only [s, Set.mem_ofPred_eq]
       constructor <;> linarith
   have h := tendsto_measure_biInter_gt (μ := volume)
     (fun t _ => (hs t).nullMeasurableSet) hm hf
@@ -165,7 +165,7 @@ theorem tendsto_volume_boundary_shell {R : ℝ} (hR : 0 < R) :
   apply measure_mono
   intro x hx
   have hpos : 0 < ε := hε
-  constructor <;> dsimp only [Set.mem_setOf_eq] at * <;> nlinarith [hx.1, hx.2]
+  constructor <;> dsimp only [Set.mem_ofPred_eq] at * <;> nlinarith [hx.1, hx.2]
 
 /-- The physical volume of boundary cells of a positive-radius ball tends to zero. -/
 theorem tendsto_boundaryCells_volume {R : ℝ} (hR : 0 < R) :
@@ -236,8 +236,8 @@ theorem sample_sub_cellAverage_le {ε : ℝ} (hε : 0 < ε)
       ε ^ d * (latticeSet ε U).ncard * η ^ 2 +
         ε ^ d * (boundaryCells ε U).ncard * M ^ 2 := by
   classical
-  letI := (latticeSet_finite hε hb).fintype
-  letI := (boundaryCells_finite hε hb).fintype
+  let := (latticeSet_finite hε hb).fintype
+  let := (boundaryCells_finite hε hb).fintype
   let b : Finset (latticeSet ε U) := Finset.univ.filter
     (fun q => q.val ∈ boundaryCells ε U)
   have hcard : b.card = (boundaryCells ε U).ncard := by
@@ -256,10 +256,10 @@ theorem sample_sub_cellAverage_le {ε : ℝ} (hε : 0 < ε)
         apply Finset.sum_le_sum
         intro q _
         by_cases hq : q ∈ b
-        · simp only [if_pos hq]
+        · simp only [ite_eq_left hq]
           exact (hboundary q.val (Finset.mem_filter.mp hq).2).trans
             (le_add_of_nonneg_left (sq_nonneg η))
-        · simp only [if_neg hq, add_zero]
+        · simp only [ite_eq_right hq, add_zero]
           apply hinterior q.val q.property
           intro h
           exact hq (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
@@ -391,7 +391,7 @@ theorem tendsto_sample_sub_cellAverage {R : ℝ} (hR : 0 < R)
       (fun q => F (physical ε q) - cellAverage ε {x : Fin d → ℝ | radius x < R} F q))
       (nhdsWithin 0 (Set.Ioi 0)) (nhds 0) := by
   let U := {x : Fin d → ℝ | radius x < R}
-  let f : C(closure U, ℝ) := ⟨fun x => F x, hF.restrict⟩
+  let f : C(closure U, ℝ) := ⟨fun x => F x, hF.domRestrict⟩
   obtain ⟨G, hG⟩ := f.exists_restrict_eq isClosed_closure
   have he (x) (hx : x ∈ U) : G x = F x :=
     congrArg (fun g : C(closure U, ℝ) => g ⟨x, subset_closure hx⟩) hG

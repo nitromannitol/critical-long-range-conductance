@@ -133,13 +133,16 @@ theorem transitionKernel_comp_singleton (rates : BoundedRates S) (μ : Measure S
 /-- At time zero the transition kernel is the identity. -/
 theorem transitionKernel_zero (rates : BoundedRates S) :
     rates.transitionKernel 0 = Kernel.id := by
-  simp only [transitionKernel, mul_zero, poissonKernel_zero]
+  have h : (⟨rates.R, rates.R_pos.le⟩ * 0 : ℝ≥0) = 0 := mul_zero _
+  rw [transitionKernel, h, poissonKernel_zero]
 
 /-- The uniformized kernels satisfy the Chapman--Kolmogorov semigroup identity. -/
 theorem transitionKernel_add (rates : BoundedRates S) (s t : ℝ≥0) :
     rates.transitionKernel (s + t) = rates.transitionKernel t ∘ₖ rates.transitionKernel s := by
-  unfold transitionKernel
-  rw [mul_add, poissonKernel_add]
+  have h : (⟨rates.R, rates.R_pos.le⟩ * (s + t) : ℝ≥0) =
+      ⟨rates.R, rates.R_pos.le⟩ * s + ⟨rates.R, rates.R_pos.le⟩ * t := mul_add _ _ _
+  rw [transitionKernel, h, poissonKernel_add]
+  rfl
 
 /-- Singleton transition masses sum to one on the countable state space. -/
 theorem tsum_transitionKernel_singleton (rates : BoundedRates S) (t : ℝ≥0) (i : S) :

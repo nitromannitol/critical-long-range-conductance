@@ -29,16 +29,16 @@ theorem measurable_minimalScale {Ω : Type*} [MeasurableSpace Ω] {G : ℕ → S
   apply Measurable.iInf
   intro _
   have hset : MeasurableSet {ω | ∀ m, m₀ ≤ m → ω ∈ G m} := by
-    simpa only [Set.setOf_forall, Set.setOf_mem_eq] using
+    simpa only [Set.ofPred_forall, Set.ofPred_mem_eq] using
       MeasurableSet.iInter fun m => MeasurableSet.iInter fun (_ : m₀ ≤ m) => hG m
   have heq : (fun ω => ⨅ (_ : ∀ m, m₀ ≤ m → ω ∈ G m),
       ENNReal.ofReal (K * m₀)) =
       (fun ω => if ∀ m, m₀ ≤ m → ω ∈ G m then ENNReal.ofReal (K * m₀) else ⊤) := by
     funext ω
     by_cases h : ∀ m, m₀ ≤ m → ω ∈ G m
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       exact le_antisymm (iInf_le _ h) (le_iInf fun _ => le_rfl)
-    · rw [if_neg h]
+    · rw [ite_eq_right h]
       exact top_unique (le_iInf fun hh => False.elim (h hh))
   rw [heq]
   exact Measurable.ite hset measurable_const measurable_const

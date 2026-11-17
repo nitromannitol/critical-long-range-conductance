@@ -43,17 +43,17 @@ theorem sum_shellTerm_le {ε : ℝ} (hε : 0 < ε) (h : Site d → ℝ)
       ε * 3 ^ k ≤ ‖physical ε p.2‖ ∧ ‖physical ε p.2‖ < ε * 3 ^ (k + 1)
   · obtain ⟨k, hk, hkp⟩ := hex
     rw [Finset.sum_eq_single k]
-    · exact le_of_eq (if_pos hkp)
+    · exact le_of_eq (ite_eq_left hkp)
     · intro l _ hl
       unfold shellTerm
-      apply if_neg
+      apply ite_eq_right
       intro hlp
       exact hl (shell_disjoint hε hlp hkp)
     · intro hk'
       exact (hk' hk).elim
   · have hz : ∀ k ∈ Finset.range m, shellTerm ε k h p = 0 := by
       intro k hk
-      exact if_neg (fun hkp => hex ⟨k, hk, hkp⟩)
+      exact ite_eq_right (fun hkp => hex ⟨k, hk, hkp⟩)
     rw [Finset.sum_eq_zero hz]
     exact mul_nonneg (jumpKernel_nonneg _) (sq_nonneg _)
 

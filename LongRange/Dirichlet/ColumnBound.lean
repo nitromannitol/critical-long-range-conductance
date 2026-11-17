@@ -120,12 +120,12 @@ lemma sum_abs_edge_term_le (ε : ℝ) (U : Set (Fin d → ℝ)) (p : Fin d → �
         jumpKernel (physical ε z) * linearFn ε p z else 0 : ℝ)| ≤
       (if x = r.1.1 then W else 0) + (if x = r.1.1 + r.1.2 then W else 0) := by
     by_cases he : r.1 = (x, z) ∨ r.1 = (x + z, -z)
-    · rw [if_pos he, abs_mul, abs_of_nonneg (jumpKernel_nonneg _)]
+    · rw [ite_eq_left he, abs_mul, abs_of_nonneg (jumpKernel_nonneg _)]
       rcases he with he | he
       · have hx := congrArg Prod.fst he
         have hz := congrArg Prod.snd he
         dsimp only [Prod.fst, Prod.snd] at hx hz
-        rw [← hz, if_pos hx.symm]
+        rw [← hz, ite_eq_left hx.symm]
         change W ≤ W + _
         split_ifs <;> linarith
       · have hx := congrArg Prod.fst he
@@ -133,10 +133,10 @@ lemma sum_abs_edge_term_le (ε : ℝ) (U : Set (Fin d → ℝ)) (p : Fin d → �
         dsimp only [Prod.fst, Prod.snd] at hx hz
         have hxr : x = r.1.1 + r.1.2 := by rw [hx, hz]; abel
         have hzr : z = -r.1.2 := by rw [hz, neg_neg]
-        rw [hzr, physical_neg, jumpKernel_neg, linearFn_neg, abs_neg, if_pos hxr]
+        rw [hzr, physical_neg, jumpKernel_neg, linearFn_neg, abs_neg, ite_eq_left hxr]
         change W ≤ _ + W
         split_ifs <;> linarith
-    · rw [if_neg he, abs_zero]
+    · rw [ite_eq_right he, abs_zero]
       split_ifs <;> linarith
   calc
     _ ≤ ∑ x ∈ S, ((if x = r.1.1 then W else 0) +
@@ -163,11 +163,11 @@ lemma sum_abs_shortCoeff_le (ε : ℝ) (U : Set (Fin d → ℝ)) (p : Fin d → 
       |(if r.1 = (x, z) ∨ r.1 = (x + z, -z) then
         jumpKernel (physical ε z) * linearFn ε p z else 0 : ℝ)| := by
     by_cases h : radius (physical ε r.1.2) < 1
-    · rw [shortCoeff, if_pos h]
+    · rw [shortCoeff, ite_eq_left h]
       exact (abs_sub _ _).trans_eq (by
         rw [abs_mul, abs_mul, abs_of_nonneg (jumpKernel_nonneg _)]
         rfl)
-    · rw [shortCoeff, if_neg h, abs_zero]
+    · rw [shortCoeff, ite_eq_right h, abs_zero]
       exact add_nonneg (mul_nonneg hW (abs_nonneg _)) (abs_nonneg _)
   calc
     _ ≤ ∑ x ∈ S, (W * |(Cycle.cycle r.1.1 r.1.2 (x + z) x : ℝ)| +

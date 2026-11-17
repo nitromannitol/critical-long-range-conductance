@@ -112,7 +112,7 @@ theorem criticalPairing_le_l2Norm (D : CriticalDomain d) (g : Site d → ℝ)
     criticalPairing D.spacing g h ≤
       l2Norm D.spacing D.domain g * l2Norm D.spacing D.domain h := by
   classical
-  letI := (latticeSet_finite D.spacing_mem.1 D.bounded).fintype
+  let := (latticeSet_finite D.spacing_mem.1 D.bounded).fintype
   rw [criticalPairing_eq_subtype D.spacing D.domain g hh]
   simp only [l2Norm, l2NormSq, tsum_fintype]
   rw [Real.sqrt_mul (pow_nonneg D.spacing_mem.1.le _),

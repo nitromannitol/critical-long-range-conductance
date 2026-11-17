@@ -1,7 +1,7 @@
 import LongRange.TwoScale.FluctuationCoeff
 import LongRange.Appendix.Kappa
 import LongRange.TwoScale.KernelSums
-import LatticeProb.Analysis.TaylorHolder
+import LongRange.Support.Analysis.TaylorHolder
 
 /-!
 # Scale comparison for the smooth fluctuation
@@ -121,7 +121,7 @@ theorem smoothRemainder_kernel_abs_sum_bound (d : ℕ) :
     apply (unitBallIndices d ε).finite_toSet.subset
     intro w hw
     by_contra hn
-    exact hw (if_neg hn)
+    exact hw (ite_eq_right hn)
   have ht : Summable t := (hc ε hε).1
   have hf0 : ∀ w, 0 ≤ f w := by
     intro w
@@ -141,11 +141,11 @@ theorem smoothRemainder_kernel_abs_sum_bound (d : ℕ) :
   have hbound (w : Site d) : f w ≤ g w + 2 * B * t w := by
     by_cases hw : w = 0
     · subst w
-      simp only [f, if_pos rfl]
+      simp only [f, ite_eq_left rfl]
       exact add_nonneg (hg0 0) (mul_nonneg (mul_nonneg (by norm_num) hB) (ht0 0))
     by_cases hr : radius (physical ε w) ≤ 1
     · have hm := (mem_unitBallIndices hε.1 w).mpr ⟨hw, hr⟩
-      simp only [f, if_neg hw, g, if_pos hm, t, not_lt.mpr hr, if_false,
+      simp only [f, ite_eq_right hw, g, ite_eq_left hm, t, not_lt.mpr hr, ite_false,
         mul_zero, add_zero]
       calc
         _ ≤ jumpKernel (physical ε w) *
@@ -157,7 +157,7 @@ theorem smoothRemainder_kernel_abs_sum_bound (d : ℕ) :
       have hm : w ∉ unitBallIndices d ε := by
         intro hm
         exact hr ((mem_unitBallIndices hε.1 w).mp hm).2
-      simp only [f, if_neg hw, g, if_neg hm, t, if_pos hr', zero_add]
+      simp only [f, ite_eq_right hw, g, ite_eq_right hm, t, ite_eq_left hr', zero_add]
       have hlin := TaylorHolder.remainder_le_linear hv0 hv1
         (physical ε q) (physical ε w)
       change |smoothRemainder v (physical ε q) (physical ε w)| ≤ _ at hlin
@@ -172,7 +172,7 @@ theorem smoothRemainder_kernel_abs_sum_bound (d : ℕ) :
   refine ⟨hs, ?_⟩
   change ε ^ d * ∑' w, f w ≤ _
   have hgs : ε ^ d * ∑' w, g w = B / 2 * kappa d ε := by
-    rw [tsum_eq_sum (s := unitBallIndices d ε) (fun w hw => if_neg hw)]
+    rw [tsum_eq_sum (s := unitBallIndices d ε) (fun w hw => ite_eq_right hw)]
     simp only [Finset.sum_ite_mem, Finset.inter_self, ← Finset.mul_sum]
     rw [kappa_eq_radial_sum hε.1]
     ring
@@ -691,7 +691,7 @@ theorem smoothFluctuation_numerator_sub_le (d : ℕ) :
     apply (unitBallIndices d ρ).finite_toSet.subset
     intro w hw
     by_contra hn
-    exact hw (if_neg hn)
+    exact hw (ite_eq_right hn)
   let t := fun w : Site d => if 1 < radius (physical ρ w) then
     jumpKernel (physical ρ w) * (1 + radius (physical ρ w)) else 0
   have ht : Summable t := (htail ρ hρ).1
@@ -713,11 +713,11 @@ theorem smoothFluctuation_numerator_sub_le (d : ℕ) :
             smoothRemainder v (physical ε q) (physical ε w)) -
           ε' ^ d * (jumpKernel (physical ε' w) *
             smoothRemainder v (physical ε' q) (physical ε' w))) := by
-      simp only [f, dif_neg hw]
+      simp only [f, dite_eq_right hw]
       ring
     rw [heq, Real.norm_eq_abs, abs_mul]
     by_cases hm : w ∈ unitBallIndices d ρ
-    · simp only [g, if_pos hm]
+    · simp only [g, ite_eq_left hm]
       have hh := mul_le_mul_of_nonneg_right (ha (edgeAdd q w hw))
         (abs_nonneg (ε ^ d * (jumpKernel (physical ε w) *
           smoothRemainder v (physical ε q) (physical ε w)) -
@@ -727,7 +727,7 @@ theorem smoothFluctuation_numerator_sub_le (d : ℕ) :
     · have hr : 1 < radius (physical ρ w) := by
         by_contra hn
         exact hm ((mem_unitBallIndices hρ.1 w).mpr ⟨hw, le_of_not_gt hn⟩)
-      simp only [g, if_neg hm, zero_add, t, if_pos hr]
+      simp only [g, ite_eq_right hm, zero_add, t, ite_eq_left hr]
       have h₁ := kernel_remainder_le_reference_linear hv0 hv1 hρ.1 hρε q hw
       have h₂ := kernel_remainder_le_reference_linear hv0 hv1 hρ.1 hρε' q hw
       have htri := abs_sub
@@ -752,7 +752,7 @@ theorem smoothFluctuation_numerator_sub_le (d : ℕ) :
         _ = _ := by ring
   have hgBound : ∑' w, g w ≤ L * (B / 2 *
       (|ε - ε'| * (radius (physical 1 q) + 1 / ρ)) ^ σ * kappa d ρ) := by
-    rw [tsum_eq_sum (s := unitBallIndices d ρ) (fun w hw => if_neg hw)]
+    rw [tsum_eq_sum (s := unitBallIndices d ρ) (fun w hw => ite_eq_right hw)]
     simp only [Finset.sum_ite_mem, Finset.inter_self, ← Finset.mul_sum]
     exact mul_le_mul_of_nonneg_left
       (kernel_remainder_sub_sum_le hv hσ hB hHolder hρ.1 hε.1 hε'.1 q) hL

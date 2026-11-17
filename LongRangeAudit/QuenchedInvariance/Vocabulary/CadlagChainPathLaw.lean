@@ -35,7 +35,7 @@ def pathLaw (rates : JumpChain.BoundedRates S) (μ : Measure S)
     [IsProbabilityMeasure μ] (ι : S → E) : ProbabilityMeasure (D E) :=
   ProbabilityMeasure.map
     (⟨rates.regularLaw μ, inferInstance⟩ : ProbabilityMeasure (JumpChain.RegularHistory S))
-    (measurable_halfLinePath ι).aemeasurable
+    (fun h => JumpChain.RegularHistory.halfLinePath ι h)
 
 end
 end LatticeProb.Cadlag.HalfLine

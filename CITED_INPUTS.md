@@ -13,22 +13,22 @@ Murugan–Saloff-Coste formulation implies the other formulation.
 
 | Proposition in `LatticeProb.External` | Cited result | Exact Lean statement |
 | --- | --- | --- |
-| `GilbargTrudingerExistence` | GT, Theorem 6.14: classical Dirichlet existence | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudingerExistence.lean) |
+| `GilbargTrudingerExistence` | GT, Theorem 6.14: classical Dirichlet existence | [source](LongRange/Support/External/GilbargTrudingerExistence.lean) |
 | `GilbargTrudingerBoundaryRegularity` | GT, Theorem 6.19: boundary regularity | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
 | `GilbargTrudingerSchauderEstimate` | GT, Theorem 6.6: Schauder estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
 | `GilbargTrudingerSupEstimate` | GT, Theorem 3.7: supremum estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
 | `GilbargTrudingerHolderExtension` | GT, Lemma 6.37: Hölder extension | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
 | `GilbargTrudingerZeroBoundaryApproximation` | GT, §7.5: approximation in the Sobolev space with zero boundary values | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudingerSobolev.lean) |
 | `GilbargTrudingerWeakHomogeneousUniqueness` | GT, Corollary 8.2: uniqueness of homogeneous weak solutions | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudingerSobolev.lean) |
-| `MuruganSaloffCoste` | MSC, Theorem 1.1, estimate (10): discrete on-diagonal bound | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/MuruganSaloffCoste.lean) |
-| `MuruganSaloffCosteUniform` | MSC, the same theorem with constant dependence traced through its proof | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/MuruganSaloffCosteUniform.lean) |
-| `ChenKimKumagaiWangNash` | CKKW, Proposition 3.1(ii): ultracontractivity implies a Nash inequality | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/ChenKimKumagaiWang.lean) |
-| `ChenKimKumagaiWangDavies` | CKKW, Theorem 4.4 and Example 4.3: Davies upper bound | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/ChenKimKumagaiWang.lean) |
-| `EthierKurtzTrotterKato` | EK, Chapter 1, Theorem 6.1(c) ⇒ (a): semigroup convergence | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/EthierKurtzTrotterKato.lean) |
-| `EthierKurtzRelativeCompactness` | EK, Chapter 3, Theorem 8.6(b) ⇒ (a): relative compactness | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/EthierKurtzSkorokhod.lean) |
-| `EthierKurtzRelativeCompactnessStopping` | EK, Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b): stopping-time criterion | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/EthierKurtzStopping.lean) |
-| `EthierKurtzConvergenceFromFdd` | EK, Chapter 3, Theorem 7.8(b): convergence from finite-dimensional laws | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/EthierKurtzSkorokhod.lean) |
-| `BillingsleySkorokhodPolish` | Billingsley, Theorems 12.1–12.2, with pp. 131 and 166: finite-horizon Skorokhod space | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/BillingsleySkorokhod.lean) |
+| `MuruganSaloffCoste` | MSC, Theorem 1.1, estimate (10): discrete on-diagonal bound | [source](LongRange/Support/External/MuruganSaloffCoste.lean) |
+| `MuruganSaloffCosteUniform` | MSC, the same theorem with constant dependence traced through its proof | [source](LongRange/Support/External/MuruganSaloffCosteUniform.lean) |
+| `ChenKimKumagaiWangNash` | CKKW, Proposition 3.1(ii): ultracontractivity implies a Nash inequality | [source](LongRange/Support/External/ChenKimKumagaiWang.lean) |
+| `ChenKimKumagaiWangDavies` | CKKW, Theorem 4.4 and Example 4.3: Davies upper bound | [source](LongRange/Support/External/ChenKimKumagaiWang.lean) |
+| `EthierKurtzTrotterKato` | EK, Chapter 1, Theorem 6.1(c) ⇒ (a): semigroup convergence | [source](LongRange/Support/External/EthierKurtzTrotterKato.lean) |
+| `EthierKurtzRelativeCompactness` | EK, Chapter 3, Theorem 8.6(b) ⇒ (a): relative compactness | [source](LongRange/Support/External/EthierKurtzSkorokhod.lean) |
+| `EthierKurtzRelativeCompactnessStopping` | EK, Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b): stopping-time criterion | [source](LongRange/Support/External/EthierKurtzStopping.lean) |
+| `EthierKurtzConvergenceFromFdd` | EK, Chapter 3, Theorem 7.8(b): convergence from finite-dimensional laws | [source](LongRange/Support/External/EthierKurtzSkorokhod.lean) |
+| `BillingsleySkorokhodPolish` | Billingsley, Theorems 12.1–12.2, with pp. 131 and 166: finite-horizon Skorokhod space | [source](LongRange/Support/External/BillingsleySkorokhod.lean) |
 
 GT denotes Gilbarg–Trudinger, *Elliptic Partial Differential Equations of Second Order*,
 Springer, Classics in Mathematics (2001 reprint). MSC denotes Murugan–Saloff-Coste,

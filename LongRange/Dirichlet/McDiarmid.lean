@@ -1,5 +1,5 @@
 import LongRange.Model.Conductance
-import LatticeProb.Prob.McDiarmidIndep
+import LongRange.Support.Prob.McDiarmidIndep
 
 /-!
 # McDiarmid bounds for finite families of conductances
@@ -29,12 +29,12 @@ theorem edge_mcdiarmid :
   obtain ⟨C, hC, hbound⟩ := mcdiarmid_indep
   refine ⟨C, hC, ?_⟩
   intro d Ω _ P lam a hA J _ _ e he f hf δ hδ hdiff
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let σ := Fintype.equivFin J
   let X := fun k ω => a ω (e (σ.symm k))
   let g := fun y : Fin (Fintype.card J) → ℝ => f (fun j => y (σ j))
   have hg : Measurable g :=
-    hf.comp (measurable_pi_lambda _ fun j => measurable_pi_apply (σ j))
+    hf.comp (measurable_pi_iff.mpr fun j => measurable_pi_apply (σ j))
   have hind : iIndepFun X P := hA.iIndep.precomp (he.comp σ.symm.injective)
   have hgbd : ∀ k (y : Fin (Fintype.card J) → ℝ) t,
       (∀ i, y i ∈ Set.Icc lam lam⁻¹) → t ∈ Set.Icc lam lam⁻¹ →

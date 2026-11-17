@@ -34,12 +34,12 @@ theorem mem_forwardBox {d k : ℕ} {z : Site (d + 1)} :
     · exact (by simpa only [↓reduceIte, Finset.mem_Ico] using hz 0 :
         (3 : ℤ) ^ k ≤ z 0 ∧ z 0 < 2 * (3 : ℤ) ^ k).2
     · intro i hi
-      simpa only [if_neg hi, Finset.mem_Ico] using hz i
+      simpa only [ite_eq_right hi, Finset.mem_Ico] using hz i
   · rintro ⟨hlo, hhi, ht⟩ i
     by_cases hi : i = 0
     · subst i
       simpa only [↓reduceIte, Finset.mem_Ico] using And.intro hlo hhi
-    · simpa only [if_neg hi, Finset.mem_Ico] using ht i hi
+    · simpa only [ite_eq_right hi, Finset.mem_Ico] using ht i hi
 
 /-- The half-slab has exactly one triadic interval of choices per coordinate. -/
 theorem card_forwardBox (d k : ℕ) : (forwardBox d k).card = (3 ^ k) ^ (d + 1) := by

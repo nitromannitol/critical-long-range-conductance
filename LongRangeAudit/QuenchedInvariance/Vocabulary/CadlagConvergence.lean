@@ -106,8 +106,8 @@ theorem tendsto_average_of_tendsto_skorohodDistance {x : ℕ → D E} {y : D E}
     Tendsto (fun n => (1 / ε) *
       ∫ s in (t : ℝ)..(t : ℝ) + ε, f ((x n).1 s.toNNReal)) atTop
       (𝓝 ((1 / ε) * ∫ s in (t : ℝ)..(t : ℝ) + ε, f (y.1 s.toNNReal))) := by
-  letI : MeasurableSpace E := borel E
-  letI : BorelSpace E := ⟨rfl⟩
+  let : MeasurableSpace E := borel E
+  let : BorelSpace E := ⟨rfl⟩
   obtain ⟨M, hM⟩ := hb
   have hm (n : ℕ) : Measurable (fun s : ℝ => f ((x n).1 s.toNNReal)) :=
     hf.measurable.comp ((measurable_isCadlag (x n).2).comp
@@ -139,8 +139,8 @@ theorem tendsto_average_eval (y : D E) {f : E → ℝ} (hf : Continuous f) (t : 
     Tendsto (fun ε : ℝ => (1 / ε) *
       ∫ s in (t : ℝ)..(t : ℝ) + ε, f (y.1 s.toNNReal))
       (𝓝[>] 0) (𝓝 (f (y.1 t))) := by
-  letI : MeasurableSpace E := borel E
-  letI : BorelSpace E := ⟨rfl⟩
+  let : MeasurableSpace E := borel E
+  let : BorelSpace E := ⟨rfl⟩
   let g : ℝ → ℝ := fun s => f (y.1 s.toNNReal)
   have hm : Measurable g :=
     hf.measurable.comp ((measurable_isCadlag y.2).comp

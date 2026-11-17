@@ -33,21 +33,21 @@ theorem IsCadlag.splice {x y : Time → E} (hx : IsCadlag x) (hy : IsCadlag y)
     by_cases ht : t < a
     · apply (hx.1 t).congr_of_eventuallyEq_of_mem (hx := Set.mem_Ici.mpr (le_refl t))
       filter_upwards [mem_inf_of_left (Iio_mem_nhds ht)] with s hs
-      simp only [if_pos (Set.mem_Iio.mp hs)]
+      simp only [ite_eq_left (Set.mem_Iio.mp hs)]
     · apply (hy.1 t).congr_of_eventuallyEq_of_mem (hx := Set.mem_Ici.mpr (le_refl t))
       filter_upwards [self_mem_nhdsWithin] with s hs
       have hsa : ¬ s < a := not_lt.mpr ((le_of_not_gt ht).trans (Set.mem_Ici.mp hs))
-      simp only [if_neg hsa]
+      simp only [ite_eq_right hsa]
   · intro t ht
     by_cases hta : t ≤ a
     · obtain ⟨l, hl⟩ := hx.2 t ht
       refine ⟨l, hl.congr' ?_⟩
       filter_upwards [self_mem_nhdsWithin] with s hs
-      simp only [if_pos (lt_of_lt_of_le (Set.mem_Iio.mp hs) hta)]
+      simp only [ite_eq_left (lt_of_lt_of_le (Set.mem_Iio.mp hs) hta)]
     · obtain ⟨l, hl⟩ := hy.2 t ht
       refine ⟨l, hl.congr' ?_⟩
       filter_upwards [mem_inf_of_left (Ioi_mem_nhds (lt_of_not_ge hta))] with s hs
-      simp only [if_neg (not_lt.mpr (Set.mem_Ioi.mp hs).le)]
+      simp only [ite_eq_right (not_lt.mpr (Set.mem_Ioi.mp hs).le)]
 
 /-- Select the grid interval, assigning a grid endpoint to the interval on its right. -/
 def stepIndex : {n : ℕ} → (Fin n → Time) → Time → Fin (n + 1)
@@ -183,11 +183,11 @@ theorem measurable_stepPath_eval [SeparableSpace E] {n : ℕ} (s : Fin n → Tim
     (r : Fin (n + 1) → Time) :
     Measurable[evaluationSigma E, borel (D E)]
       (fun x : D E => stepPath s (fun i => x.1 (r i))) := by
-  letI : MeasurableSpace E := borel E
-  letI : BorelSpace E := ⟨rfl⟩
+  let : MeasurableSpace E := borel E
+  let : BorelSpace E := ⟨rfl⟩
   have hvalues : Measurable[evaluationSigma E]
       (fun x : D E => fun i : Fin (n + 1) => x.1 (r i)) := by
-    letI : MeasurableSpace (D E) := evaluationSigma E
+    let : MeasurableSpace (D E) := evaluationSigma E
     exact measurable_pi_iff.mpr (fun i => measurable_eval_evaluationSigma (r i))
   exact (continuous_stepPath s).measurable.comp hvalues
 

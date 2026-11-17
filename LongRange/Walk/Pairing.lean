@@ -89,11 +89,11 @@ theorem exists_continuous_memLp_zero_off_eLpNorm_sub_le
     exact hy.mpr hyU
   apply hf.induction_dense (by norm_num)
     (fun g => Continuous g ∧ MemLp g 2 μ ∧ HasCompactSupport g ∧
-      (∀ y, y ∉ U → g y = 0)) _ _ _ hε
+      (∀ y, y ∉ U → g y = 0)) _ _ hε
   · intro c t ht htμ δ hδ
     obtain ⟨η, hη, hhalf⟩ := exists_Lp_half (μ := μ) (ε := ℝ) 2 hδ
     obtain ⟨a, ha, hsmall⟩ : ∃ a : NNReal, 0 < a ∧
-        ∀ s : Set (Fin d → ℝ), μ s ≤ a →
+        ∀ s : Set (Fin d → ℝ), μ s ≤ a → NullMeasurableSet s μ →
           eLpNorm (s.indicator (fun _ => c)) 2 μ ≤ η :=
       exists_eLpNorm_indicator_le (p := (2 : ℝ≥0∞)) (μ := μ) (by norm_num) c hη.ne'
     obtain ⟨s, hst, hsc, hsclosed, hdiff⟩ :=
@@ -112,7 +112,7 @@ theorem exists_continuous_memLp_zero_off_eLpNorm_sub_le
     have hfirst : eLpNorm
         ((s.indicator (fun _ => c)) - t.indicator (fun _ => c)) 2 μ ≤ η := by
       rw [← eLpNorm_neg, neg_sub, ← Set.indicator_sdiff hst']
-      exact hsmall _ hdiff'.le
+      exact hsmall _ hdiff'.le (ht.diff hsclosed.measurableSet).nullMeasurableSet
     obtain ⟨k, hkc, hsk⟩ := exists_compact_superset hsc
     obtain ⟨g, hgc, hgerr, _, hgsupp, hgm⟩ :=
       exists_continuous_eLpNorm_sub_le_of_closed (μ := μ) (p := (2 : ℝ≥0∞))
@@ -121,11 +121,7 @@ theorem exists_continuous_memLp_zero_off_eLpNorm_sub_le
         ((measure_mono hst').trans_lt htμ).ne c hη.ne'
     refine ⟨g, ?_, hgc, hgm, ?_, ?_⟩
     · have herr := hhalf (g - s.indicator (fun _ => c))
-        (s.indicator (fun _ => c) - t.indicator (fun _ => c))
-        (hgm.aestronglyMeasurable.sub
-          (aestronglyMeasurable_const.indicator hsclosed.measurableSet))
-        ((aestronglyMeasurable_const.indicator hsclosed.measurableSet).sub
-          (aestronglyMeasurable_const.indicator ht)) hgerr hfirst
+        (s.indicator (fun _ => c) - t.indicator (fun _ => c)) hgerr hfirst
       simpa only [sub_add_sub_cancel] using herr.le
     · apply HasCompactSupport.intro hkc
       intro y hy
@@ -136,8 +132,6 @@ theorem exists_continuous_memLp_zero_off_eLpNorm_sub_le
     refine ⟨hf.1.add hg.1, hf.2.1.add hg.2.1, hf.2.2.1.add hg.2.2.1, ?_⟩
     intro y hy
     simp only [Pi.add_apply, hf.2.2.2 y hy, hg.2.2.2 y hy, add_zero]
-  · intro g hg
-    exact hg.2.1.aestronglyMeasurable
 
 /-- Full-cell averaging is asymptotically isometric on continuous compactly supported
 functions which vanish outside the domain. -/

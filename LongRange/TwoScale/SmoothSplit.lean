@@ -64,12 +64,12 @@ theorem smoothError_eq_split (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) {lam : ℝ
   have hF : Summable F := hdom.of_norm_bounded hbound
   have hA : Summable A := (hdom.mul_left lam⁻¹).of_norm_bounded (fun w => by
     by_cases hw : w = 0
-    · simp only [A, dif_pos hw, norm_zero]
+    · simp only [A, dite_eq_left hw, norm_zero]
       exact mul_nonneg (inv_nonneg.mpr hlam.le) ((norm_nonneg (F w)).trans (hbound w))
     · have habs : |a (edgeAdd q w hw)| ≤ lam⁻¹ := by
         rw [abs_of_nonneg (hlam.le.trans (ha _).1)]
         exact (ha _).2
-      simp only [A, dif_neg hw]
+      simp only [A, dite_eq_right hw]
       calc
         _ = |a (edgeAdd q w hw)| * ‖F w‖ := by
           simp only [F, Real.norm_eq_abs, abs_mul, mul_assoc]
@@ -87,8 +87,8 @@ theorem smoothError_eq_split (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε) {lam : ℝ
     funext w
     by_cases hw : w = 0
     · subst w
-      simp only [A, dif_pos rfl, hzero, mul_zero, sub_zero, dite_true]
-    · simp only [dif_neg hw, A, F]
+      simp only [A, dite_eq_left rfl, hzero, mul_zero, sub_zero, dite_true]
+    · simp only [dite_eq_right hw, A, F]
       ring
   unfold smoothError smoothFluctuation
   rw [hp, hfluct, hA.tsum_sub (hF.mul_left m), tsum_mul_left]

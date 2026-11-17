@@ -36,7 +36,7 @@ lemma summable_edge_indicator (ε : ℝ) (U : Set (Fin d → ℝ)) (x z : Site d
   simp only [Function.mem_support, ne_eq] at hr
   simp only [Set.mem_preimage, Set.mem_union, Set.mem_singleton_iff]
   by_contra hn
-  exact hr (if_neg hn)
+  exact hr (ite_eq_right hn)
 
 /-- The cycle correction is summable on a fixed observation edge. -/
 lemma summable_cycle_coefficient (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
@@ -76,8 +76,8 @@ theorem defectCoeff_eq_short_add_long (ε : ℝ) (U : Set (Fin d → ℝ))
     (p : Fin d → ℝ) (x z : Site d) (r : Cycle.indexSet ε U) :
     defectCoeff ε U p x z r = shortCoeff ε U p x z r + longCoeff ε U p x z r := by
   by_cases h : radius (physical ε r.1.2) < 1
-  · simp only [shortCoeff, longCoeff, if_pos h, if_neg (not_le.mpr h), add_zero]
-  · simp only [shortCoeff, longCoeff, if_neg h, if_pos (le_of_not_gt h), zero_add]
+  · simp only [shortCoeff, longCoeff, ite_eq_left h, ite_eq_right (not_le.mpr h), add_zero]
+  · simp only [shortCoeff, longCoeff, ite_eq_right h, ite_eq_left (le_of_not_gt h), zero_add]
 
 /-- Restricting the summable defect coefficients to short displacements preserves summability. -/
 theorem summable_shortCoeff (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
@@ -139,7 +139,7 @@ theorem gpField_sub_eq_tsum_defectCoeff (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
           rintro (heq | heq)
           · exact hr (Subtype.ext heq)
           · exact h.2 (heq ▸ r.2)
-        exact if_neg hn
+        exact ite_eq_right hn
     · let r₀ : Cycle.indexSet ε U := ⟨(x + z, -z), h.2⟩
       rw [tsum_eq_single r₀]
       · simp only [f, r₀, ite_true, or_true, edgeAdd_reverse x z hz]
@@ -148,7 +148,7 @@ theorem gpField_sub_eq_tsum_defectCoeff (hd : 1 ≤ d) {ε : ℝ} (hε : 0 < ε)
           rintro (heq | heq)
           · exact h.1 (heq ▸ r.2)
           · exact hr (Subtype.ext heq)
-        exact if_neg hn
+        exact ite_eq_right hn
   have ht : (∑' r : Cycle.indexSet ε U,
       defectCoeff ε U p x z r * (a (edgeAdd r.1.1 r.1.2 r.2.2.1) - m)) =
       (∑' r : Cycle.indexSet ε U,

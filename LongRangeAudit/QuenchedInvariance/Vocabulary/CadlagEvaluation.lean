@@ -76,7 +76,7 @@ theorem measurable_eval (t : Time) : Measurable (fun x : D E => x.1 t) := by
 /-- Any family of fixed-time evaluations, in particular a finite family, is measurable. -/
 theorem measurable_eval_family {ι : Type*} (t : ι → Time) :
     Measurable (fun x : D E => fun i => x.1 (t i)) :=
-  measurable_pi_lambda _ (fun i => measurable_eval (t i))
+  measurable_pi_iff.mpr (fun i => measurable_eval (t i))
 
 /-- A measurable path-valued map has measurable evaluations. -/
 theorem measurable_eval_comp {Ω : Type*} [MeasurableSpace Ω] {X : Ω → D E}

@@ -39,3 +39,5 @@ import LongRangeHeat.FddTight
 import LongRangeHeat.FddMarginals
 import LongRangeHeat.FddGaussian
 import LongRangeHeat.FddGaussianChain
+import LongRangeHeat.FddBrownian
+import LongRangeHeat.Statements.Fdd

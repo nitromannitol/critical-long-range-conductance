@@ -26,19 +26,22 @@ represent physical positions `ε * q`; corrector slopes use those positions. The
 variational corrector and full and killed path-law densities retain their definition
 bodies and characterization theorems.
 
-These results are conditional on a finite list of **16 explicit cited propositions** in
-Lattice-Probability and the carried support modules. They are assumptions, not proofs of the outside
+These results are conditional on a finite list of **13 explicit cited propositions** in
+the library and its pinned Lattice-Probability dependency. They are assumptions, not proofs of the outside
 papers. Different exports use different subsets; [CITED_INPUTS.md](CITED_INPUTS.md)
 lists the exact names. The paper's applications and adapters are proved in the library.
 
 ## Heat-kernel version
 
-`LongRangeHeat` contains the developing formalization of the heat-kernel version in
+`LongRangeHeat` contains the formalization of the heat-kernel version in
 [`paper/heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
-Its available statements and those still to be added are listed in
-[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The heat-kernel and Aldous
-exports take the uniform Murugan–Saloff-Coste estimate and the Chen–Kim–Kumagai–Wang
-Nash and Davies estimates as explicit hypotheses; see [CITED_INPUTS.md](CITED_INPUTS.md).
+Theorem 1.1, the scaled and unscaled annealed invariance principles (Theorem 1.2),
+and supporting results are listed in
+[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The heat-kernel, Aldous,
+finite-dimensional convergence and invariance-principle exports take the uniform
+Murugan–Saloff-Coste estimate and the Chen–Kim–Kumagai–Wang Nash and Davies estimates
+as explicit hypotheses. Both invariance-principle forms also take two Ethier–Kurtz criteria;
+see [CITED_INPUTS.md](CITED_INPUTS.md).
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
 revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned

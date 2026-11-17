@@ -30,3 +30,6 @@ import LongRangeHeat.FddStep
 import LongRangeHeat.MainTheorem
 import LongRangeHeat.Statements.MainTheorem
 import LongRangeHeat.FddChain
+import LongRangeHeat.FddExpectation
+import LongRangeHeat.FddAnnealed
+import LongRangeHeat.FddLimit

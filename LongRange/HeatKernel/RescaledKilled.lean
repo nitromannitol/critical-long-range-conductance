@@ -91,8 +91,7 @@ theorem rescaledKilledDensity_le (hd : 1 ≤ d) {ε lam : ℝ}
     (inv_nonneg.mpr (pow_nonneg hε.1.le d))
 
 /-- The same constant bounds the full and killed physical densities at every scale. -/
-theorem rescaledDensity_and_killed_offDiagonal_uniform
-    (hMSCUniform : External.MuruganSaloffCosteUniform)
+theorem rescaledDensity_and_killed_offDiagonal_uniform_proved
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
     {lam : ℝ} (hlam : 0 < lam) :
@@ -108,11 +107,31 @@ theorem rescaledDensity_and_killed_offDiagonal_uniform
         ∀ U : Set (Fin d → ℝ),
           rescaledKilledDensity hd hε hlam a ha U t x y ≤ bound := by
   obtain ⟨C, hC, hbound⟩ :=
-    rescaledDensity_offDiagonal_uniform hMSCUniform hNash hDavies d hd hlam
+    rescaledDensity_offDiagonal_uniform_proved hNash hDavies d hd hlam
   refine ⟨C, hC, ?_⟩
   intro ε hε a ha t ht x y hxy
   have hb := hbound ε hε a ha t ht x y hxy
   exact ⟨hb, fun U ↦ (rescaledKilledDensity_le hd hε hlam a ha U t x y).trans hb⟩
+
+
+/-- This bound is compatible with the conditional interface. -/
+theorem rescaledDensity_and_killed_offDiagonal_uniform
+    (_hMSCUniform : External.MuruganSaloffCosteUniform)
+    (hNash : External.ChenKimKumagaiWangNash)
+    (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
+    {lam : ℝ} (hlam : 0 < lam) :
+    ∃ C : ℝ, 0 < C ∧ ∀ ε : ℝ, ∀ hε : ε ∈ Set.Ioo 0 1,
+      ∀ a : Edge d → ℝ, ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹,
+      ∀ t : ℝ≥0, 0 < t → ∀ x y : Site d, x ≠ y →
+      let bound := C * min
+        ((ε ^ 2 + t / kappa d ε * Real.log (2 + t / (kappa d ε * ε ^ 2))) ^
+          (-((d : ℝ) / 2)))
+        (t / kappa d ε * Real.log (2 + radius (physical ε (y - x)) / ε) /
+          radius (physical ε (y - x)) ^ (d + 2))
+      rescaledDensity hd hε hlam a ha t x y ≤ bound ∧
+        ∀ U : Set (Fin d → ℝ),
+          rescaledKilledDensity hd hε hlam a ha U t x y ≤ bound :=
+  rescaledDensity_and_killed_offDiagonal_uniform_proved hNash hDavies d hd hlam
 
 end
 

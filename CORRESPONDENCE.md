@@ -71,13 +71,13 @@ The three definitions retain their complete bodies and associated characterizati
 ## Heat-kernel version
 
 The following refers to [`heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
-Names below are in `LongRangeHeat.Statements`. The unscaled formulation following
-Theorem 1.2 has no separate export yet.
+Names below are in `LongRangeHeat.Statements`.
 
 | Paper result | Lean declaration |
 | --- | --- |
 | Theorem 1.1 | `main_theorem` |
 | Theorem 1.2 | `annealed_invariance_principle` |
+| Theorem 1.2, unscaled form | `unscaled_invariance_principle` |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |
 | Lemma 2.3 | `O_squares`, `O_expectation`, `O_sums`, `O_sums_countable`, `O_integrals`, `O_constants` |
@@ -92,15 +92,16 @@ Theorem 1.2 has no separate export yet.
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |
 
-`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`, and
-`annealed_invariance_principle` take three explicit cited propositions:
-Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
+`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`,
+`annealed_invariance_principle`, and `unscaled_invariance_principle` take three explicit
+cited propositions: Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
 uniform form; and Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
 Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other heat exports do not
-take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
-Nash and Davies inputs above for that bound instead.
+take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15
+together with Malmquist (2023) for (4.5); the formalization uses the Nash and Davies inputs
+above for that bound instead.
 
-Theorem 1.2 additionally assumes the stopping-time relative compactness and
+Both forms of Theorem 1.2 additionally assume the stopping-time relative compactness and
 finite-dimensional convergence criteria of Ethier–Kurtz (1986), Chapter 3,
 Theorem 8.6 with Remark 8.7(b), and Theorem 7.8(b). The paper instead cites
 Kallenberg (2002), Theorems 14.10–14.11, and Aldous (1978).

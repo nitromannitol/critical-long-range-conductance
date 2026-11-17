@@ -51,7 +51,7 @@ stopping times and finite-horizon laws are proved in the library.
 
 In the heat-kernel version, the kernel bounds, Aldous condition and finite-dimensional
 convergence use `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash` and
-`ChenKimKumagaiWangDavies`. The scaled annealed invariance principle also uses
+`ChenKimKumagaiWangDavies`. The scaled and unscaled annealed invariance principles also use
 `EthierKurtzRelativeCompactnessStopping` and `EthierKurtzConvergenceFromFdd`.
 
 Checking that the public exports use only `propext`, `Classical.choice` and `Quot.sound`

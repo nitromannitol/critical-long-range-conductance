@@ -112,7 +112,7 @@ theorem exists_pos_hasOscillationPartition (x : D E) (t : Time) (ht : 0 < t)
   let ζ : ℝ := η / 2
   have hζ : 0 < ζ := half_pos hη
   have htT : t < T := lt_add_of_pos_right _ zero_lt_one
-  obtain ⟨m, hm⟩ := exists_le_oscillationTime Y T t htT hζ ()
+  obtain ⟨m, hm⟩ := exists_le_oscillationTime Y T t htT.le hζ ()
   let α : ℕ → Time := fun k => oscillationTime Y T ζ k ()
   have hex : ∃ k, t ≤ α k := ⟨m, hm⟩
   let K := Nat.find hex

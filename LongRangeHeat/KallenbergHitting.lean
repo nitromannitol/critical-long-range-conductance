@@ -293,7 +293,7 @@ omit [MeasurableSpace E] [BorelSpace E] [SeparableSpace E] in
 /-- The successive positive-threshold oscillation times cannot accumulate
 strictly before their cap. -/
 theorem exists_le_oscillationTime {Ω : Type} (Y : Ω → D E) (T t : Time)
-    (ht : t < T) {η : ℝ} (hη : 0 < η) (w : Ω) :
+    (ht : t ≤ T) {η : ℝ} (hη : 0 < η) (w : Ω) :
     ∃ k : ℕ, t ≤ oscillationTime Y T η k w := by
   classical
   by_contra hnone
@@ -303,7 +303,7 @@ theorem exists_le_oscillationTime {Ω : Type} (Y : Ω → D E) (T t : Time)
   have hstrict : StrictMono α := by
     apply strictMono_nat_of_lt_succ
     intro k
-    exact lt_nextOscillationTime Y (oscillationTime Y T η k) T hη w ((hα k).trans ht)
+    exact lt_nextOscillationTime Y (oscillationTime Y T η k) T hη w ((hα k).trans_le ht)
   have hbdd : BddAbove (range α) := ⟨t, fun _ ⟨k, hk⟩ => hk ▸ (hα k).le⟩
   let L : Time := ⨆ k, α k
   have hlim : Tendsto α atTop (𝓝 L) := tendsto_atTop_ciSup hstrict.monotone hbdd
@@ -319,7 +319,7 @@ theorem exists_le_oscillationTime {Ω : Type} (Y : Ω → D E) (T t : Time)
       atTop (𝓝 0) := by
     simpa only [dist_self, Function.comp_def] using hx.dist (hx.comp (Filter.tendsto_add_atTop_nat 1))
   obtain ⟨k, hk⟩ := (hdist.eventually (Iio_mem_nhds hη)).exists
-  have hlarge := le_dist_oscillationTime_succ Y T η k w ((hα (k + 1)).trans ht)
+  have hlarge := le_dist_oscillationTime_succ Y T η k w ((hα (k + 1)).trans_le ht)
   exact (not_lt_of_ge hlarge) hk
 
 end LatticeProb.Cadlag.HalfLine

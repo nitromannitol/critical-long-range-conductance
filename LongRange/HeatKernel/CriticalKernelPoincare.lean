@@ -55,4 +55,39 @@ theorem weightedLattice_critical_pseudoPoincare {d : ℕ} (hd : 0 < d)
   convert hmult using 1
   ring
 
+/-- Critical lower jump bounds give a pseudo-Poincaré inequality for every positive radius. -/
+theorem weightedLattice_critical_pseudoPoincare_all_radii {d : ℕ} (hd : 0 < d)
+    (C : ℝ) (hC : 0 < C) :
+    ∃ A : ℝ, 0 < A ∧ ∀ (k : Site d → Site d → ℝ≥0∞),
+      (∀ x, ∑' y, k x y = 1) → (∀ x y, k x y = k y x) →
+      (∀ x y, ENNReal.ofReal (C⁻¹ /
+        (latticeVolumeProfile d ((weightedLattice d hd).graph.dist x y : ℝ) *
+          quadraticScale ((weightedLattice d hd).graph.dist x y : ℝ))) ≤ k x y) →
+      ∀ (R : ℝ), 0 < R → ∀ f : lp (fun _ : Site d => ℝ) 2,
+        Summable (fun x => (f x - finsetTranslateAverage (latticeRealGraphBall d R) f x) ^ 2) ∧
+        Real.log (1 + R) *
+            (∑' x, (f x - finsetTranslateAverage (latticeRealGraphBall d R) f x) ^ 2) ≤
+          A * R ^ 2 * realKernelEnergy k f := by
+  obtain ⟨A, hA, hlarge⟩ := weightedLattice_critical_pseudoPoincare hd C hC
+  refine ⟨A, hA, ?_⟩
+  intro k hk hsym hlower R hR f
+  by_cases hR1 : 1 ≤ R
+  · exact hlarge k hk hsym hlower R hR1 f
+  · have hball : latticeRealGraphBall d R = {0} := by
+      ext z
+      simp only [latticeRealGraphBall, Nat.floor_eq_zero.mpr (lt_of_not_ge hR1),
+        mem_latticeGraphBall, Nat.le_zero, graphNorm_eq_zero_iff, Finset.mem_singleton]
+    have hzero : (fun x => (f x - finsetTranslateAverage (latticeRealGraphBall d R) f x) ^ 2) =
+        fun _ => 0 := by
+      funext x
+      simp only [hball, finsetTranslateAverage, Finset.sum_singleton, Finset.card_singleton,
+        Nat.cast_one, div_one, add_zero, sub_self, zero_pow (by norm_num : (2 : ℕ) ≠ 0)]
+    have he : 0 ≤ realKernelEnergy k f := by
+      unfold realKernelEnergy
+      exact mul_nonneg (by norm_num) (tsum_nonneg (fun x => tsum_nonneg (fun y =>
+        mul_nonneg ENNReal.toReal_nonneg (sq_nonneg _))))
+    rw [hzero]
+    simp only [summable_zero, tsum_zero, mul_zero, true_and]
+    positivity
+
 end LatticeProb.Graph.LongRangeKernel

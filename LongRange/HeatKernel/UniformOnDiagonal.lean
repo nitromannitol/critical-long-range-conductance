@@ -1,4 +1,5 @@
 import LongRange.HeatKernel.UnitWalk
+import LongRange.HeatKernel.CriticalDiagonal
 import LongRange.Support.External.MuruganSaloffCosteUniform
 import LongRange.Support.Graph.LongRangeKernel.CriticalVolume
 import LongRange.Support.Analysis.KernelPowerBridge
@@ -8,7 +9,7 @@ import LongRange.Support.Analysis.PoissonProfile
 # A field-uniform on-diagonal heat-kernel bound
 
 The unit clock and jump comparison depend only on dimension and ellipticity.
-The uniform cited estimate, Cauchy–Schwarz and Poisson averaging therefore give
+The discrete diagonal estimate, Cauchy–Schwarz and Poisson averaging give
 one continuous-time bound for every admissible conductance field.
 -/
 
@@ -143,8 +144,7 @@ private theorem logarithmic_profile_half (n m : ℕ) (hn : n ≤ 2 * m + 1) :
   exact hh
 
 /-- The unit-scale heat bound has one constant for all admissible conductance fields. -/
-theorem unitHeat_onDiagonal_uniform
-    (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
+theorem unitHeat_onDiagonal_uniform_proved
     (d : ℕ) (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam) :
     ∃ C : ℝ, 0 < C ∧ ∀ a : Edge d → ℝ,
       ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹,
@@ -155,11 +155,9 @@ theorem unitHeat_onDiagonal_uniform
   have hR : 0 < R :=
     mul_pos (by norm_num) (mul_pos (inv_pos.mpr hlam) (unitKernel_tsum_pos hd))
   obtain ⟨Cφ, hCφ, hprofile⟩ := unitRates_density_profile_uniform hd hlam
-  obtain ⟨C, hC, hbound⟩ :=
-    External.lattice_uniform_estimate hMSC hd Cφ hCφ
-  obtain ⟨c, _, hc, _, hv⟩ := latticeVolume_criticalInverse_comparison d
-  let D := C / c * (6 : ℝ) ^ ((d : ℝ) / 2)
-  have hD : 0 < D := mul_pos (div_pos hC hc) (Real.rpow_pos_of_pos (by norm_num) _)
+  obtain ⟨C, hC, hbound⟩ := weightedLattice_critical_diagonal hd Cφ hCφ
+  let D := C * (6 : ℝ) ^ ((d : ℝ) / 2)
+  have hD : 0 < D := mul_pos hC (Real.rpow_pos_of_pos (by norm_num) _)
   obtain ⟨B, hB, hpoisson⟩ := poisson_average_profile_le d R hR
   refine ⟨D * B, mul_pos hD hB, ?_⟩
   intro a ha
@@ -177,26 +175,15 @@ theorem unitHeat_onDiagonal_uniform
         (Cφ / (latticeVolumeProfile d ((lattice d).dist x y) *
           quadraticScale ((lattice d).dist x y))) := by
     simpa only [lattice_dist_eq_graphNorm hd] using hprofile a ha
-  have hbound' := hbound (fun x y => ENNReal.ofReal (rates.p x y)) hmark
-    (unitRates_density_symm hd hlam a ha) hprofile'
+  have hrow : ∀ x, ∑' y, ENNReal.ofReal (rates.p x y) = 1 := by
+    simpa only [hmass, IsMarkovDensity, ENNReal.coe_one, mul_one] using hmark
   have heven (n : ℕ) (x : Site d) : kernelPow rates.p (2 * n) x x ≤
-      (C / c) * (1 + (n : ℝ) * Real.log (2 + n)) ^ (-((d : ℝ) / 2)) := by
-    have hb := (le_iSup (fun z => densityPower (weightedLattice d hd).mass
-      (fun u v => ENNReal.ofReal (rates.p u v)) (2 * n) z z) x).trans (hbound' n).2
-    rw [hmass, densityPower_one_eq _ _ rates.p_nonneg rates.hasSum_p] at hb
-    have hvn := (hv n (Nat.cast_nonneg n)).1
-    have hlog : 0 ≤ Real.log (2 + (n : ℝ)) :=
-      Real.log_nonneg (by linarith [Nat.cast_nonneg (α := ℝ) n])
-    have hp : 0 < (1 + (n : ℝ) * Real.log (2 + n)) ^ ((d : ℝ) / 2) :=
-      Real.rpow_pos_of_pos (by positivity) _
-    have hV : 0 < latticeVolumeProfile d (criticalInverse n) :=
-      (mul_pos hc hp).trans_le hvn
-    have hr := (ENNReal.ofReal_le_ofReal_iff (div_nonneg hC.le hV.le)).mp hb
-    calc
-      _ ≤ C / latticeVolumeProfile d (criticalInverse n) := hr
-      _ ≤ C / (c * (1 + (n : ℝ) * Real.log (2 + n)) ^ ((d : ℝ) / 2)) :=
-        div_le_div_of_nonneg_left hC.le (mul_pos hc hp) hvn
-      _ = _ := by rw [Real.rpow_neg (by positivity)]; ring
+      C * (1 + (n : ℝ) * Real.log (2 + n)) ^ (-((d : ℝ) / 2)) := by
+    have hb := hbound (fun x y => ENNReal.ofReal (rates.p x y)) hrow
+      (unitRates_density_symm hd hlam a ha) (fun x y => (hprofile' x y).1) n x
+    rw [densityPower_one_eq _ _ rates.p_nonneg rates.hasSum_p,
+      ENNReal.toReal_ofReal (kernelPow_nonneg rates.p_nonneg (2 * n) x x)] at hb
+    exact hb
   have hall (n : ℕ) (x y : Site d) : kernelPow rates.p n x y ≤
       D * (1 + (n : ℝ) * Real.log (2 + n)) ^ (-((d : ℝ) / 2)) := by
     have hhalf (m : ℕ) (hm : n ≤ 2 * m + 1) (z : Site d) :
@@ -204,7 +191,7 @@ theorem unitHeat_onDiagonal_uniform
           D * (1 + (n : ℝ) * Real.log (2 + n)) ^ (-((d : ℝ) / 2)) := by
       exact (heven m z).trans (by
         simpa only [D, mul_assoc] using mul_le_mul_of_nonneg_left
-          (logarithmic_profile_half (d := d) n m hm) (div_pos hC hc).le)
+          (logarithmic_profile_half (d := d) n m hm) hC.le)
     have hb := kernelPow_le_sqrt_diag_half rates.p_nonneg rates.hasSum_p
       (unitRates_p_symm hd hlam a ha) n x y
     have hlog : 0 ≤ Real.log (2 + (n : ℝ)) :=
@@ -251,14 +238,24 @@ theorem unitHeat_onDiagonal_uniform
       mul_le_mul_of_nonneg_left (hpoisson t t.coe_nonneg) hD.le
     _ = _ := by ring
 
+/-- The uniform heat bound is compatible with the earlier conditional interface. -/
+theorem unitHeat_onDiagonal_uniform
+    (_hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
+    (d : ℕ) (hd : 1 ≤ d) {lam : ℝ} (hlam : 0 < lam) :
+    ∃ C : ℝ, 0 < C ∧ ∀ a : Edge d → ℝ,
+      ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹,
+      ∀ (t : ℝ≥0) (x y : Site d),
+        ((unitRates hd hlam a ha).transitionKernel t x).real {y} ≤
+          C * (1 + t * Real.log (2+t)) ^ (-((d:ℝ)/2)) :=
+  unitHeat_onDiagonal_uniform_proved d hd hlam
+
 /-- The constant-one conductances in dimension one satisfy the uniform heat bound. -/
-theorem unitHeat_onDiagonal_one
-    (hMSC : LatticeProb.External.MuruganSaloffCosteUniform) :
+theorem unitHeat_onDiagonal_one :
     ∃ C : ℝ, 0 < C ∧ ∀ (t : ℝ≥0) (x y : Site 1),
       ((unitRates (by norm_num : 1 ≤ 1) (by norm_num : (0 : ℝ) < 1)
         (fun _ : Edge 1 => (1 : ℝ)) (by intro _; norm_num)).transitionKernel t x).real {y} ≤
           C * (1 + t * Real.log (2 + t)) ^ (-(1 / (2 : ℝ))) := by
-  obtain ⟨C, hC, hbound⟩ := unitHeat_onDiagonal_uniform hMSC 1 (by norm_num)
+  obtain ⟨C, hC, hbound⟩ := unitHeat_onDiagonal_uniform_proved 1 (by norm_num)
     (by norm_num : (0 : ℝ) < 1)
   refine ⟨C, hC, ?_⟩
   intro t x y

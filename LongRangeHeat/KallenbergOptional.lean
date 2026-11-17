@@ -179,4 +179,45 @@ theorem exists_pos_eventually_uniform_optional_increment_of_positive
     exact zero_le
   · simpa only [v, if_neg hz] using hn
 
+
+/-- Sequential optional-time convergence implies uniform control of the expected
+truncated increment. -/
+theorem exists_pos_eventually_uniform_optional_expectation
+    (P : ∀ n, ProbabilityMeasure (Ω n)) (Y : ∀ n, Ω n → D E)
+    {H : ℝ} (hH : 0 < H)
+    (h : ∀ η : ℝ, 0 < η → ∀ τ : (n : ℕ) → Ω n → Time,
+      (∀ n, naturalStopping (Y n) H (τ n)) →
+      ∀ u : ℕ → Time, (∀ n, 0 < u n) →
+      Tendsto (fun n => (u n : ℝ)) atTop (𝓝 0) →
+        Tendsto (fun n => (P n : Measure (Ω n))
+          {w | η ≤ dist ((Y n w).1 (τ n w + u n)) ((Y n w).1 (τ n w))})
+          atTop (𝓝 0))
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ δ : ℝ, 0 < δ ∧ ∃ N : ℕ, ∀ n, N ≤ n →
+      ∀ τ : Ω n → Time, naturalStopping (Y n) H τ →
+      ∀ u : Time, (u : ℝ) ≤ δ →
+        (∫⁻ w, ENNReal.ofReal (min (dist ((Y n w).1 (τ w + u))
+          ((Y n w).1 (τ w))) 1) ∂(P n : Measure (Ω n))) < ε := by
+  obtain ⟨r, _, hrpos, hrε⟩ := ENNReal.lt_iff_exists_real_btwn.mp hε
+  have hr2 : 0 < r / 2 := half_pos (ENNReal.ofReal_pos.mp hrpos)
+  obtain ⟨δ, hδ, N, hN⟩ :=
+    exists_pos_eventually_uniform_optional_increment_of_positive P Y hH hr2 (h (r / 2) hr2)
+      (ENNReal.ofReal_pos.mpr hr2)
+  refine ⟨δ, hδ, N, ?_⟩
+  intro n hn τ hτ u hu
+  have htail := hN n hn τ hτ u hu
+  calc
+    _ ≤ ENNReal.ofReal (r / 2) +
+        (P n : Measure (Ω n))
+          {w | r / 2 ≤ dist ((Y n w).1 (τ w + u)) ((Y n w).1 (τ w))} :=
+      lintegral_truncated_dist_le (P n) (fun w => (Y n w).1 (τ w + u))
+        (fun w => (Y n w).1 (τ w)) (r / 2)
+    _ < ENNReal.ofReal (r / 2) + ENNReal.ofReal (r / 2) :=
+      ENNReal.add_lt_add_left ENNReal.ofReal_ne_top htail
+    _ = ENNReal.ofReal r := by
+      rw [← ENNReal.ofReal_add hr2.le hr2.le]
+      congr 1
+      ring
+    _ < ε := hrε
+
 end LatticeProb.Cadlag.HalfLine

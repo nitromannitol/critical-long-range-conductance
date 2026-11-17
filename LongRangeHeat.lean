@@ -29,3 +29,9 @@ import LongRangeHeat.WalkPointwise
 import LongRangeHeat.FddStep
 import LongRangeHeat.MainTheorem
 import LongRangeHeat.Statements.MainTheorem
+import LongRangeHeat.FddChain
+import LongRangeHeat.FddExpectation
+import LongRangeHeat.FddAnnealed
+import LongRangeHeat.FddLimit
+import LongRangeHeat.FddAlgebra
+import LongRangeHeat.FddWeak

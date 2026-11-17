@@ -33,3 +33,5 @@ import LongRangeHeat.FddChain
 import LongRangeHeat.FddExpectation
 import LongRangeHeat.FddAnnealed
 import LongRangeHeat.FddLimit
+import LongRangeHeat.FddAlgebra
+import LongRangeHeat.FddWeak

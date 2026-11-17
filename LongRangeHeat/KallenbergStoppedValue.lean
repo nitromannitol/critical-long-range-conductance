@@ -39,6 +39,7 @@ theorem weakNaturalStopping.measurable_min {Y : Ω → D E} {H : ℝ}
     rw [heq]
     exact naturalSigma_mono Y hst _ (hτ.2 s)
 
+omit [SeparableSpace E] in
 /-- A clipped weakly optional time has a measurable stopped value at the
 clipping horizon. -/
 theorem weakNaturalStopping.measurable_stopped_min {Y : Ω → D E} {H : ℝ}

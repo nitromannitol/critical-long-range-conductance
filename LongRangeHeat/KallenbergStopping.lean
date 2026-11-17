@@ -233,7 +233,7 @@ theorem stoppingIncrementCondition_of_positive_stopping_increment
       exact hη
     rw [hempty, measure_empty]
     exact zero_le
-  · simpa only [v, if_neg hz] using hn
+  · simpa only [v, ite_eq_right hz] using hn
 
 /-- The uniform stopped-increment bound yields the sequential condition in
 Kallenberg (2002), Lemma 16.12. -/

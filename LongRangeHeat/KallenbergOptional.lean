@@ -177,7 +177,7 @@ theorem exists_pos_eventually_uniform_optional_increment_of_positive
       exact hη
     rw [hempty, measure_empty]
     exact zero_le
-  · simpa only [v, if_neg hz] using hn
+  · simpa only [v, ite_eq_right hz] using hn
 
 
 /-- Sequential optional-time convergence implies uniform control of the expected

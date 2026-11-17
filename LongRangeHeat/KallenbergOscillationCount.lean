@@ -64,7 +64,7 @@ theorem measure_oscillationTime_lt_le
           ∑ i : Fin m, ((α (i.val + 1) w : ℝ) - (α i.val w : ℝ)) := by
         apply Finset.sum_congr rfl
         intro i _
-        simp only [ξ, if_pos (hu i)]
+        simp only [ξ, ite_eq_left (hu i)]
       calc
         _ = ∑ i : Fin m, ((α (i.val + 1) w : ℝ) - (α i.val w : ℝ)) := hξeq
         _ = ∑ i ∈ Finset.range m, ((α (i + 1) w : ℝ) - (α i w : ℝ)) :=

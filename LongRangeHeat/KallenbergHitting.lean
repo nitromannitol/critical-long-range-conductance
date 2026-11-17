@@ -113,6 +113,25 @@ theorem le_dist_nextOscillationTime {Ω : Type} (Y : Ω → D E) (τ : Ω → Ti
   · exact (lt_irrefl T (heq ▸ hk)).elim
   · exact hex.2.le
 
+
+/-- Before the first oscillation time, the distance from the starting value
+cannot exceed the threshold. -/
+theorem dist_le_of_lt_nextOscillationTime {Ω : Type} (Y : Ω → D E) (τ : Ω → Time)
+    (T : Time) {η : ℝ} (hη : 0 ≤ η) (w : Ω) {s : Time}
+    (hτs : τ w ≤ s) (hs : s < nextOscillationTime Y τ T η w) :
+    dist ((Y w).1 (τ w)) ((Y w).1 s) ≤ η := by
+  by_cases heq : τ w = s
+  · rw [← heq, dist_self]
+    exact hη
+  · have hlt : τ w < s := lt_of_le_of_ne hτs heq
+    by_contra hbad
+    have hdist : η < dist ((Y w).1 (τ w)) ((Y w).1 s) := lt_of_not_ge hbad
+    have hle : nextOscillationTime Y τ T η w ≤ s := by
+      apply csInf_le ⟨0, fun _ _ => zero_le⟩
+      exact mem_insert_of_mem T ⟨hlt, hdist⟩
+    exact (not_lt_of_ge hle) hs
+
+
 variable [MeasurableSpace E] [BorelSpace E] [SeparableSpace E]
 
 /-- A capped first oscillation after a weakly optional time is weakly optional. -/
@@ -193,7 +212,7 @@ theorem weakNaturalStopping_oscillationTime {Ω : Type} (Y : Ω → D E)
       by_cases ht : 0 < t
       · have heq : {w : Ω | oscillationTime Y T η 0 w < t} = univ := by
           ext w
-          simp only [oscillationTime, mem_ofPred_eq, mem_univ, iff_true, ht]
+          simp only [oscillationTime, mem_ofPred_eq, mem_univ, ht]
         rw [heq]
         exact @MeasurableSet.univ Ω (naturalSigma Y t)
       · have heq : {w : Ω | oscillationTime Y T η 0 w < t} = ∅ := by
@@ -211,6 +230,7 @@ theorem oscillationTime_le_succ {Ω : Type} (Y : Ω → D E)
   apply le_nextOscillationTime
   exact NNReal.coe_le_coe.mp ((weakNaturalStopping_oscillationTime Y T η k).1 w)
 
+omit [MeasurableSpace E] [BorelSpace E] [SeparableSpace E] in
 /-- An oscillation time strictly before the cap reaches the threshold. -/
 theorem le_dist_oscillationTime_succ {Ω : Type} (Y : Ω → D E)
     (T : Time) (η : ℝ) (k : ℕ) (w : Ω)
@@ -218,5 +238,22 @@ theorem le_dist_oscillationTime_succ {Ω : Type} (Y : Ω → D E)
     η ≤ dist ((Y w).1 (oscillationTime Y T η k w))
       ((Y w).1 (oscillationTime Y T η (k + 1) w)) :=
   le_dist_nextOscillationTime Y (oscillationTime Y T η k) T η w hT
+
+omit [MeasurableSpace E] [BorelSpace E] [SeparableSpace E] in
+/-- Two values between successive oscillation times are within twice the
+threshold. -/
+theorem dist_le_between_oscillationTimes {Ω : Type} (Y : Ω → D E)
+    (T : Time) {η : ℝ} (hη : 0 ≤ η) (k : ℕ) (w : Ω) {s u : Time}
+    (hks : oscillationTime Y T η k w ≤ s)
+    (hs : s < oscillationTime Y T η (k + 1) w)
+    (hku : oscillationTime Y T η k w ≤ u)
+    (hu : u < oscillationTime Y T η (k + 1) w) :
+    dist ((Y w).1 s) ((Y w).1 u) ≤ 2 * η := by
+  have hs' := dist_le_of_lt_nextOscillationTime Y (oscillationTime Y T η k) T hη w hks hs
+  have hu' := dist_le_of_lt_nextOscillationTime Y (oscillationTime Y T η k) T hη w hku hu
+  have htri := dist_triangle ((Y w).1 s) ((Y w).1 (oscillationTime Y T η k w)) ((Y w).1 u)
+  have hs'' : dist ((Y w).1 s) ((Y w).1 (oscillationTime Y T η k w)) ≤ η := by
+    simpa only [dist_comm] using hs'
+  linarith
 
 end LatticeProb.Cadlag.HalfLine

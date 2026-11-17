@@ -11,8 +11,6 @@ open scoped ENNReal Topology
 theorem quenched_invariance_principle
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -55,8 +53,6 @@ theorem quenched_invariance_principle
 theorem quenched_invariance_principle_intro
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)

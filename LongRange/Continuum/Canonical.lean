@@ -31,7 +31,6 @@ theorem mean_coefficient_pos {P : Measure Ω} {lam : ℝ} {a : Ω → Edge d →
 classical solution at the actual mean coefficient, including mass zero. -/
 theorem existsUnique_classical_solution
     (h614 : LatticeProb.External.GilbargTrudingerExistence)
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
     (hd : 1 ≤ d) {σ μ : ℝ} (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     {P : Measure Ω} {lam : ℝ} {a : Ω → Edge d → ℝ} (hA : AssumptionU P lam a)
@@ -42,13 +41,12 @@ theorem existsUnique_classical_solution
         ∀ x ∉ U, ū x = 0 := by
   have hfinite : c0HolderNorm σ (closure U) f < ⊤ :=
     hf.trans_lt ENNReal.ofReal_lt_top
-  exact existsUnique_zero_extended_classicalDirichletSolution h614 h37 hd hσ.1 hσ.2
+  exact existsUnique_zero_extended_classicalDirichletSolution h614 hd hσ.1 hσ.2
     hU hμ (mean_coefficient_pos hA hd) hfinite
 
 /-- Closure uniqueness transfers directly to the lattice samples occurring in the
 paper's error norm; no values outside the domain enter that norm. -/
 theorem sampled_error_eq
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
     (hd : 1 ≤ d) {σ μ : ℝ} (hμ : 0 ≤ μ)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     {P : Measure Ω} {lam : ℝ} {a : Ω → Edge d → ℝ} (hA : AssumptionU P lam a)
@@ -58,7 +56,7 @@ theorem sampled_error_eq
     (ε : ℝ) (u : LatticeProb.Site d → ℝ) :
     l2Norm ε U (fun q => u q - v (physical ε q)) =
       l2Norm ε U (fun q => u q - ū (physical ε q)) := by
-  have heq := hv.eqOn_closure h37 hd hU hμ (mean_coefficient_pos hA hd) hū
+  have heq := hv.eqOn_closure hd hU hμ (mean_coefficient_pos hA hd) hū
   unfold l2Norm l2NormSq
   congr 2
   apply tsum_congr
@@ -70,7 +68,7 @@ theorem sampled_error_eq
 The produced zero-extended solution on the unit ball has value one at the origin. -/
 theorem exists_nonzero_mass_zero_solution
     (h614 : LatticeProb.External.GilbargTrudingerExistence)
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
+
     {P : Measure Ω} {lam : ℝ} {a : Ω → Edge 1 → ℝ} (hA : AssumptionU P lam a) :
     ∃ ū : (Fin 1 → ℝ) → ℝ,
       IsClassicalDirichletSolution (unitBall 1) 0
@@ -89,14 +87,14 @@ theorem exists_nonzero_mass_zero_solution
   simp only [Nat.cast_one] at hfinite
   rw [hdata] at hfinite
   have hbound := (ENNReal.ofReal_toReal hfinite.ne).ge
-  obtain ⟨ū, hū, _⟩ := existsUnique_classical_solution (μ := 0) h614 h37 (by omega)
+  obtain ⟨ū, hū, _⟩ := existsUnique_classical_solution (μ := 0) h614 (by omega)
     (by norm_num : (1 / 2 : ℝ) ∈ Set.Ioo 0 1) (by norm_num)
     (isC2HolderDomain_unitBall _) hA hbound
   simp only [Nat.cast_one] at hū
   have hquad := quadratic_isClassicalDirichletSolution (d := 1) 0 b
   simp only [Nat.cast_one] at hquad
   rw [hdata] at hquad
-  have heq := hū.1.eqOn_closure h37 (by omega) (isC2HolderDomain_unitBall (1 / 2))
+  have heq := hū.1.eqOn_closure (by omega) (isC2HolderDomain_unitBall (1 / 2))
     (by norm_num) (show 0 < b by
       simpa only [b, Nat.cast_one] using mean_coefficient_pos hA (by omega)) hquad
   have horigin : (0 : Fin 1 → ℝ) ∈ closure (unitBall 1) := by

@@ -71,12 +71,13 @@ The three definitions retain their complete bodies and associated characterizati
 ## Heat-kernel version
 
 The following refers to [`heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
-Names below are in `LongRangeHeat.Statements`. A pending entry has no statement export yet.
+Names below are in `LongRangeHeat.Statements`. The unscaled formulation following
+Theorem 1.2 has no separate export yet.
 
 | Paper result | Lean declaration |
 | --- | --- |
 | Theorem 1.1 | `main_theorem` |
-| Theorem 1.2 | Pending |
+| Theorem 1.2 | `annealed_invariance_principle` |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |
 | Lemma 2.3 | `O_squares`, `O_expectation`, `O_sums`, `O_sums_countable`, `O_integrals`, `O_constants` |
@@ -85,21 +86,21 @@ Names below are in `LongRangeHeat.Statements`. A pending entry has no statement 
 | Lemma 3.3 | `G_gaussian_tails` (also `G_gaussian_tails_of_increment`) |
 | Proposition 4.1 | `heat_kernel_bounds` |
 | Proposition 4.2 | `aldous_condition` |
-| Proposition 4.3 | Pending |
-| (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving` |
+| Proposition 4.3 | `fdd_convergence` |
+| (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving`, `scaling_obstruction` |
 | (2.3) | `second_moment` |
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |
 
-`heat_kernel_bounds` and `aldous_condition` take three explicit cited propositions:
+`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`, and
+`annealed_invariance_principle` take three explicit cited propositions:
 Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
 uniform form; and Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
-Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other available heat exports
-do not take these cited propositions. The paper cites Chen–Kumagai–Wang's stability
-Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
+Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other heat exports do not
+take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
 Nash and Davies inputs above for that bound instead.
 
-The intended route for Theorem 1.2 uses Ethier–Kurtz (1986), Chapter 3,
-Theorem 7.8(b) and Theorem 8.6 with Remark 8.7(b), and Billingsley (1999),
-Theorems 12.1–12.2. The paper instead cites Kallenberg (2002), Theorems 14.10–14.11,
-and Aldous (1978). These are planned inputs until the corresponding export is available.
+Theorem 1.2 additionally assumes the stopping-time relative compactness and
+finite-dimensional convergence criteria of Ethier–Kurtz (1986), Chapter 3,
+Theorem 8.6 with Remark 8.7(b), and Theorem 7.8(b). The paper instead cites
+Kallenberg (2002), Theorems 14.10–14.11, and Aldous (1978).

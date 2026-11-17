@@ -1,0 +1,13 @@
+{
+  "challenge_module": "LongRangeAudit.AnnealedInvariance.Challenge",
+  "solution_module": "LongRangeAudit.AnnealedInvariance.Solution",
+  "theorem_names": [
+    "LongRangeAudit.AnnealedInvariance.annealed_invariance_principle"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}

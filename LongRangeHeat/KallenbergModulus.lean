@@ -25,6 +25,44 @@ def HasOscillationPartition (x : D E) (t : Time) (δ η : ℝ) : Prop :=
       cut i ≤ s → s < cut (i + 1) → cut i ≤ u → u < cut (i + 1) →
       dist (x.1 s) (x.1 u) ≤ η
 
+/-- The minimum width bounds the number of nonterminal partition intervals. -/
+theorem partition_interval_count_bound {t : Time} {δ : ℝ} {K : ℕ}
+    (hK : 0 < K) (cut : ℕ → Time) (h0 : cut 0 = 0) (ht : cut K = t)
+    (hstrict : ∀ i, i < K → cut i < cut (i + 1))
+    (hwidth : ∀ i, i + 1 < K → δ ≤ (cut (i + 1) : ℝ) - (cut i : ℝ)) :
+    ((K - 1 : ℕ) : ℝ) * δ ≤ (t : ℝ) := by
+  have hsum : ((K - 1 : ℕ) : ℝ) * δ ≤
+      ∑ i ∈ Finset.range (K - 1), ((cut (i + 1) : ℝ) - (cut i : ℝ)) := by
+    calc
+      _ = ∑ _i ∈ Finset.range (K - 1), δ := by simp
+      _ ≤ _ := Finset.sum_le_sum fun i hi => hwidth i (by
+        have := Finset.mem_range.mp hi
+        omega)
+  have hend : (cut (K - 1) : ℝ) ≤ (t : ℝ) := by
+    have hk : K - 1 + 1 = K := by omega
+    have hh := hstrict (K - 1) (by omega)
+    rw [hk, ht] at hh
+    exact_mod_cast hh.le
+  have htel : (∑ i ∈ Finset.range (K - 1),
+      ((cut (i + 1) : ℝ) - (cut i : ℝ))) = (cut (K - 1) : ℝ) := by
+    simpa only [h0, NNReal.coe_zero, sub_zero] using
+      Finset.sum_range_sub (fun i => (cut i : ℝ)) (K - 1)
+  rw [htel] at hsum
+  exact hsum.trans hend
+
+/-- At a fixed horizon and positive mesh, all admissible partitions have a
+common finite bound on their number of intervals. -/
+theorem exists_partition_interval_bound (t : Time) {δ : ℝ} (hδ : 0 < δ) :
+    ∃ N : ℕ, ∀ (K : ℕ) (cut : ℕ → Time), 0 < K → cut 0 = 0 → cut K = t →
+      (∀ i, i < K → cut i < cut (i + 1)) →
+      (∀ i, i + 1 < K → δ ≤ (cut (i + 1) : ℝ) - (cut i : ℝ)) → K ≤ N := by
+  obtain ⟨n, hn⟩ := exists_nat_gt ((t : ℝ) / δ)
+  refine ⟨n + 1, fun K cut hK h0 ht hstrict hwidth => ?_⟩
+  have hb := partition_interval_count_bound hK cut h0 ht hstrict hwidth
+  have hdiv : ((K - 1 : ℕ) : ℝ) ≤ (t : ℝ) / δ := (le_div_iff₀ hδ).2 hb
+  have hlt : K - 1 < n := by exact_mod_cast hdiv.trans_lt hn
+  omega
+
 
 /-- The modified oscillation modulus, truncated at one. -/
 noncomputable def truncatedModifiedModulus (x : D E) (t : Time) (δ : ℝ) : ℝ≥0∞ :=

@@ -1,3 +1,4 @@
+import LatticeProb.Analysis.Elliptic.SupEstimateProved
 import LongRange.Support.Analysis.Elliptic.OneDimDomain
 import LongRange.Support.External.GilbargTrudingerExistence
 import Mathlib.Topology.Piecewise
@@ -8,7 +9,7 @@ import Mathlib.Topology.Piecewise
 For positive diffusivity and nonnegative mass, Hölder data on a smooth bounded
 domain admit a unique globally continuous classical solution that vanishes outside
 the domain. Existence in dimensions at least two uses the cited GT 6.14 input;
-uniqueness there uses the cited GT 3.7 input. Dimension one uses interval ODE proofs.
+uniqueness there uses the GT 3.7 estimate. Dimension one uses interval ODE proofs.
 
 Carried from Lattice-Probability revision 47027b49 (`LatticeProb/Analysis/Elliptic/CanonicalDirichlet.lean`).
 -/
@@ -88,7 +89,6 @@ theorem eqOn_closure_of_sub_supNorm_eq_zero {U : Set (Fin d → ℝ)} (hU : IsOp
 /-- On a smooth bounded domain of positive dimension, classical Dirichlet solutions
 are unique on the closure, including the zero-mass case. -/
 theorem IsClassicalDirichletSolution.eqOn_closure
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
     (hd : 1 ≤ d) {σ : ℝ} {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     {μ a : ℝ} (hμ : 0 ≤ μ) (ha : 0 < a) {f u v : (Fin d → ℝ) → ℝ}
     (hu : IsClassicalDirichletSolution U μ a f u)
@@ -113,7 +113,8 @@ theorem IsClassicalDirichletSolution.eqOn_closure
         rw [hz]; exact ENNReal.zero_lt_top) hdiff
     simpa only [hz, mul_zero] using hb
   · have htwo : 2 ≤ d := by omega
-    obtain ⟨C, _, hsup⟩ := h37 d htwo U hU.1 hU.2.1 hU.2.2.1
+    obtain ⟨C, _, hsup⟩ :=
+      LatticeProb.External.gilbargTrudingerSupEstimate_holds d htwo U hU.1 hU.2.1 hU.2.2.1
     have hb := hsup a μ ha hμ (fun _ => 0) (u - v)
       (by rw [hz]; exact ENNReal.zero_lt_top) hdiff
     simpa only [hz, mul_zero] using hb
@@ -155,10 +156,9 @@ theorem IsClassicalDirichletSolution.zero_extension {U : Set (Fin d → ℝ)}
     exact piecewise_eq_of_notMem U u (fun _ => 0) hx
 
 /-- Every Hölder datum has exactly one globally continuous, literally zero-extended
-classical Dirichlet solution. The only assumptions from PDE books are GT 6.14 and 3.7. -/
+classical Dirichlet solution. The remaining cited existence assumption is GT 6.14. -/
 theorem existsUnique_zero_extended_classicalDirichletSolution
     (h614 : LatticeProb.External.GilbargTrudingerExistence)
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
     (hd : 1 ≤ d) {σ : ℝ} (hσ : 0 < σ) (hσ1 : σ < 1)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     {μ a : ℝ} (hμ : 0 ≤ μ) (ha : 0 < a)
@@ -177,7 +177,7 @@ theorem existsUnique_zero_extended_classicalDirichletSolution
   obtain ⟨v, hv, hvc, hvzero, _⟩ := hu.zero_extension hU.1
   refine ⟨v, ⟨hv, hvc, hvzero⟩, ?_⟩
   rintro w ⟨hw, _, hwzero⟩
-  have heq := hw.eqOn_closure h37 hd hU hμ ha hv
+  have heq := hw.eqOn_closure hd hU hμ ha hv
   ext x
   by_cases hx : x ∈ closure U
   · exact heq hx

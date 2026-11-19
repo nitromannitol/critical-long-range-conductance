@@ -43,8 +43,6 @@ lemma tendsto_abs_log_nhdsGT_zero :
 theorem ae_tendsto_discrete_solution
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
-    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (d : ℕ) (hd : 1 ≤ d) (lam σ μ : ℝ) (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     (U : Set (Fin d → ℝ)) (hU : LatticeProb.Elliptic.IsC2HolderDomain σ U) (M : ℝ)
     {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ)
@@ -60,7 +58,7 @@ theorem ae_tendsto_discrete_solution
       Tendsto (fun ε ↦ l2Norm ε U (fun q ↦ u ε q - ū (physical ε q)))
         (𝓝[>] 0) (𝓝 0) := by
   obtain ⟨C, c, _, hc, hmain⟩ :=
-    LongRange.main_theorem h619 h66 h37 h637 d hd lam σ μ hσ hμ U hU M
+    LongRange.main_theorem h619 h66 d hd lam σ μ hσ hμ U hU M
   obtain ⟨𝒳, _, htail, hbound⟩ := hmain P a ha f hf ū hū
   filter_upwards [ae_minimalScale_lt_top P 𝒳 C c hc htail] with ω hω
   intro u hs hu
@@ -84,8 +82,6 @@ theorem ae_tendsto_discrete_solution
 theorem ae_tendsto_discrete_solution_countable
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
-    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (d : ℕ) (hd : 1 ≤ d) (lam σ μ : ℝ) (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ)
     (ha : AssumptionU P lam a)
@@ -104,7 +100,7 @@ theorem ae_tendsto_discrete_solution_countable
         (𝓝[>] 0) (𝓝 0) := by
   apply ae_all_iff.mpr
   intro i
-  exact ae_tendsto_discrete_solution h619 h66 h37 h637 d hd lam σ μ hσ hμ
+  exact ae_tendsto_discrete_solution h619 h66 d hd lam σ μ hσ hμ
     (U i) (hU i) (M i) P a ha (f i) (ū i) (hf i) (hū i)
 
 end LongRange

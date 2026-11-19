@@ -26,8 +26,8 @@ represent physical positions `ε * q`; corrector slopes use those positions. The
 variational corrector and full and killed path-law densities retain their definition
 bodies and characterization theorems.
 
-These results are conditional on a finite list of **16 explicit cited propositions** in
-the pinned Lattice-Probability dependency. They are assumptions, not proofs of the outside
+These results are conditional on a finite list of **13 explicit cited propositions** in
+the library and its pinned Lattice-Probability dependency. They are assumptions, not proofs of the outside
 papers. Different exports use different subsets; [CITED_INPUTS.md](CITED_INPUTS.md)
 lists the exact names. The paper's applications and adapters are proved in the library.
 
@@ -54,7 +54,7 @@ The Lean toolchain, Mathlib and Lattice-Probability versions are pinned in
 
 ```sh
 lake exe cache get
-lake build LongRange
+lake build LongRange LongRangeHeat
 python3 scripts/check_axioms.py
 ```
 

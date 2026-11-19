@@ -61,6 +61,47 @@ theorem davies_exponent_coefficient_le {l ε : ℝ} (hε : 0 < ε)
   nlinarith [mul_le_mul_of_nonneg_left hcorr hratio0,
     mul_le_mul_of_nonneg_right hratio hε.le]
 
+/-- The geometric subdivision of a positive time interval. -/
+def timeGrid (l t : ℝ) (n : ℕ) : ℝ := t * (1 - l⁻¹ ^ n)
+
+theorem timeGrid_nonneg {l t : ℝ} (hl : 2 < l) (ht : 0 ≤ t) (n : ℕ) :
+    0 ≤ timeGrid l t n := by
+  have hlpos : 0 < l := by linarith
+  have hq : l⁻¹ ≤ 1 := (inv_le_one₀ hlpos).2 (by linarith)
+  exact mul_nonneg ht (sub_nonneg.mpr (pow_le_one₀ (inv_nonneg.mpr hlpos.le) hq))
+
+theorem timeGrid_lt_succ {l t : ℝ} (hl : 2 < l) (ht : 0 < t) (n : ℕ) :
+    timeGrid l t n < timeGrid l t (n + 1) := by
+  have hlpos : 0 < l := by linarith
+  have hqpos : 0 < l⁻¹ := inv_pos.mpr hlpos
+  have hq : l⁻¹ < 1 := (inv_lt_one₀ hlpos).2 (by linarith)
+  have hp : 0 < l⁻¹ ^ n := pow_pos hqpos _
+  dsimp [timeGrid]
+  rw [pow_succ]
+  nlinarith [mul_pos hp (sub_pos.mpr hq)]
+
+theorem timeGrid_lt {l t : ℝ} (hl : 2 < l) (ht : 0 < t) (n : ℕ) :
+    timeGrid l t n < t := by
+  have hlpos : 0 < l := by linarith
+  have hp : 0 < l⁻¹ ^ n := pow_pos (inv_pos.mpr hlpos) _
+  dsimp [timeGrid]
+  nlinarith [mul_pos ht hp]
+
+theorem timeGrid_increment {l t : ℝ} (hl : 2 < l) (n : ℕ) :
+    timeGrid l t (n + 1) - timeGrid l t n =
+      (l - 1) * l ^ (-(n + 1 : ℤ)) * t := by
+  have hl0 : l ≠ 0 := by linarith
+  have hexp : (n + 1 : ℤ) = ((n + 1 : ℕ) : ℤ) := by push_cast; rfl
+  have hid : (l - 1) * l⁻¹ = 1 - l⁻¹ := by field_simp
+  calc
+    _ = t * (l⁻¹ ^ n * (1 - l⁻¹)) := by
+      dsimp [timeGrid]
+      rw [pow_succ]
+      ring
+    _ = _ := by
+      rw [hexp, zpow_neg, zpow_natCast, pow_succ, mul_inv_rev, inv_pow, ← hid]
+      ring
+
 /-- A product with half the exponents has the square root of the original product as its limit. -/
 theorem tendsto_prod_mul_rpow {a P : ℝ} {f w : ℕ → ℝ} (ha : 0 < a)
     (hf : ∀ n, 0 ≤ f n) (hw : HasSum w (1 / 2 : ℝ))

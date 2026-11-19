@@ -36,6 +36,8 @@ import LongRangeHeat.FddLimit
 import LongRangeHeat.FddAlgebra
 import LongRangeHeat.FddWeak
 import LongRangeHeat.FddTight
+import LongRangeHeat.ScalingComparison
+import LongRangeHeat.Statements.Scaling
 import LongRangeHeat.FddMarginals
 import LongRangeHeat.FddGaussian
 import LongRangeHeat.FddGaussianChain
@@ -43,3 +45,4 @@ import LongRangeHeat.FddBrownian
 import LongRangeHeat.Statements.Fdd
 import LongRangeHeat.InvariancePrinciple
 import LongRangeHeat.Statements.InvariancePrinciple
+import LongRangeHeat.Statements.UnscaledInvariance

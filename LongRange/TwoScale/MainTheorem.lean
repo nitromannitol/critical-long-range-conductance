@@ -81,8 +81,6 @@ theorem measure_minimalScale_tail_explicit {Ω : Type*} [MeasurableSpace Ω]
 theorem main_theorem
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
-    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
-    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (d : ℕ) (hd : 1 ≤ d) (lam σ μ : ℝ) (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     (U : Set (Fin d → ℝ)) (hU : LatticeProb.Elliptic.IsC2HolderDomain σ U) (M : ℝ) :
     ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∀ {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω)
@@ -107,7 +105,7 @@ theorem main_theorem
       (le_max_left _ _).trans (le_max_right _ _)
     have hμΛ : μ ≤ Λ := (le_max_right _ _).trans (le_max_right _ _)
     obtain ⟨Cp, Rp, hCp, _hRp, _hUR, hext⟩ :=
-      continuum_extension h619 h66 h37 h637 hd hσ.1 hσ.2 hU hΛ
+      continuum_extension h619 h66 hd hσ.1 hσ.2 hU hΛ
     let B := max (Cp * max M 0) μ + 1
     let R := max Rp (euclideanDiam U)
     have hB : Cp * max M 0 ≤ B := (le_max_left _ _).trans (by dsimp [B]; linarith)

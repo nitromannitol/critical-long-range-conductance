@@ -156,8 +156,6 @@ theorem tendsto_norm_cellAverageLp_sub_classical
 theorem ae_tendsto_sampled_killedResolvent
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (hd : 1 ≤ d) {lam : ℝ} {Ω : Type*} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (ha : AssumptionU P lam a)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain (1 / 2) U)
@@ -175,7 +173,7 @@ theorem ae_tendsto_sampled_killedResolvent
       (comap Subtype.val (𝓝[>] (0 : ℝ))) (𝓝 0) := by
   classical
   unfold IsC2HolderDomain at hU
-  filter_upwards [ae_tendsto_discrete_solution h619 h66 h37 h637 d hd lam
+  filter_upwards [ae_tendsto_discrete_solution h619 h66 d hd lam
     (1 / 2) 1 (by norm_num) zero_le_one U hU M P a ha f u hf hu] with ξ hξ
   let v : ℝ → Site d → ℝ := fun ε =>
     if hε : 0 < ε then
@@ -216,8 +214,6 @@ theorem ae_tendsto_sampled_killedResolvent
 theorem ae_tendsto_classical_cellAverage_resolvent
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (hd : 1 ≤ d) {lam : ℝ} {Ω : Type*} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (ha : AssumptionU P lam a)
     {R : ℝ} (hR : 0 < R) {μB : Measure (BrownianPath d)}
@@ -254,7 +250,7 @@ theorem ae_tendsto_classical_cellAverage_resolvent
     (hfs.uniformContinuous_of_continuous hfc.continuous) hzero hf
   have hsol := tendsto_norm_cellAverageLp_sub_classical hU.1.measurableSet hU.2.2.1
     hu huLp
-  filter_upwards [ae_tendsto_sampled_killedResolvent h619 h66 h37 h637 hd P a ha
+  filter_upwards [ae_tendsto_sampled_killedResolvent h619 h66 hd P a ha
     hU hbound hu] with ξ hξ
   rw [show hf'.toLp f = hf.toLp f from rfl] at hid
   simp only [hid]
@@ -285,8 +281,6 @@ theorem ae_tendsto_classical_cellAverage_resolvent
 theorem exists_dense_family_ae_cellAverage_resolvent
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hd : 1 ≤ d) {lam : ℝ} {Ω : Type*} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (ha : AssumptionU P lam a)
@@ -322,7 +316,7 @@ theorem exists_dense_family_ae_cellAverage_resolvent
     intro R
     apply ae_all_iff.mpr
     intro k
-    exact ae_tendsto_classical_cellAverage_resolvent h619 h66 h37 h637 hd P a ha
+    exact ae_tendsto_classical_cellAverage_resolvent h619 h66 hd P a ha
       (hR R) hμB (hreg R k).1 (hreg R k).2.1 (hreg R k).2.2.1
       (hreg R k).2.2.2.2 (hf R k)
 
@@ -350,8 +344,6 @@ theorem tendsto_norm_of_dense_family {H : Type*} [NormedAddCommGroup H]
 theorem ae_tendsto_resolvent
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hd : 1 ≤ d) {lam : ℝ} {Ω : Type*} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (ha : AssumptionU P lam a)
@@ -369,7 +361,7 @@ theorem ae_tendsto_resolvent
                 (meanConductance P hd a / (2 * d)) hμB) 1 zero_lt_one f)‖)
           (comap Subtype.val (𝓝[>] (0 : ℝ))) (𝓝 0) := by
   obtain ⟨v, hv, hdense, _, hevent⟩ :=
-    exists_dense_family_ae_cellAverage_resolvent h619 h66 h37 h637 h614 hd P a ha hμB
+    exists_dense_family_ae_cellAverage_resolvent h619 h66 h614 hd P a ha hμB
   filter_upwards [hevent] with ξ hξ
   intro R hR
   dsimp only

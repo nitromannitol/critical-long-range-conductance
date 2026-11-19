@@ -1,5 +1,4 @@
-import LongRangeHeat.InvariancePrinciple
-import LongRangeHeat.Statements.Fdd
+import LongRangeHeat.KallenbergAnnealedFinal
 
 /-!
 # Theorem 1.2: the annealed invariance principle
@@ -23,16 +22,12 @@ the law of the walk `X^ε` under the annealed law `P^ann_0 = E[P^a_0]` converges
 The measurability of `W ↦ d^{-1/2} W` as a map into `D([0, ∞), ℝ^d)` is part of the conclusion.
 
 The heat-kernel inputs of Proposition 4.1 enter as the hypotheses `hMSC`, `hNash` and `hDavies`.
-The paper obtains tightness and the identification of the limit from Kallenberg (2002,
-Theorems 14.10 and 14.11) and Aldous (1978); the same two steps are the cited criteria of
-Ethier–Kurtz (Chapter 3, Theorem 8.6 and Theorem 7.8(b)) taken as the hypotheses `hEK` and
-`hFdd`. Proposition 4.3 is used as a proved result. -/
+Tightness and identification of the limit use Kallenberg (2002, Theorems 16.10 and 16.11)
+and Aldous (1978). Proposition 4.3 is used as a proved result. -/
 theorem annealed_invariance_principle
     (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
     (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)
-    (hEK : LatticeProb.External.EthierKurtzRelativeCompactnessStopping)
-    (hFdd : LatticeProb.External.EthierKurtzConvergenceFromFdd)
     {d : ℕ} (hd : 1 ≤ d) {lam : ℝ}
     {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ)
     (hP : ConductanceLaw P lam a)
@@ -45,8 +40,6 @@ theorem annealed_invariance_principle
       Tendsto (fun ε : Set.Ioo (0 : ℝ) (1 / 2) => annealedLaw hd P a hP ε.2.1)
         (Filter.comap Subtype.val (𝓝 0)) (𝓝 (ProbabilityMeasure.map B F)) :=
   ⟨measurable_scaledBrownianPath _,
-    annealed_invariance_of_fdd_convergence hMSC hNash hDavies hEK hFdd hP B _
-      fun ε hε hε0 _ hk ts hts =>
-        fdd_convergence hMSC hNash hDavies hd P a hP B hB hk ts hts ε hε hε0⟩
+    annealed_invariance_of_kallenberg hMSC hNash hDavies hd P a hP B hB⟩
 
 end LongRangeHeat.Statements

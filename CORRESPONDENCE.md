@@ -76,19 +76,20 @@ lists the hypotheses of each.
 | Paper result | Lean declaration |
 | --- | --- |
 | Theorem 1.1 | `main_theorem` |
-| Theorem 1.2 | `annealed_invariance_principle_of_davies` (also `annealed_invariance_principle_kallenberg`, `annealed_invariance_principle_proved`, `annealed_invariance_principle`) |
-| Theorem 1.2, unscaled form | `unscaled_invariance_principle_of_davies` (also `unscaled_invariance_principle_kallenberg`, `unscaled_invariance_principle_proved`, `unscaled_invariance_principle`) |
+| Theorem 1.2 | `annealed_invariance_principle_unconditional` (also `annealed_invariance_principle_of_davies`, `annealed_invariance_principle_kallenberg`, `annealed_invariance_principle_proved`, `annealed_invariance_principle`) |
+| Theorem 1.2, unscaled form | `unscaled_invariance_principle_unconditional` (also `unscaled_invariance_principle_of_davies`, `unscaled_invariance_principle_kallenberg`, `unscaled_invariance_principle_proved`, `unscaled_invariance_principle`) |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |
 | Lemma 2.3 | `O_squares`, `O_expectation`, `O_sums`, `O_sums_countable`, `O_integrals`, `O_constants` |
 | Lemma 3.1 | `mean_operator_consistency` |
 | Proposition 3.2 | `forcing_representation` (also `forcing_representation_of_increment`) |
 | Lemma 3.3 | `G_gaussian_tails` (also `G_gaussian_tails_of_increment`) |
-| Proposition 4.1 | `heat_kernel_bounds_of_davies` (also `heat_kernel_bounds_proved`, `heat_kernel_bounds`) |
+| Proposition 4.1 | `heat_kernel_bounds_unconditional` (also `heat_kernel_bounds_of_davies`, `heat_kernel_bounds_proved`, `heat_kernel_bounds`) |
 | Proposition 4.1, Step 1, discrete on-diagonal bound | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
 | Proposition 4.1, Step 2, Nash inequality | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
-| Proposition 4.2 | `aldous_condition_of_davies` (also `aldous_condition_proved`, `aldous_condition`) |
-| Proposition 4.3 | `fdd_convergence_of_davies` (also `fdd_convergence_proved`, `fdd_convergence`) |
+| Proposition 4.1, Step 2, Davies estimate | `LatticeProb.External.chenKimKumagaiWangDavies_holds` |
+| Proposition 4.2 | `aldous_condition_unconditional` (also `aldous_condition_of_davies`, `aldous_condition_proved`, `aldous_condition`) |
+| Proposition 4.3 | `fdd_convergence_unconditional` (also `fdd_convergence_of_davies`, `fdd_convergence_proved`, `fdd_convergence`) |
 | (1.3), (1.4): the lattice and continuum heat equations | `lattice_heat_equation`, `continuum_heat_equation` |
 | (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving`, `scaling_obstruction` |
 | (2.3) | `second_moment` |
@@ -119,8 +120,14 @@ route from Propositions 4.2 and 4.3 and the criterion of Kallenberg (2002), Theo
 these as Theorems 14.10 and 14.11; in the second edition (2002) cited in its bibliography they
 are Theorems 16.10 (p. 313) and 16.11 (p. 314), with Lemmas 16.12–16.13 used in the proof of the
 latter. The paper source in `paper/` is kept as written; the library text uses the second-edition
-numbers. Chen–Kim–Kumagai–Wang, Theorem 4.4 with Example 4.3 (the Davies estimate), remains the
-explicit hypothesis `hDavies`.
+numbers. Chen–Kim–Kumagai–Wang, Theorem 4.4 with Example 4.3 (the Davies estimate), is proved
+as formulated (`LongRange/Support/External/ChenKimKumagaiWangDaviesProof.lean`, with the
+argument in `LongRange/Support/Analysis/Davies/`), following the source's proof of Theorem 4.4
+through Proposition 4.5 with `s = 1/2`: the perturbed semigroup, the derivative of
+`‖P^ψ_t f‖_{2p}^{2p}`, the comparison with the Nash profile, the geometric time grid
+`t(1 - λ^{-k})` with the product of Example 4.3, duality and the semigroup law, and the
+reduction from `θ` to `c₁⁻¹ θ*(c₂⁻¹ ·)`. No cited input of the heat-kernel version remains a
+hypothesis.
 
 ### Deviations from the paper's proofs
 
@@ -136,7 +143,8 @@ from the paper's argument.
   applies their Davies bound (Theorem 4.4 with Example 4.3) with Euclidean tent functions
   (`Tent.lean`, `UniformDavies.lean`), and combines three truncation regimes into the minimum
   bound (`PropositionA.lean`, `UniformOffDiagonal.lean`). The conclusion (4.5) and the uniform
-  constant `C(d, λ)` are the paper's.
+  constant `C(d, λ)` are the paper's. Both Chen–Kim–Kumagai–Wang results used on this route are
+  proved; the stability theorem of Chen–Kumagai–Wang is not used.
 * **D2. Theorem 1.2, assembly.** `annealed_invariance_principle` and
   `annealed_invariance_principle_proved` obtain relative compactness from the stopping-time
   criterion of Ethier–Kurtz (Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b)), with compact
@@ -174,7 +182,32 @@ comparison of Pittet–Saloff-Coste (survey Theorem 3.3.2) applied to `‖K^n δ
 (49)–(55). Kallenberg–Aldous: the modulus condition is used in the form of explicit partitions
 with small oscillation (the modified modulus of Ethier–Kurtz, Chapter 3), bounded through outer
 measure, so that measurability of the modulus is not needed; completeness of the Skorokhod space
-follows Ethier–Kurtz, Chapter 3, Theorem 5.6.
+follows Ethier–Kurtz, Chapter 3, Theorem 5.6. Chen–Kim–Kumagai–Wang, Theorem 4.4 with
+Example 4.3:
+
+* The source works with a regular Dirichlet form on `L²(E; m)`. The formalization proves the
+  estimate for symmetric jump forms with killing on a finite set, where the semigroup is a
+  matrix exponential, every norm is a finite sum and the exponents `2p = 2^k` are natural
+  numbers (`FiniteForm.lean` to `DaviesFinite.lean`). It passes to the countable state space
+  through the chains killed outside finite sets `U ↑ S`: their kernels converge to the full
+  kernel (`KilledConvergence.lean`), the energy of the extension by zero is the killed form, so
+  the Nash inequality restricts (`KilledEnergy.lean`), and the finite Davies functional is at
+  most the full one (`Killed.lean`).
+* Example 4.3 takes the perturbation inequality for the twisted form from Carlen–Kusuoka–Stroock
+  (their (3.10) and the end of the proof of their Theorem 3.9), which the source does not
+  reprove. For jump forms it is proved directly from two-point inequalities
+  (`Perturbation.lean`, `PowerInequality.lean`, `PowerPerturbation.lean`, `TwistedForm.lean`,
+  `TwistedPowerForm.lean`), with `s = 1/2`, error `Λ(ψ)²` at `p = 1` and `(2p + 1) Λ(ψ)²` for
+  `p ≥ 2`, in place of the source's `(1 + 8p²) Λ(ψ)²`. Only the error at `p = 1` enters the
+  conclusion.
+* The source integrates the differential inequality for the normalized power sums with the
+  chain rule for `∫ 1/θ`, which needs continuity of `θ`; Theorem 4.4 does not assume it. The
+  formalization integrates against the monotone lower profile `c₁⁻¹ θ*(c₂⁻¹ ·)` and replaces
+  the chain rule by a comparison of right Dini derivatives (`Comparison.lean`).
+* The passage from the `L^{2p}` bounds to the pointwise bound uses
+  `|f(i)| ≤ (∑_j |f(j)|^q)^{1/q}` at each grid level and a single limit along the grid, instead
+  of a limit of norms as `p → ∞`. The duality step bounds `P^ψ_{2s}(i, j)` by Cauchy–Schwarz
+  in `P^ψ_{2s} = P^ψ_s P^ψ_s`, with the columns of `P^ψ_s` the rows of `P^{-ψ}_s` by symmetry.
 
 ### Generator series in the statements
 

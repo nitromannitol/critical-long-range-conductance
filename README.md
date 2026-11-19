@@ -38,16 +38,17 @@ adapters are proved in the library.
 [`paper/heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
 Theorem 1.1, the scaled and unscaled annealed invariance principles (Theorem 1.2),
 and supporting results are listed in
-[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). Of the cited inputs of the
-heat-kernel version, the on-diagonal bound of Murugan–Saloff-Coste (Theorem 1.1, for the
-critical lattice kernel), the Nash inequality of Chen–Kim–Kumagai–Wang (Proposition 3.1(ii))
-and the Kallenberg–Aldous criterion for convergence in `D([0, ∞), ℝ^d)` are proved in the
-library. The exports `heat_kernel_bounds_of_davies`, `aldous_condition_of_davies`,
-`fdd_convergence_of_davies`, `annealed_invariance_principle_of_davies` and
-`unscaled_invariance_principle_of_davies` state Propositions 4.1–4.3 and both forms of
-Theorem 1.2 with the Chen–Kim–Kumagai–Wang Davies estimate as the only cited hypothesis.
-Earlier forms of these statements, which take more cited inputs as hypotheses, are kept
-unchanged; see [CITED_INPUTS.md](CITED_INPUTS.md#heat-kernel-version).
+[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). Every cited input of the
+heat-kernel version is proved in the library: the on-diagonal bound of Murugan–Saloff-Coste
+(Theorem 1.1, for the critical lattice kernel), the Nash inequality (Proposition 3.1(ii)) and
+the Davies estimate (Theorem 4.4 with Example 4.3) of Chen–Kim–Kumagai–Wang, and the
+Kallenberg–Aldous criterion for convergence in `D([0, ∞), ℝ^d)`. The exports
+`heat_kernel_bounds_unconditional`, `aldous_condition_unconditional`,
+`fdd_convergence_unconditional`, `annealed_invariance_principle_unconditional` and
+`unscaled_invariance_principle_unconditional` state Propositions 4.1–4.3 and both forms of
+Theorem 1.2 with no cited hypothesis, as Theorem 1.1 (`main_theorem`) is stated. Earlier forms
+of these statements, which take cited inputs as hypotheses, are kept unchanged; see
+[CITED_INPUTS.md](CITED_INPUTS.md#heat-kernel-version).
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
 revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned

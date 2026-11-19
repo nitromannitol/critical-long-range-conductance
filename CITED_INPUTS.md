@@ -52,21 +52,22 @@ revision:
 [`GilbargTrudingerHolderExtension`](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/HolderExtensionProved.lean)
 and
 [`GilbargTrudingerWeakHomogeneousUniqueness`](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/WeakHomogeneousUniquenessProved.lean).
-`ChenKimKumagaiWangNash` is proved in this repository
-([`chenKimKumagaiWangNash_holds`](LongRange/Support/External/ChenKimKumagaiWangNashProof.lean)).
+`ChenKimKumagaiWangNash` and `ChenKimKumagaiWangDavies` are proved in this repository
+([`chenKimKumagaiWangNash_holds`](LongRange/Support/External/ChenKimKumagaiWangNashProof.lean),
+[`chenKimKumagaiWangDavies_holds`](LongRange/Support/External/ChenKimKumagaiWangDaviesProof.lean)).
 The April exports still list these as hypotheses, as released.
 
 ## Heat-kernel version
 
-The heat-kernel version uses four cited inputs. Three are proved in the library; one remains an
-explicit hypothesis.
+The heat-kernel version uses four cited inputs. All four are proved in the library, and the
+exports ending in `_unconditional` take no cited hypothesis.
 
 | Cited input (paper) | Status | Lean |
 | --- | --- | --- |
 | MSC, Theorem 1.1: on-diagonal bound (Proposition 4.1, Step 1) | proved for the critical lattice kernel, the case the paper uses | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
 | CKKW, Proposition 3.1(ii): Nash inequality (Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
 | Kallenberg (2002), Theorems 16.10 and 16.11, and Aldous (1978): tightness and identification in `D([0, ∞), ℝ^d)` (Theorem 1.2) | proved (the sufficiency direction, for proper separable state spaces) | `LatticeProb.Cadlag.HalfLine.tendsto_of_ordered_fdd_of_optional_increment` |
-| CKKW, Theorem 4.4 with Example 4.3: Davies upper bound (Proposition 4.1, Step 2) | remains the hypothesis `hDavies` | `ChenKimKumagaiWangDavies` |
+| CKKW, Theorem 4.4 with Example 4.3: Davies upper bound (Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangDavies_holds` |
 
 The paper prints the Kallenberg reference as Theorems 14.10 and 14.11; in the second edition
 (2002) cited in its bibliography they are Theorems 16.10 (p. 313) and 16.11 (p. 314). The
@@ -79,6 +80,11 @@ Hypotheses of the heat exports, all in `LongRangeHeat.Statements`:
 
 | Paper result | Export | Cited hypotheses |
 | --- | --- | --- |
+| Proposition 4.1 | `heat_kernel_bounds_unconditional` | none |
+| Proposition 4.2 | `aldous_condition_unconditional` | none |
+| Proposition 4.3 | `fdd_convergence_unconditional` | none |
+| Theorem 1.2 | `annealed_invariance_principle_unconditional` | none |
+| Theorem 1.2, unscaled form | `unscaled_invariance_principle_unconditional` | none |
 | Proposition 4.1 | `heat_kernel_bounds_of_davies` | `ChenKimKumagaiWangDavies` |
 | Proposition 4.2 | `aldous_condition_of_davies` | `ChenKimKumagaiWangDavies` |
 | Proposition 4.3 | `fdd_convergence_of_davies` | `ChenKimKumagaiWangDavies` |

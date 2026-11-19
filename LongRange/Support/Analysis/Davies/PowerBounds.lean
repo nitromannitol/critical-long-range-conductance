@@ -13,15 +13,17 @@ open Set
 
 noncomputable section
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] (F : FiniteJumpForm ι)
+variable {ι : Type*} [Fintype ι]
 
 /-- A nonnegative coordinate is bounded by every positive-power sum. -/
-theorem coordinate_le_powSum (u : ι → ℝ) (hu : ∀ i, 0 ≤ u i) (p : ℕ) (hp : 0 < p)
+theorem coordinate_le_powSum [DecidableEq ι] (u : ι → ℝ) (hu : ∀ i, 0 ≤ u i) (p : ℕ) (hp : 0 < p)
     (i : ι) : u i ≤ Real.rpow (∑ j, u j ^ p) ((p : ℝ)⁻¹) := by
   have hsum : 0 ≤ ∑ j, u j ^ p := Finset.sum_nonneg fun j _ ↦ pow_nonneg (hu j) p
   apply (Real.le_rpow_inv_iff_of_pos (hu i) hsum (Nat.cast_pos.mpr hp)).2
   rw [Real.rpow_natCast]
   exact Finset.single_le_sum (fun j _ ↦ pow_nonneg (hu j) p) (Finset.mem_univ i)
+
+variable [DecidableEq ι] (F : FiniteJumpForm ι)
 
 /-- An even power sum grows at most at its compensated exponential rate. -/
 theorem twist_powSum_le {ψ : ι → ℝ} {Λsq : ℝ} (hΛ : F.LambdaBound ψ Λsq)

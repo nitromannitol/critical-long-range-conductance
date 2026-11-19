@@ -27,8 +27,7 @@ theorem hasSum_davies_correction {l : ℝ} (hl : 2 < l) :
   · ext n
     rw [pow_succ]
     ring
-  · field_simp
-    <;> ring
+  · field_simp; ring
 
 /-- The geometric sum controlling the contribution of the killing parameter. -/
 theorem hasSum_davies_killing {l : ℝ} (hl : 2 < l) :
@@ -39,7 +38,6 @@ theorem hasSum_davies_killing {l : ℝ} (hl : 2 < l) :
   have hsum := hasSum_geometric_of_lt_one hq0 hq1
   convert hsum using 1
   field_simp
-  <;> ring
 
 /-- The time-grid coefficient multiplying the killing parameter is at most one. -/
 theorem davies_killing_coefficient_le_one {l : ℝ} (hl : 2 < l) :
@@ -183,7 +181,7 @@ theorem le_of_product_iteration {M A E D : ℕ → ℝ} {z B P : ℝ}
       (mul_le_mul_of_nonneg_left hexp hprod0) hM0)
   have hlim : Tendsto (fun n ↦ D n * ((∏ k ∈ Finset.range n, A k) * Real.exp B * M 0))
       atTop (𝓝 (P * Real.exp B * M 0)) := by
-    convert hDlim.mul ((hprod.mul_const (Real.exp B)).mul_const (M 0)) using 1 <;> simp
+    convert hDlim.mul ((hprod.mul_const (Real.exp B)).mul_const (M 0)) using 1; simp
   apply ge_of_tendsto hlim
   exact Filter.Eventually.of_forall fun n ↦ (hcoordinate n).trans
     (mul_le_mul_of_nonneg_left (hbounded n) (hD n))

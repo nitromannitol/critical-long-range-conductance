@@ -167,7 +167,6 @@ theorem powSum_step {ψ : ι → ℝ} {Λsq δ c₁ c₂ : ℝ}
   have hk : 2 * κ = 2 * (p : ℝ) * ((2 * (p : ℝ) + 1) * Λsq) + 2 * δ := by
     dsimp [κ, c]
     field_simp
-    <;> ring
   rw [hk] at h
   exact h
 

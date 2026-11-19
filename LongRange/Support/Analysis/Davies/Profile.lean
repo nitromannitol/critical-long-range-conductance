@@ -65,10 +65,8 @@ theorem le_thetaLow_scaled {c₁ c₂ : ℝ} {θ θstar : ℝ → ℝ}
     _ = c₁ ^ 2 * thetaLow c₁ c₂ θstar (c₂ ^ 2 * r) := by
       have harg : c₂⁻¹ * (c₂ ^ 2 * r) = c₂ * r := by
         field_simp
-        <;> ring
       rw [thetaLow, harg]
       field_simp
-      <;> ring
 
 theorem le_of_le_ckkwTail {θ φ : ℝ → ℝ} (h : ckkwInverseProfile θ φ)
     {s y : ℝ} (hs : 0 < s) (hy : 0 < y)

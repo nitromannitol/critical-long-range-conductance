@@ -40,8 +40,11 @@ and supporting results are listed in
 [CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The heat-kernel, Aldous,
 finite-dimensional convergence and invariance-principle exports take the uniform
 Murugan–Saloff-Coste estimate and the Chen–Kim–Kumagai–Wang Nash and Davies estimates
-as explicit hypotheses. Both invariance-principle forms also take two Ethier–Kurtz criteria;
-see [CITED_INPUTS.md](CITED_INPUTS.md).
+as explicit hypotheses. The statements `annealed_invariance_principle` and
+`unscaled_invariance_principle` also take two Ethier–Kurtz criteria; their forms
+`annealed_invariance_principle_kallenberg` and `unscaled_invariance_principle_kallenberg`
+do not, since the Kallenberg–Aldous criterion is proved in the library; see
+[CITED_INPUTS.md](CITED_INPUTS.md).
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
 revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned

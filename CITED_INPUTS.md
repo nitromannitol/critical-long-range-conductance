@@ -51,8 +51,12 @@ stopping times and finite-horizon laws are proved in the library.
 
 In the heat-kernel version, the kernel bounds, Aldous condition and finite-dimensional
 convergence use `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash` and
-`ChenKimKumagaiWangDavies`. The scaled and unscaled annealed invariance principles also use
-`EthierKurtzRelativeCompactnessStopping` and `EthierKurtzConvergenceFromFdd`.
+`ChenKimKumagaiWangDavies`. The statements `annealed_invariance_principle` and
+`unscaled_invariance_principle` of the scaled and unscaled annealed invariance principles
+also use `EthierKurtzRelativeCompactnessStopping` and `EthierKurtzConvergenceFromFdd`. Their
+forms `annealed_invariance_principle_kallenberg` and `unscaled_invariance_principle_kallenberg`
+do not: the Kallenberg–Aldous criterion they use (Kallenberg (2002), Theorems 16.10 and 16.11)
+is proved in [`LongRangeHeat/KallenbergCriterion.lean`](LongRangeHeat/KallenbergCriterion.lean).
 
 Checking that the public exports use only `propext`, `Classical.choice` and `Quot.sound`
 does not prove these hypotheses: they are ordinary proposition parameters of the theorems.

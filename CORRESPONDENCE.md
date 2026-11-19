@@ -78,6 +78,8 @@ Names below are in `LongRangeHeat.Statements`.
 | Theorem 1.1 | `main_theorem` |
 | Theorem 1.2 | `annealed_invariance_principle_proved` (also `annealed_invariance_principle`) |
 | Theorem 1.2, unscaled form | `unscaled_invariance_principle_proved` (also `unscaled_invariance_principle`) |
+| Theorem 1.2, without the Ethier–Kurtz criteria | `annealed_invariance_principle_kallenberg` |
+| Theorem 1.2, unscaled form, without the Ethier–Kurtz criteria | `unscaled_invariance_principle_kallenberg` |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |
 | Lemma 2.3 | `O_squares`, `O_expectation`, `O_sums`, `O_sums_countable`, `O_integrals`, `O_constants` |
@@ -107,7 +109,19 @@ heat exports do not take these cited propositions. The paper cites Chen–Kumaga
 stability Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
 Nash and Davies inputs above for that bound instead.
 
-Both forms of Theorem 1.2 additionally assume the stopping-time relative compactness and
-finite-dimensional convergence criteria of Ethier–Kurtz (1986), Chapter 3,
-Theorem 8.6 with Remark 8.7(b), and Theorem 7.8(b). The paper instead cites
-Kallenberg (2002), Theorems 14.10–14.11, and Aldous (1978).
+`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`, and the forms of Theorem 1.2
+without `_proved` take three explicit cited propositions: Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
+uniform form; and Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
+Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other heat exports do not
+take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15
+together with Malmquist (2023) for (4.5); the formalization uses the Nash and Davies inputs
+above for that bound instead.
+
+`annealed_invariance_principle` and `unscaled_invariance_principle` additionally assume the
+stopping-time relative compactness and finite-dimensional convergence criteria of
+Ethier–Kurtz (1986), Chapter 3, Theorem 8.6 with Remark 8.7(b), and Theorem 7.8(b).
+`annealed_invariance_principle_kallenberg` and `unscaled_invariance_principle_kallenberg`
+follow the paper instead: Propositions 4.2 and 4.3 and the Kallenberg–Aldous criterion,
+proved in `LongRangeHeat/KallenbergCriterion.lean`. The paper cites Kallenberg (2002),
+Theorems 14.10–14.11; in that second edition they are Theorems 16.10 (p. 313) and
+16.11 (p. 314), with Lemmas 16.12–16.13 used in the proof of the latter.

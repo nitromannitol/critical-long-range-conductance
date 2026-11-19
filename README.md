@@ -47,7 +47,9 @@ Theorem 1.2 without a Murugan–Saloff-Coste hypothesis. They take the Chen–Ki
 Nash and Davies estimates as explicit hypotheses, and both invariance-principle forms also
 take two Ethier–Kurtz criteria; see [CITED_INPUTS.md](CITED_INPUTS.md). The exports of the
 same names without `_proved` are unchanged and still take the uniform Murugan–Saloff-Coste
-estimate as a hypothesis.
+estimate as a hypothesis. The forms `annealed_invariance_principle_kallenberg` and
+`unscaled_invariance_principle_kallenberg` do not take the Ethier–Kurtz criteria, since the
+Kallenberg–Aldous criterion is proved in the library.
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
 revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned

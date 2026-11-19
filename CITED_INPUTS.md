@@ -52,13 +52,19 @@ stopping times and finite-horizon laws are proved in the library.
 In the heat-kernel version, the exports ending in `_proved` (the kernel bounds, Aldous
 condition, finite-dimensional convergence and both annealed invariance principles) use
 `ChenKimKumagaiWangNash` and `ChenKimKumagaiWangDavies`; the scaled and unscaled annealed
-invariance principles also use `EthierKurtzRelativeCompactnessStopping` and
+invariance principles `annealed_invariance_principle_proved` and
+`unscaled_invariance_principle_proved` also use `EthierKurtzRelativeCompactnessStopping` and
 `EthierKurtzConvergenceFromFdd`. They do not use `MuruganSaloffCosteUniform`: the
 on-diagonal bound that the paper takes from MSC, Theorem 1.1, is proved in the library for
 the critical lattice kernel (`weightedLattice_critical_diagonal` and, in the form of the
 even-time diagonal supremum, `weightedLattice_evenKernelSup_le`). Neither MSC proposition
 is proved in its general weighted-graph form. The heat exports of the same names without
-`_proved` are unchanged and also use `MuruganSaloffCosteUniform`.
+`_proved` are unchanged and also use `MuruganSaloffCosteUniform`. The forms
+`annealed_invariance_principle_kallenberg` and `unscaled_invariance_principle_kallenberg`
+use `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash` and `ChenKimKumagaiWangDavies` but
+not the Ethier–Kurtz criteria: the Kallenberg–Aldous criterion they use (Kallenberg (2002),
+Theorems 16.10 and 16.11) is proved in
+[`LongRangeHeat/KallenbergCriterion.lean`](LongRangeHeat/KallenbergCriterion.lean).
 
 Checking that the public exports use only `propext`, `Classical.choice` and `Quot.sound`
 does not prove these hypotheses: they are ordinary proposition parameters of the theorems.

@@ -51,3 +51,5 @@ import LongRangeHeat.Statements.AldousProved
 import LongRangeHeat.Statements.FddProved
 import LongRangeHeat.Statements.InvariancePrincipleProved
 import LongRangeHeat.Statements.UnscaledInvarianceProved
+import LongRangeHeat.Statements.InvariancePrincipleKallenberg
+import LongRangeHeat.Statements.UnscaledInvarianceKallenberg

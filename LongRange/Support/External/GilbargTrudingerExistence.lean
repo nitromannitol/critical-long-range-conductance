@@ -72,7 +72,7 @@ theorem exists_quadratic_datum_solution_of_gt (hGT : GilbargTrudingerExistence) 
 
 /-- The input's domain and datum premises occur at an actual nonzero classical solution,
 independently of the existence input. The solution is one at zero and the datum is five. -/
-theorem quadratic_existence_hypotheses_nonvacuous :
+theorem quadratic_existence_hypotheses_satisfiable :
     IsC2HolderDomain (1 / 2) (unitBall 2) ∧
       IsClassicalDirichletSolution (unitBall 2) 1 1
         (fun x => 1 * (1 - ∑ k, x k ^ 2) + 2 * 2 * 1)

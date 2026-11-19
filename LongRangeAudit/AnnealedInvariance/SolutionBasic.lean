@@ -14,89 +14,6 @@ open scoped ENNReal NNReal Topology
 open _root_.LongRangeAudit.QuenchedInvariance.LongRange (Edge walkRates walkRate walkEmbed)
 
 noncomputable section
-namespace LatticeProb.External
-open _root_.LongRangeAudit.QuenchedInvariance.LatticeProb.Graph.LongRangeKernel
-
-/-- The uniform Murugan–Saloff-Coste heat-kernel estimate. -/
-def MuruganSaloffCosteUniform : Prop :=
-  ∀ (X : Type) (G : WeightedGraph X), Infinite X → G.graph.Connected →
-    ∀ (V φ : ℝ → ℝ) (γ : ℝ),
-    (∃ C_μ : ℝ, 1 ≤ C_μ ∧ ∀ x,
-      C_μ⁻¹ ≤ (G.mass x : ℝ) ∧ (G.mass x : ℝ) ≤ C_μ) →
-    IsVolumeProfile V →
-    (∃ C_h : ℝ, 1 < C_h ∧ ∀ x r, 0 < r →
-      ENNReal.ofReal (C_h⁻¹ * V r) ≤ G.volume x r ∧
-      G.volume x r ≤ ENNReal.ofReal (C_h * V r)) →
-    (∃ p₀ : ℝ, 0 < p₀ ∧ ∀ x y, G.graph.Adj x y →
-      p₀ ≤ (G.weight x y : ℝ) / (G.mass x : ℝ)) →
-    1 < γ →
-    (∃ C : ℝ, 0 < C ∧ ∀ x y (n : ℕ), 1 ≤ n →
-      G.heat n x y ≤ ENNReal.ofReal
-        (C / V ((n : ℝ) ^ (1 / γ)) *
-          Real.exp (-(((G.graph.dist x y : ℝ) ^ γ / (C * n)) ^ (1 / (γ - 1)))))) →
-    (∃ c : ℝ, 0 < c ∧ ∀ x y (n : ℕ), 1 ≤ n → G.graph.dist x y ≤ n →
-      ENNReal.ofReal (c / V ((n : ℝ) ^ (1 / γ)) *
-        Real.exp (-(((G.graph.dist x y : ℝ) ^ γ / (c * n)) ^ (1 / (γ - 1))))) ≤
-          G.heat n x y + G.heat (n + 1) x y) →
-    IsJumpScale φ →
-    ∀ ζ : ℝ → ℝ, IsInverseScale γ φ ζ →
-    ∀ C_φ : ℝ, 0 < C_φ →
-    ∃ C : ℝ, 0 < C ∧ ∀ k : X → X → ℝ≥0∞, IsMarkovDensity G.mass k →
-      (∀ x y, k x y = k y x) →
-      (∀ x y,
-        ENNReal.ofReal (C_φ⁻¹ / (V (G.graph.dist x y) * φ (G.graph.dist x y))) ≤ k x y ∧
-        k x y ≤ ENNReal.ofReal (C_φ / (V (G.graph.dist x y) * φ (G.graph.dist x y)))) →
-      ∀ n : ℕ,
-        ENNReal.ofReal (C⁻¹ / V (ζ n)) ≤ evenKernelSup G.mass k n ∧
-        evenKernelSup G.mass k n ≤ ENNReal.ofReal (C / V (ζ n))
-
-
-/-- Discrete stopping times for the natural filtration on a bounded horizon. -/
-def discreteNaturalStopping {E Ω : Type*} [MetricSpace E] [MeasurableSpace E]
-    (Y : Ω → D E) (T : ℝ) (tau : Ω → Time) : Prop :=
-  (Set.range tau).Countable ∧ (∀ w, (tau w : ℝ) ≤ T) ∧
-    ∀ t : Time, @MeasurableSet Ω (naturalSigma Y t) {w | tau w ≤ t}
-
-/-- The stopped increment quantity in the compactness criterion. -/
-def stoppingOscillation {E Ω : Type*} [MetricSpace E] [MeasurableSpace E]
-    [m : MeasurableSpace Ω] (P : ProbabilityMeasure Ω) (Y : Ω → D E)
-    (beta T delta : ℝ) : ℝ≥0∞ :=
-  ⨆ tau : Ω → Time, ⨆ (_ : discreteNaturalStopping Y T tau),
-    ⨆ u : Time, ⨆ (_ : (u : ℝ) ≤ delta),
-      ∫⁻ w, ⨆ v : Time, ⨆ (_ : (v : ℝ) ≤ min delta (tau w)),
-        incrementPower Y beta (tau w + u) (tau w) w *
-          incrementPower Y beta (tau w) (tau w - v) w ∂P
-
-/-- The implication (c) implies (a) with a specified outer aggregation of process indices.
-Only `iSup` and sequential `limsup` are used in the cited proposition below. -/
-def stoppingCompactnessImplication (A : Type)
-    (aggregate : (A → ℝ≥0∞) → ℝ≥0∞) : Prop :=
-  ∀ (E : Type) [MetricSpace E] [CompleteSpace E] [SeparableSpace E] [MeasurableSpace E]
-    [BorelSpace E] (Ω : A → Type) (m : ∀ a, MeasurableSpace (Ω a))
-    (P : ∀ a, @ProbabilityMeasure (Ω a) (m a)) (Y : ∀ a, Ω a → D E),
-    (∀ a, @Measurable (Ω a) (D E) (m a) inferInstance (Y a)) →
-    (∀ a t, @Measurable (Ω a) E (m a) inferInstance (fun w => (Y a w).1 t)) →
-    (∀ eta : ℝ, 0 < eta → ∀ t : ℚ, 0 ≤ t → ∃ K : Set E, IsCompact K ∧
-      ∀ a, ENNReal.ofReal (1 - eta) ≤
-        (P a : @Measure (Ω a) (m a)) {w | (Y a w).1 (t : ℝ).toNNReal ∈ K}) →
-    (∀ T : ℝ, 0 < T → ∃ beta : ℝ, 0 < beta ∧
-      Tendsto (fun delta : ℝ => aggregate (fun a =>
-        @stoppingOscillation E (Ω a) _ _ (m a) (P a) (Y a) beta T delta))
-        (𝓝[>] 0) (𝓝 0) ∧
-      Tendsto (fun delta : ℝ => aggregate (fun a =>
-        ∫⁻ w, incrementPower (Y a) beta delta.toNNReal 0 w
-          ∂(P a : @Measure (Ω a) (m a)))) (𝓝[>] 0) (𝓝 0)) →
-    IsCompact (closure (Set.range (fun a =>
-      @ProbabilityMeasure.map (Ω a) (D E) (m a) inferInstance (P a) (Y a))))
-
-/-- Ethier–Kurtz, Chapter 3, Theorem 8.6(c) implies (a), together with Remark 8.7(b).
-The first conjunct is the family statement; the second replaces both outer suprema
-by sequential limsups. Rational-time marginal compactness is retained in both. -/
-def EthierKurtzRelativeCompactnessStopping : Prop :=
-  (∀ A : Type, stoppingCompactnessImplication A (fun f => ⨆ a, f a)) ∧
-    stoppingCompactnessImplication ℕ (fun f => Filter.limsup f atTop)
-
-end LatticeProb.External
 
 variable {d : ℕ}
 
@@ -109,7 +26,6 @@ structure ConductanceLaw {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) (lam
   indep : iIndepFun (fun e ω => a ω e) P
   bounds : ∀ ω e, lam ≤ a ω e ∧ a ω e ≤ lam⁻¹
   mean_one : ∀ e, ∫ ω, a ω e ∂P = 1
-
 
 /-- Transport the measurable-cylinder result to the equivalent jump-rate vocabulary. -/
 theorem measurable_regularLaw_cylinder {Ω S : Type*} [MeasurableSpace Ω]
@@ -225,7 +141,6 @@ def annealedLaw (hd : 1 ≤ d) {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω
       rw [Measure.bind_apply MeasurableSet.univ (measurable_quenchedLaw hd hε hP.lam_mem.1 a
         hP.bounds hP.measurable 0).aemeasurable]
       simp only [measure_univ, lintegral_const, one_mul]⟩⟩
-
 
 end
 end LongRangeAudit.QuenchedInvariance

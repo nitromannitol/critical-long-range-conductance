@@ -20,7 +20,7 @@ PINS = {
     "landrun": "811cfff51ceaf3d9843708aa6d22e9b84ccac8b4",
 }
 PAIRS = {
-    "AnnealedInvariance": ["annealed_invariance_principle"],
+    "AnnealedInvariance": ["annealed_invariance_principle_of_davies"],
     "HeatHomogenization": ["main_theorem"],
     "QuantitativeHomogenization": ["main_theorem"],
     "QuenchedInvariance": ["quenched_invariance_principle",

@@ -2,9 +2,11 @@
 
 The manual `Independent comparators` workflow builds production once, then checks
 `QuantitativeHomogenization.main_theorem` and the two `QuenchedInvariance` targets
-`quenched_invariance_principle` and `quenched_invariance_principle_intro`, as well as
-`HeatHomogenization.main_theorem` and `AnnealedInvariance.annealed_invariance_principle`,
-under `LongRangeAudit`. Each comparison includes dependency comparison, NanoDa and
+`quenched_invariance_principle` and `quenched_invariance_principle_intro` of the April
+version, and `HeatHomogenization.main_theorem` (Theorem 1.1) and
+`AnnealedInvariance.annealed_invariance_principle_of_davies` (Theorem 1.2, with the
+Chen–Kim–Kumagai–Wang Davies estimate as its only cited hypothesis) of the heat-kernel
+version, under `LongRangeAudit`. Each comparison includes dependency comparison, NanoDa and
 Lean kernel replay.
 
 The project and standalone exporter use Lean 4.35.0-rc2; the comparator uses Lean

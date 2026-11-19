@@ -99,5 +99,34 @@ theorem tendsto_prod_mul_rpow {a P : ℝ} {f w : ℕ → ℝ} (ha : 0 < a)
   · intro n hn
     exact Real.rpow_nonneg (hf n) _
 
+/-- The source product profile gives the limit used in the finite Davies iteration. -/
+theorem ckkw_product_limit {φ : ℝ → ℝ} {l c C a t : ℝ}
+    (hl : 2 < l) (ha : 0 < a) (ht : 0 < t)
+    (hφ : ∀ s > 0, 0 < φ s) (hprofile : External.ckkwProductBound φ l c C) :
+    ∃ P : ℝ, HasProd (fun n : ℕ ↦ Real.rpow
+      (φ ((l - 1) * l ^ (-(n + 2 : ℤ)) * t)) ((2 : ℝ) ^ (-(n + 1 : ℤ)))) P ∧
+      P ≤ C * φ (c * t) ∧
+      Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.range N, Real.rpow
+        (a ^ 2 * φ ((l - 1) * l ^ (-(n + 2 : ℤ)) * t))
+        ((1 / 2 : ℝ) / 2 / 2 ^ n)) atTop (𝓝 (a * Real.rpow P (1 / 2))) := by
+  obtain ⟨P, hp, hP⟩ := hprofile t ht
+  refine ⟨P, hp, hP, ?_⟩
+  let f : ℕ → ℝ := fun n ↦ φ ((l - 1) * l ^ (-(n + 2 : ℤ)) * t)
+  let w : ℕ → ℝ := fun n ↦ (1 / 2 : ℝ) / 2 / 2 ^ n
+  have hlpos : 0 < l := by linarith
+  have hf : ∀ n, 0 ≤ f n := by
+    intro n
+    apply (hφ _ (mul_pos (mul_pos (by linarith) (zpow_pos hlpos _)) ht)).le
+  have hw : HasSum w (1 / 2 : ℝ) := hasSum_geometric_two' (1 / 2)
+  have hexp : ∀ n : ℕ, 2 * w n = (2 : ℝ) ^ (-(n + 1 : ℤ)) := by
+    intro n
+    dsimp [w]
+    have heq : (n + 1 : ℤ) = ((n + 1 : ℕ) : ℤ) := by push_cast; rfl
+    rw [heq, zpow_neg, zpow_natCast, pow_succ]
+    field_simp
+  have hp' : HasProd (fun n ↦ Real.rpow (f n) (2 * w n)) P := by
+    simpa only [hexp, f] using hp
+  exact tendsto_prod_mul_rpow ha hf hw hp'
+
 end
 end LatticeProb.Davies

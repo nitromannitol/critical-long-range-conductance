@@ -58,6 +58,11 @@ import LongRangeHeat.Statements.AldousOfDavies
 import LongRangeHeat.Statements.FddOfDavies
 import LongRangeHeat.Statements.InvariancePrincipleOfDavies
 import LongRangeHeat.Statements.UnscaledInvarianceOfDavies
+import LongRangeHeat.Statements.HeatKernelBoundsUnconditional
+import LongRangeHeat.Statements.AldousUnconditional
+import LongRangeHeat.Statements.FddUnconditional
+import LongRangeHeat.Statements.InvariancePrincipleUnconditional
+import LongRangeHeat.Statements.UnscaledInvarianceUnconditional
 import LongRangeHeat.KallenbergPartitionCollection
 import LongRangeHeat.Statements.HeatEquations
 import LongRangeHeat.Statements.Measurability

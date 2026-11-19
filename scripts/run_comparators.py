@@ -20,6 +20,8 @@ PINS = {
     "landrun": "811cfff51ceaf3d9843708aa6d22e9b84ccac8b4",
 }
 PAIRS = {
+    "AnnealedInvariance": ["annealed_invariance_principle"],
+    "HeatHomogenization": ["main_theorem"],
     "QuantitativeHomogenization": ["main_theorem"],
     "QuenchedInvariance": ["quenched_invariance_principle",
                           "quenched_invariance_principle_intro"],
@@ -53,7 +55,10 @@ def main():
     parser.add_argument("--lock", type=Path,
                         default=os.environ.get("COMPARATOR_LOCK",
                                                str(Path.home() / ".lake-global.lock")))
+    parser.add_argument("--pair", action="append", choices=PAIRS,
+                        help="run only the named pair; may be repeated")
     args = parser.parse_args()
+    pairs = list(dict.fromkeys(args.pair or PAIRS))
     project = args.project.resolve()
     lock = args.lock.expanduser().resolve()
     lock.parent.mkdir(parents=True, exist_ok=True)
@@ -112,8 +117,8 @@ def main():
         # its export-parser dependency's unrelated Main module.
         return os.pathsep.join([own] + [part for part in resolved if part != own])
 
-    # Invalidate every prior receipt before attempting either pair or tool invocation.
-    for pair in PAIRS:
+    # Invalidate every selected receipt before attempting any tool invocation.
+    for pair in pairs:
         work = logs / pair
         if work.is_symlink():
             raise RuntimeError("Refusing a symlinked audit log directory")
@@ -130,7 +135,8 @@ def main():
         if not binary.is_file() or not os.access(binary, os.X_OK):
             raise RuntimeError(f"Missing executable: {binary}")
     driver = Path(__file__).with_name("CompareExports.lean").resolve()
-    for pair, names in PAIRS.items():
+    for pair in pairs:
+        names = PAIRS[pair]
         print(f"Checking {pair}", flush=True)
         namespace = f"LongRangeAudit.{pair}"
         source = project / "LongRangeAudit" / pair
@@ -163,7 +169,7 @@ def main():
             visiting.add(module)
             relative = Path(*module.split(".")).with_suffix(".lean")
             lean_file = project / relative
-            # Independent vocabulary can be organized into small local modules.
+            # Build audit dependencies from source in the fresh comparison directory.
             # The production dependency closure is already built in this checkout.
             for line in lean_file.read_text().splitlines():
                 line = line.strip()
@@ -172,7 +178,7 @@ def main():
                 if not line.startswith("import "):
                     break
                 for dependency in line.removeprefix("import ").split():
-                    if dependency.startswith(namespace + "."):
+                    if dependency.startswith("LongRangeAudit."):
                         build_module(dependency)
             sources[str(lean_file.relative_to(project))] = digest(lean_file)
             argv = ["elan", "run", PROJECT_TOOLCHAIN, "lean", "-DautoImplicit=false",

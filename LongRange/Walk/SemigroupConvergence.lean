@@ -21,6 +21,8 @@ theorem ae_tendsto_killedSemigroup
     (hTK : External.EthierKurtzTrotterKato)
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
+    (h37 : External.GilbargTrudingerSupEstimate)
+    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hd : 1 ≤ d) {lam : ℝ} {Ω : Type*} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (ha : AssumptionU P lam a)
@@ -35,7 +37,7 @@ theorem ae_tendsto_killedSemigroup
           (continuumSemigroup R (meanConductance P hd a / (2 * d)) hμB)
           (fun n => discreteKilledSemigroup hd (εn n).property ha.lam_pos
             (a ξ) (ha.bounds ξ) hU.2.2.1) := by
-  filter_upwards [ae_tendsto_resolvent h619 h66 h614 hd P a ha hμB]
+  filter_upwards [ae_tendsto_resolvent h619 h66 h37 h637 h614 hd P a ha hμB]
     with ξ hξ
   intro R hR
   dsimp only

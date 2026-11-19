@@ -1,10 +1,9 @@
-import LatticeProb.Analysis.Elliptic.SupEstimateProved
 import LatticeProb.External.GilbargTrudinger
 
 /-!
 # Uniform Schauder bound for the homogenized solution
 
-The boundary regularity, Schauder estimate and supremum estimate give a
+The cited boundary regularity, Schauder estimate and supremum estimate give a
 `C^{2,σ}` bound uniform in the elliptic coefficient, mass, datum and solution.
 The constant is chosen before those four quantities.
 -/
@@ -18,7 +17,7 @@ open LatticeProb.Elliptic
 theorem homogenized_c2Holder_bound
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
-
+    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
     {d : ℕ} (hd : 2 ≤ d) {σ : ℝ} (hσ : 0 < σ) (hσ1 : σ < 1)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U) {Λ : ℝ} (hΛ : 1 ≤ Λ) :
     ∃ C : ℝ, 0 < C ∧ ∀ (a₀ μ : ℝ),
@@ -27,8 +26,7 @@ theorem homogenized_c2Holder_bound
         IsClassicalDirichletSolution U μ a₀ f u →
         c2HolderNorm σ U u ≤ ENNReal.ofReal C * c0HolderNorm σ (closure U) f := by
   obtain ⟨C₁, hC₁, hschauder⟩ := h66 d hd σ hσ hσ1 U hU Λ hΛ
-  obtain ⟨C₂, hC₂, hsup⟩ :=
-    LatticeProb.External.gilbargTrudingerSupEstimate_holds d hd U hU.1 hU.2.1 hU.2.2.1
+  obtain ⟨C₂, hC₂, hsup⟩ := h37 d hd U hU.1 hU.2.1 hU.2.2.1
   have hΛpos : 0 < Λ := lt_of_lt_of_le zero_lt_one hΛ
   have hproduct : 0 ≤ C₂ * Λ := (mul_pos hC₂ hΛpos).le
   refine ⟨C₁ * (C₂ * Λ + 1), mul_pos hC₁ (by positivity), ?_⟩

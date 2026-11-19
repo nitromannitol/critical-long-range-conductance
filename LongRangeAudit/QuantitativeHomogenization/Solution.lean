@@ -14,7 +14,10 @@ theorem main_theorem
     (h614 : LatticeProb.External.GilbargTrudingerExistence)
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
+    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
+    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (h75 : LatticeProb.External.GilbargTrudingerZeroBoundaryApproximation)
+    (h82 : LatticeProb.External.GilbargTrudingerWeakHomogeneousUniqueness)
     (d : ℕ) (hd : 1 ≤ d) (lam σ μ : ℝ) (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     (U : Set (Fin d → ℝ)) (hU : IsC2HolderDomain σ U) (M : ℝ) :
     ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∀ {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω)
@@ -42,7 +45,7 @@ theorem main_theorem
                   μ * u q - generator ε (a ω) u q = f (physical ε q)) →
                 l2Norm ε U (fun q => u q - v (physical ε q)) ≤
                   C / Real.sqrt |Real.log ε|  := by
-  exact main_estimate h614 h619 h66 h75 d hd lam σ μ hσ hμ U hU M
+  exact main_estimate h614 h619 h66 h37 h637 h75 h82 d hd lam σ μ hσ hμ U hU M
 
 end
 

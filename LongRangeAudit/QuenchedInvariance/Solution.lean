@@ -12,6 +12,8 @@ attribute [local instance 2000] LatticeProb.continuousMapMeasurableSpace
 theorem quenched_invariance_principle
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
+    (h37 : External.GilbargTrudingerSupEstimate)
+    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -48,7 +50,7 @@ theorem quenched_invariance_principle
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
               F))  := by
-  exact _root_.LongRange.quenched_invariance_principle_of_cited h619 h66 h614
+  exact _root_.LongRange.quenched_invariance_principle_of_cited h619 h66 h37 h637 h614
     (trotterKato hTK) hRC hFdd (muruganSaloffCoste hMSC)
     (chenKimKumagaiWangNash hNash) (chenKimKumagaiWangDavies hDavies)
     d hd lam P a (assumption hU) g hg hg0 hgc hg1 B hB
@@ -57,6 +59,8 @@ theorem quenched_invariance_principle
 theorem quenched_invariance_principle_intro
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
+    (h37 : External.GilbargTrudingerSupEstimate)
+    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hTK : External.EthierKurtzTrotterKato)
     (hRC : External.EthierKurtzRelativeCompactness)
@@ -93,7 +97,7 @@ theorem quenched_invariance_principle_intro
             (⟨(ρp : Measure _).prod (B : Measure (BrownianPath d)),
             inferInstance⟩ : ProbabilityMeasure (EuclideanSpace ℝ (Fin d) × BrownianPath d))
               F))  := by
-  exact _root_.LongRange.quenched_invariance_principle_intro_of_cited h619 h66 h614
+  exact _root_.LongRange.quenched_invariance_principle_intro_of_cited h619 h66 h37 h637 h614
     (trotterKato hTK) hRC hFdd (muruganSaloffCoste hMSC)
     (chenKimKumagaiWangNash hNash) (chenKimKumagaiWangDavies hDavies)
     d hd lam P a (assumption hU) g hg hg0 hgc hg1 B hB

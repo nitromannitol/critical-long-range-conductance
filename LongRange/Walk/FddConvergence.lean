@@ -388,6 +388,8 @@ theorem ae_tendsto_walk_productTests
     (hTK : External.EthierKurtzTrotterKato)
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
+    (h37 : External.GilbargTrudingerSupEstimate)
+    (h637 : External.GilbargTrudingerHolderExtension)
     (h614 : External.GilbargTrudingerExistence)
     (hd : 1 ≤ d) {lam : ℝ} {Ω : Type*} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (ha : AssumptionU P lam a)
@@ -410,7 +412,7 @@ theorem ae_tendsto_walk_productTests
           (brownianMixturePath (d := d)
             (Real.sqrt (2 * (meanConductance P hd a / (2 * (d : ℝ))))))) ss :
               Measure (Fin m → EuclideanSpace ℝ (Fin d))))) := by
-  filter_upwards [ae_tendsto_killedSemigroup hTK h619 h66 h614 hd P a ha hB]
+  filter_upwards [ae_tendsto_killedSemigroup hTK h619 h66 h37 h637 h614 hd P a ha hB]
     with ξ hξ
   intro ε hε m ss hss _ φ
   have hgi := integrable_initial_density hg hgc

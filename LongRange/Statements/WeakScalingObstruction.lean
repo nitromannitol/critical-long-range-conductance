@@ -21,7 +21,10 @@ theorem weak_scaling_obstruction
     (h614 : External.GilbargTrudingerExistence)
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
+    (h37 : External.GilbargTrudingerSupEstimate)
+    (h637 : External.GilbargTrudingerHolderExtension)
     (h75 : External.GilbargTrudingerZeroBoundaryApproximation)
+    (h82 : External.GilbargTrudingerWeakHomogeneousUniqueness)
     (hd : 1 ≤ d) {σ a₀ lam : ℝ} (hσ : σ ∈ Set.Ioo (0 : ℝ) 1)
     (ha₀ : 0 < a₀) {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     (hlam : 0 < lam) {a : Edge d → ℝ}
@@ -66,6 +69,6 @@ theorem weak_scaling_obstruction
 
 by
   exact LongRange.Scaling.weak_source_scaling_obstruction
-    h614 h619 h66 h75 hd hσ ha₀ hU hlam ha f hf w hw hn u v hu hv heu hev
+    h614 h619 h66 h37 h637 h75 h82 hd hσ ha₀ hU hlam ha f hf w hw hn u v hu hv heu hev
 
 end LongRange.Statements

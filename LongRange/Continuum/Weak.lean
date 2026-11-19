@@ -1,4 +1,3 @@
-import LatticeProb.Analysis.Elliptic.WeakHomogeneousUniquenessProved
 import LongRange.Continuum.Canonical
 import LongRange.Continuum.Package
 import LongRange.Support.Analysis.Elliptic.ClassicalWeakGraph
@@ -35,7 +34,10 @@ The value and every derivative coordinate, the weak equation, and uniqueness are
 theorem classical_solution_has_weak_graph
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
+    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
+    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (h75 : LatticeProb.External.GilbargTrudingerZeroBoundaryApproximation)
+    (h82 : LatticeProb.External.GilbargTrudingerWeakHomogeneousUniqueness)
     (hd : 1 ≤ d) {σ μ a₀ : ℝ} (hσ : σ ∈ Set.Ioo (0 : ℝ) 1)
     (hμ : 0 ≤ μ) (ha : 0 < a₀) {U : Set (Fin d → ℝ)}
     (hU : IsC2HolderDomain σ U) {M : ℝ} {f ū : (Fin d → ℝ) → ℝ}
@@ -63,7 +65,7 @@ theorem classical_solution_has_weak_graph
     (le_max_right _ _).trans ((le_max_right _ _).trans (le_max_right _ _))
   have hlow : Λ⁻¹ ≤ a₀ := (inv_le_comm₀ ha hΛpos).mp haiΛ
   obtain ⟨C, R, _, _, _, hext⟩ :=
-    continuum_extension h619 h66 hd hσ.1 hσ.2 hU hΛ
+    continuum_extension h619 h66 h37 h637 hd hσ.1 hσ.2 hU hΛ
   obtain ⟨V, hV, _, heq, hz, _⟩ := hext a₀ μ ⟨hlow, haΛ⟩ ⟨hμ, hμΛ⟩
     f ū (max M 0) (le_max_right _ _)
     (hf.trans (ENNReal.ofReal_le_ofReal (le_max_left _ _))) hū
@@ -82,9 +84,7 @@ theorem classical_solution_has_weak_graph
     exact heq hx
   · exact fun z => eq_classicalH10_iff h75 (by omega) hV hU.2.2.1 hU.1 hU.2.1 hz z
   · intro z hz
-    exact hz.eq_of_same_data
-      LatticeProb.External.gilbargTrudingerWeakHomogeneousUniqueness_holds
-      (by omega) hU.1 hU.2.1 hU.2.2.1 ha hμ hw
+    exact hz.eq_of_same_data h82 (by omega) hU.1 hU.2.1 hU.2.2.1 ha hμ hw
 
 /-- The source data produce both the unique H¹₀ solution and its unique continuous
 zero-extended classical representative, at the actual mean coefficient. -/
@@ -92,7 +92,10 @@ theorem exists_weak_classical_solution
     (h614 : LatticeProb.External.GilbargTrudingerExistence)
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
+    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
+    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (h75 : LatticeProb.External.GilbargTrudingerZeroBoundaryApproximation)
+    (h82 : LatticeProb.External.GilbargTrudingerWeakHomogeneousUniqueness)
     (hd : 1 ≤ d) {σ μ : ℝ} (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω} {lam : ℝ}
@@ -109,9 +112,9 @@ theorem exists_weak_classical_solution
       ∀ v, (IsClassicalDirichletSolution U μ
         (meanConductance P hd a / (2 * d)) f v ∧ Continuous v ∧
           ∀ x ∉ U, v x = 0) → v = ū := by
-  obtain ⟨ū, hū, huniq⟩ := existsUnique_classical_solution h614 hd hσ hμ hU hA hf
+  obtain ⟨ū, hū, huniq⟩ := existsUnique_classical_solution h614 h37 hd hσ hμ hU hA hf
   obtain ⟨V, _, _, _, _, w, hw, hae, _, _, hwu⟩ :=
-    classical_solution_has_weak_graph h619 h66 h75 hd hσ hμ
+    classical_solution_has_weak_graph h619 h66 h37 h637 h75 h82 hd hσ hμ
       (mean_coefficient_pos hA hd) hU hf hū.1
   exact ⟨w, ū, hw, hwu, hū, hae, huniq⟩
 

@@ -1,7 +1,7 @@
 import LongRange.HeatKernel.UniformOffDiagonal
 
 /-!
-# off-diagonal heat kernel bound
+# Uniform off-diagonal heat-kernel bound
 
 Proposition B.2 with one constant depending only on dimension and ellipticity.
 The Chen–Kim–Kumagai–Wang cited inputs remain explicit hypotheses. The truncation, Nash,
@@ -13,8 +13,7 @@ open scoped NNReal
 
 /-- Proposition B.2: the original minimum heat bound holds uniformly over every
 admissible symmetric conductance field, every positive time and distinct sites. -/
-
-theorem LongRange.Statements.heatkernel_offDiagonal_proved
+theorem LongRange.heatkernel_offDiagonal_proved
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
     (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d) {lam : ℝ}
     (hlam : 0 < lam) :
@@ -24,6 +23,5 @@ theorem LongRange.Statements.heatkernel_offDiagonal_proved
       ((unitRates hd hlam a ha).transitionKernel t x).real {y} ≤
         C * min ((1 + t * Real.log (2 + t)) ^ (-((d : ℝ) / 2)))
           (t * Real.log (2 + radius (physical 1 (y - x))) /
-            radius (physical 1 (y - x)) ^ (d + 2)) :=
-
-by exact LongRange.unitHeat_offDiagonal_uniform_proved hNash hDavies d hd hlam
+            radius (physical 1 (y - x)) ^ (d + 2)) := by
+  exact LongRange.unitHeat_offDiagonal_uniform_proved hNash hDavies d hd hlam

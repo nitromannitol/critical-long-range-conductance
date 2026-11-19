@@ -4,7 +4,7 @@ import LongRange.HeatKernel.RescaledKilled
 # The actual full and killed position laws and their common rescaled minimum bound
 -/
 
-namespace LongRange.Statements
+namespace LongRange
 
 open LatticeProb LatticeProb.Euclidean.Lattice
 open scoped NNReal
@@ -13,7 +13,6 @@ noncomputable section
 
 /-- At every nonnegative time the densities are the actual endpoint and survival
 masses. One positive `C(d, lam)` bounds both densities at every positive time and scale. -/
-
 theorem rescaled_kernel_proved
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
@@ -44,9 +43,7 @@ theorem rescaled_kernel_proved
             radius (physical ε (y - x)) ^ (d + 2))
         LongRange.rescaledDensity hd hε hlam a ha t x y ≤ bound ∧
           ∀ U : Set (Fin d → ℝ),
-            LongRange.rescaledKilledDensity hd hε hlam a ha U t x y ≤ bound) :=
-
-by
+            LongRange.rescaledKilledDensity hd hε hlam a ha U t x y ≤ bound) := by
   obtain ⟨C, hC, hb⟩ :=
     rescaledDensity_and_killed_offDiagonal_uniform_proved hNash hDavies d hd hlam
   refine ⟨C, hC, ?_⟩
@@ -62,4 +59,4 @@ by
 
 end
 
-end LongRange.Statements
+end LongRange

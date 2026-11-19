@@ -22,6 +22,8 @@ theorem exists_classical_solution_main_estimate
     (h614 : LatticeProb.External.GilbargTrudingerExistence)
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
+    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
+    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     (d : ℕ) (hd : 1 ≤ d) (lam σ μ : ℝ) (hσ : σ ∈ Set.Ioo (0 : ℝ) 1) (hμ : 0 ≤ μ)
     (U : Set (Fin d → ℝ)) (hU : IsC2HolderDomain σ U) (M : ℝ) :
     ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∀ {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω)
@@ -46,15 +48,15 @@ theorem exists_classical_solution_main_estimate
                 l2Norm ε U (fun q => u q - v (physical ε q)) ≤
                   C / Real.sqrt |Real.log ε| := by
   obtain ⟨C, c, hC, hc, hmain⟩ :=
-    LongRange.main_theorem h619 h66 d hd lam σ μ hσ hμ U hU M
+    LongRange.main_theorem h619 h66 h37 h637 d hd lam σ μ hσ hμ U hU M
   refine ⟨C, c, hC, hc, ?_⟩
   intro Ω _ P a hA f hf
   obtain ⟨ū, hū, huniq⟩ :=
-    Continuum.existsUnique_classical_solution h614 hd hσ hμ hU hA hf
+    Continuum.existsUnique_classical_solution h614 h37 hd hσ hμ hU hA hf
   obtain ⟨𝒳, hmeas, htail, herr⟩ := hmain P a hA f hf ū hū.1
   refine ⟨ū, hū, huniq, 𝒳, hmeas, htail, ?_⟩
   intro v hv ω ε hε hscale u hu heqn
-  rw [Continuum.sampled_error_eq hd hμ hU hA hū.1 hv ε u]
+  rw [Continuum.sampled_error_eq h37 hd hμ hU hA hū.1 hv ε u]
   exact herr ω ε hε hscale u hu heqn
 
 end

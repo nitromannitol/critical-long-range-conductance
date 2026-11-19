@@ -21,8 +21,8 @@ derivative and Euclidean Hölder bounds in every positive dimension. -/
 theorem continuum_extension
     (h619 : LatticeProb.External.GilbargTrudingerBoundaryRegularity)
     (h66 : LatticeProb.External.GilbargTrudingerSchauderEstimate)
-
-
+    (h37 : LatticeProb.External.GilbargTrudingerSupEstimate)
+    (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     {d : ℕ} (hd : 1 ≤ d) {σ : ℝ} (hσ : 0 < σ) (hσ1 : σ < 1)
     {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U) {Λ : ℝ} (hΛ : 1 ≤ Λ) :
     ∃ C R : ℝ, 0 < C ∧ 0 < R ∧ (∀ x ∈ U, radius x < R) ∧
@@ -42,7 +42,7 @@ theorem continuum_extension
         IsClassicalDirichletSolution U μ a f u →
         c2HolderNorm σ U u ≤ ENNReal.ofReal C * c0HolderNorm σ (closure U) f := by
     by_cases hd2 : 2 ≤ d
-    · exact homogenized_c2Holder_bound h619 h66 hd2 hσ hσ1 hU hΛ
+    · exact homogenized_c2Holder_bound h619 h66 h37 hd2 hσ hσ1 hU hΛ
     · obtain rfl : d = 1 := by omega
       obtain ⟨α, β, hαβ, rfl⟩ := eq_interval_of_isC2HolderDomain hU
       obtain ⟨C, hC, hb⟩ := c2HolderNorm_le_one_dim_dirichlet hαβ hσ hσ1 hΛ
@@ -54,7 +54,7 @@ theorem continuum_extension
           (∀ x, R ≤ radius x → v x = 0) ∧ Set.EqOn v u U ∧
           c2HolderNorm σ Set.univ v ≤ ENNReal.ofReal C * c2HolderNorm σ U u := by
     by_cases hd2 : 2 ≤ d
-    · exact regular_extension_of_gt_ball hd2 hσ hσ1 hU
+    · exact regular_extension_of_gt_ball h637 hd2 hσ hσ1 hU
     · obtain rfl : d = 1 := by omega
       obtain ⟨α, β, hαβ, rfl⟩ := eq_interval_of_isC2HolderDomain hU
       obtain ⟨C, hC, hb⟩ := one_dim_holder_extension_support hαβ hσ hσ1

@@ -1,4 +1,3 @@
-import LatticeProb.Analysis.Elliptic.HolderExtensionProved
 import LatticeProb.External.GilbargTrudinger
 
 /-!
@@ -12,7 +11,7 @@ namespace LongRange
 
 /-- The cited extension theorem gives a compactly supported global `C²` extension,
 with a uniform global `C^{2,σ}` bound, by choosing the whole space as neighborhood. -/
-theorem regular_extension_of_gt
+theorem regular_extension_of_gt (h637 : LatticeProb.External.GilbargTrudingerHolderExtension)
     {d : ℕ} (hd : 2 ≤ d) {σ : ℝ} (hσ : 0 < σ) (hσ1 : σ < 1) {U : Set (Fin d → ℝ)}
     (hU : LatticeProb.Elliptic.IsC2HolderDomain σ U) :
     ∃ C : ℝ, 0 < C ∧ ∀ u : (Fin d → ℝ) → ℝ, ContDiffOn ℝ 2 u U →
@@ -22,8 +21,7 @@ theorem regular_extension_of_gt
         LatticeProb.Elliptic.c2HolderNorm σ Set.univ v ≤
           ENNReal.ofReal C * LatticeProb.Elliptic.c2HolderNorm σ U u := by
   obtain ⟨C, hC, hext⟩ :=
-    LatticeProb.Elliptic.HolderExtension.gilbargTrudingerHolderExtension_holds
-      d hd σ hσ hσ1 U hU Set.univ isOpen_univ (Set.subset_univ _)
+    h637 d hd σ hσ hσ1 U hU Set.univ isOpen_univ (Set.subset_univ _)
   refine ⟨C, hC, ?_⟩
   intro u hu hnorm
   obtain ⟨v, hv, hcompact, _, heq, hbound⟩ := hext u hu hnorm

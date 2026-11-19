@@ -55,6 +55,204 @@ def Nash (θ : ℝ → ℝ) (δ : ℝ) : Prop :=
 /-- The finite sum of a natural power of a real-valued function. -/
 def powSum (f : ι → ℝ) (p : ℕ) : ℝ := ∑ i, (f i) ^ p
 
+/-- The generator is the negative of the bilinear jump form under counting measure. -/
+theorem sum_mul_gen_mulVec (u v : ι → ℝ) :
+    (∑ i, u i * (F.gen *ᵥ v) i) = -F.form u v := by
+  have hswap₁ : (∑ i, ∑ j, F.q i j * u j * v j) =
+      ∑ i, ∑ j, F.q i j * u i * v i := by
+    rw [Finset.sum_comm]
+    exact Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ by rw [F.q_symm]
+  have hswap₂ : (∑ i, ∑ j, F.q i j * u j * v i) =
+      ∑ i, ∑ j, F.q i j * u i * v j := by
+    rw [Finset.sum_comm]
+    exact Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ by rw [F.q_symm]
+  have hrow (i : ι) : (F.gen *ᵥ v) i =
+      (∑ j, F.q i j * v j) - ((∑ j, F.q i j) + F.κ i) * v i := by
+    simp only [Matrix.mulVec, dotProduct, gen, Matrix.of_apply, sub_mul,
+      Finset.sum_sub_distrib, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+      ↓reduceIte]
+  simp_rw [hrow]
+  unfold form
+  simp_rw [show ∀ i j, F.q i j * (u j - u i) * (v j - v i) =
+    F.q i j * u j * v j - F.q i j * u j * v i -
+      F.q i j * u i * v j + F.q i j * u i * v i by intros; ring]
+  simp only [Finset.sum_sub_distrib, Finset.sum_add_distrib]
+  rw [hswap₁, hswap₂]
+  have hx : (∑ i, u i * (((∑ j, F.q i j) + F.κ i) * v i)) =
+      (∑ i, ∑ j, F.q i j * u i * v i) + ∑ i, F.κ i * u i * v i := by
+    simp only [add_mul, mul_add, Finset.sum_add_distrib, Finset.mul_sum, Finset.sum_mul]
+    congr 1
+    · apply Finset.sum_congr rfl
+      intro i _
+      apply Finset.sum_congr rfl
+      intro j _
+      ring
+    · apply Finset.sum_congr rfl
+      intro i _
+      ring
+  have hy : (∑ i, u i * ∑ j, F.q i j * v j) =
+      ∑ i, ∑ j, F.q i j * u i * v j := by
+    simp only [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro i _
+    apply Finset.sum_congr rfl
+    intro j _
+    ring
+  simp only [mul_sub, Finset.sum_sub_distrib]
+  rw [hx, hy]
+  ring
+
+omit [DecidableEq ι] in
+/-- A symmetric jump form with nonnegative killing is nonnegative on the diagonal. -/
+theorem form_self_nonneg (u : ι → ℝ) : 0 ≤ F.form u u := by
+  unfold form
+  apply add_nonneg
+  · apply div_nonneg _ (by norm_num)
+    apply Finset.sum_nonneg
+    intro i _
+    apply Finset.sum_nonneg
+    intro j _
+    exact mul_nonneg (F.q_nonneg i j) (sq_nonneg (u j - u i)) |>.trans_eq (by ring)
+  · apply Finset.sum_nonneg
+    intro i _
+    exact mul_nonneg (F.κ_nonneg i) (sq_nonneg (u i)) |>.trans_eq (by ring)
+
+omit [DecidableEq ι] in
+/-- Simultaneously scaling both arguments scales the form quadratically. -/
+theorem form_smul_smul (c : ℝ) (u v : ι → ℝ) :
+    F.form (c • u) (c • v) = c ^ 2 * F.form u v := by
+  unfold form
+  simp only [Pi.smul_apply, smul_eq_mul]
+  have h₁ : (∑ i, ∑ j, F.q i j * (c * u j - c * u i) * (c * v j - c * v i)) =
+      c ^ 2 * ∑ i, ∑ j, F.q i j * (u j - u i) * (v j - v i) := by
+    simp only [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro i _
+    apply Finset.sum_congr rfl
+    intro j _
+    ring
+  have h₂ : (∑ i, F.κ i * (c * u i) * (c * v i)) =
+      c ^ 2 * ∑ i, F.κ i * u i * v i := by
+    simp only [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro i _
+    ring
+  rw [h₁, h₂]
+  ring
+
+omit [DecidableEq ι] in
+/-- Reversing both arguments leaves the form unchanged. -/
+theorem form_neg (u v : ι → ℝ) : F.form (-u) (-v) = F.form u v := by
+  simpa using F.form_smul_smul (-1) u v
+
+/-- The finite matrix semigroup differentiates by its generator. -/
+theorem hasDerivAt_semigroup_mulVec (w : ι → ℝ) (t : ℝ) :
+    HasDerivAt (fun u : ℝ ↦ F.semigroup u *ᵥ w)
+      (F.gen *ᵥ (F.semigroup t *ᵥ w)) t := by
+  have h := hasDerivAt_exp_smul_const' (𝕂 := ℝ) F.gen t
+  have hl : HasDerivAt (fun u : ℝ ↦ (Matrix.mulVecLin (NormedSpace.exp (u • F.gen))) w)
+      ((Matrix.mulVecLin (F.gen * NormedSpace.exp (t • F.gen))) w) t := by
+    let ev : Matrix ι ι ℝ →L[ℝ] (ι → ℝ) :=
+      LinearMap.toContinuousLinearMap
+        { toFun := fun B ↦ B *ᵥ w
+          map_add' := fun _ _ ↦ Matrix.add_mulVec _ _ _
+          map_smul' := fun _ _ ↦ Matrix.smul_mulVec _ _ _ }
+    exact ev.hasFDerivAt.comp_hasDerivAt t h
+  simpa [semigroup, Matrix.mulVec_mulVec] using hl
+
+/-- The finite semigroup obeys the addition law at all real times. -/
+theorem semigroup_add (s t : ℝ) : F.semigroup (s + t) = F.semigroup s * F.semigroup t := by
+  unfold semigroup
+  rw [add_smul]
+  exact NormedSpace.exp_add_of_commute (((Commute.refl F.gen).smul_left s).smul_right t)
+
+/-- The generator of a symmetric jump form is symmetric. -/
+theorem gen_transpose : F.genᵀ = F.gen := by
+  ext i j
+  simp only [Matrix.transpose_apply, gen, Matrix.of_apply]
+  rw [F.q_symm j i]
+  by_cases h : i = j
+  · subst j
+    rfl
+  · simp [h, Ne.symm h]
+
+/-- The finite semigroup of a symmetric jump form is symmetric. -/
+theorem semigroup_transpose (t : ℝ) : (F.semigroup t)ᵀ = F.semigroup t := by
+  unfold semigroup
+  rw [← Matrix.exp_transpose, Matrix.transpose_smul, F.gen_transpose]
+
+/-- The matrix semigroup at negative time is the inverse at positive time. -/
+theorem semigroup_mul_neg (t : ℝ) : F.semigroup t * F.semigroup (-t) = 1 := by
+  rw [← F.semigroup_add, add_neg_cancel]
+  simp [semigroup, NormedSpace.exp_zero]
+
+/-- An entrywise nonnegative matrix has an entrywise nonnegative exponential. -/
+theorem exp_apply_nonneg (A : Matrix ι ι ℝ) (hA : ∀ i j, 0 ≤ A i j) (i j : ι) :
+    0 ≤ (NormedSpace.exp A) i j := by
+  let ev : Matrix ι ι ℝ →ₗ[ℝ] ℝ :=
+    { toFun := fun B ↦ B i j
+      map_add' := fun _ _ ↦ rfl
+      map_smul' := fun _ _ ↦ rfl }
+  have h := (NormedSpace.exp_series_hasSum_exp' (𝕂 := ℝ) A).map
+    ev.toAddMonoidHom ev.continuous_of_finiteDimensional
+  have he := h.tsum_eq
+  change (∑' n : ℕ, ((n.factorial : ℝ)⁻¹ • A ^ n) i j) =
+    (NormedSpace.exp A) i j at he
+  rw [← he]
+  apply tsum_nonneg
+  intro n
+  change 0 ≤ (n.factorial : ℝ)⁻¹ * (A ^ n) i j
+  exact mul_nonneg (inv_nonneg.mpr (Nat.cast_nonneg _)) (Matrix.pow_apply_nonneg hA n i j)
+
+/-- At nonnegative times every entry of the killed semigroup is nonnegative. -/
+theorem semigroup_nonneg (t : ℝ) (ht : 0 ≤ t) (i j : ι) :
+    0 ≤ F.semigroup t i j := by
+  let c : ℝ := ∑ i, ((∑ k, F.q i k) + F.κ i)
+  have hrow (i : ι) : 0 ≤ (∑ k, F.q i k) + F.κ i :=
+    add_nonneg (Finset.sum_nonneg fun k _ ↦ F.q_nonneg i k) (F.κ_nonneg i)
+  have hc (i : ι) : (∑ k, F.q i k) + F.κ i ≤ c := by
+    exact Finset.single_le_sum (fun j _ ↦ hrow j) (Finset.mem_univ i)
+  let A : Matrix ι ι ℝ := F.gen + c • 1
+  have hA (i j : ι) : 0 ≤ (t • A) i j := by
+    change 0 ≤ t * (F.gen i j + c * (1 : Matrix ι ι ℝ) i j)
+    apply mul_nonneg ht
+    by_cases hij : i = j
+    · subst j
+      simp only [gen, Matrix.of_apply, ite_true, Matrix.one_apply_eq, mul_one]
+      have := F.q_nonneg i i
+      linarith [hc i]
+    · simp only [gen, Matrix.of_apply, hij, ite_false, sub_zero,
+        Matrix.one_apply_ne hij, mul_zero, add_zero]
+      exact F.q_nonneg i j
+  have he := exp_apply_nonneg (t • A) hA i j
+  have hdecomp : t • A = t • F.gen + (t * c) • (1 : Matrix ι ι ℝ) := by
+    simp [A, smul_add, smul_smul]
+  have hcomm : Commute (t • F.gen) ((t * c) • (1 : Matrix ι ι ℝ)) := by
+    change (t • F.gen) * ((t * c) • (1 : Matrix ι ι ℝ)) =
+      ((t * c) • (1 : Matrix ι ι ℝ)) * (t • F.gen)
+    simpa only [Algebra.algebraMap_eq_smul_one] using
+      (Algebra.commutes (t * c) (t • F.gen)).symm
+  have hexp := NormedSpace.exp_add_of_commute hcomm
+  have heq : (NormedSpace.exp (t • A)) i j =
+      (NormedSpace.exp (t • F.gen) * NormedSpace.exp ((t * c) • (1 : Matrix ι ι ℝ))) i j :=
+    congrArg (fun B : Matrix ι ι ℝ ↦ B i j) ((congrArg NormedSpace.exp hdecomp).trans hexp)
+  rw [heq] at he
+  have hscalar : NormedSpace.exp ((t * c) • (1 : Matrix ι ι ℝ)) =
+        Real.exp (t * c) • (1 : Matrix ι ι ℝ) := by
+      calc
+        NormedSpace.exp ((t * c) • (1 : Matrix ι ι ℝ)) =
+            NormedSpace.exp (algebraMap ℝ (Matrix ι ι ℝ) (t * c)) := by
+          rw [Algebra.algebraMap_eq_smul_one]
+        _ = algebraMap ℝ (Matrix ι ι ℝ) (Real.exp (t * c)) := by
+          have hm := NormedSpace.algebraMap_exp_comm (𝕂 := ℝ)
+            (𝔸 := Matrix ι ι ℝ) (t * c)
+          exact hm.symm.trans (congrArg (algebraMap ℝ (Matrix ι ι ℝ))
+            (congrFun Real.exp_eq_exp_ℝ (t * c)).symm)
+        _ = Real.exp (t * c) • (1 : Matrix ι ι ℝ) := Algebra.algebraMap_eq_smul_one _
+  rw [hscalar, Matrix.mul_smul, Matrix.mul_one] at he
+  change 0 ≤ Real.exp (t * c) * F.semigroup t i j at he
+  exact nonneg_of_mul_nonneg_right he (Real.exp_pos _)
+
 end FiniteJumpForm
 end
 end LatticeProb.Davies

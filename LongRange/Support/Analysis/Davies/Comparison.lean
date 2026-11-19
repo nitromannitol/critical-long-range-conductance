@@ -13,7 +13,8 @@ A right-sided slope argument permits monotone profiles with discontinuities.
 namespace LatticeProb.Davies
 
 open MeasureTheory Set Filter
-open scoped Topology
+open scoped Topology ENNReal
+open LatticeProb.External
 
 noncomputable section
 
@@ -128,6 +129,71 @@ theorem sub_le_integral_inv {θ β β' : ℝ → ℝ} {t₀ t₁ : ℝ}
     (by intro x hx; exact (hasDerivAt_const x (0 : ℝ)).hasDerivWithinAt) hbound
     (show t₁ ∈ Icc t₀ t₁ from ⟨ht, le_rfl⟩)
   simpa only [F, Pi.zero_apply] using sub_nonpos.mp hfinal
+
+/-- The inverse tail bounds a positive function satisfying the Nash differential inequality. -/
+theorem le_phi_of_deriv_le {c₁ c₂ : ℝ} {θ θstar φ β β' : ℝ → ℝ} {t₀ t₁ : ℝ}
+    (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂) (hinv : ckkwInverseProfile θ φ)
+    (hpos : ∀ r > 0, 0 < θstar r) (hm : MonotoneOn θstar (Ioi 0))
+    (hcompare : ∀ r > 0, c₁⁻¹ * θstar (c₂⁻¹ * r) ≤ θ r ∧
+      θ r ≤ c₁ * θstar (c₂ * r)) (ht : t₀ < t₁)
+    (hβ : ∀ u ∈ Icc t₀ t₁, 0 < β u)
+    (hd : ∀ u ∈ Icc t₀ t₁, HasDerivAt β (β' u) u)
+    (hle : ∀ u ∈ Icc t₀ t₁, β' u ≤ -thetaLow c₁ c₂ θstar (β u)) :
+    β t₁ ≤ c₂ ^ 2 * φ ((t₁ - t₀) / (c₁ * c₂) ^ 2) := by
+  let low := thetaLow c₁ c₂ θstar
+  have hlowpos : ∀ r > 0, 0 < low r := fun _ hr ↦ thetaLow_pos hc₁ hc₂ hpos hr
+  have hlowmono : MonotoneOn low (Ioi 0) := thetaLow_mono hc₁ hc₂ hm
+  have hcont : ContinuousOn β (Icc t₀ t₁) := fun u hu ↦ (hd u hu).continuousAt.continuousWithinAt
+  have hanti : StrictAntiOn β (Icc t₀ t₁) := by
+    apply strictAntiOn_of_deriv_neg (convex_Icc _ _) hcont
+    intro u hu
+    have hu' : u ∈ Icc t₀ t₁ := interior_subset hu
+    rw [(hd u hu').deriv]
+    have := hle u hu'
+    have := hlowpos _ (hβ u hu')
+    linarith
+  have hord : β t₁ ≤ β t₀ := hanti.antitoneOn ⟨le_rfl, ht.le⟩ ⟨ht.le, le_rfl⟩ ht.le
+  have hlo : 0 < β t₁ := hβ t₁ ⟨ht.le, le_rfl⟩
+  have hθanti : AntitoneOn (fun s ↦ (low s)⁻¹) (Icc (β t₁) (β t₀)) := by
+    intro x hx y hy hxy
+    have hxpos := lt_of_lt_of_le hlo hx.1
+    have hypos := lt_of_lt_of_le hlo hy.1
+    exact (inv_le_inv₀ (hlowpos _ hypos) (hlowpos _ hxpos)).2
+      (hlowmono hxpos hypos hxy)
+  have hint : IntervalIntegrable (fun s ↦ (low s)⁻¹) volume (β t₁) (β t₀) := by
+    apply AntitoneOn.intervalIntegrable
+    simpa only [uIcc_of_le hord] using hθanti
+  have hae : 0 ≤ᵐ[volume.restrict (Ioc (β t₁) (β t₀))] fun s ↦ (low s)⁻¹ := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioc] with s hs
+    exact inv_nonneg.mpr (hlowpos _ (lt_trans hlo hs.1)).le
+  have hreal : t₁ - t₀ ≤ ∫ s in β t₁..β t₀, (low s)⁻¹ :=
+    sub_le_integral_inv hlowpos hlowmono ht.le hβ hd hle
+  have hen : ENNReal.ofReal (t₁ - t₀) ≤
+      ENNReal.ofReal ((c₁ * c₂) ^ 2) * ckkwTail θ (β t₁ / c₂ ^ 2) := by
+    calc
+      _ ≤ ENNReal.ofReal (∫ s in β t₁..β t₀, (low s)⁻¹) := ENNReal.ofReal_le_ofReal hreal
+      _ = ∫⁻ s in Ioc (β t₁) (β t₀), ENNReal.ofReal ((low s)⁻¹) := by
+        rw [intervalIntegral.integral_of_le hord]
+        exact ofReal_integral_eq_lintegral_ofReal hint.1 hae
+      _ ≤ ∫⁻ s in Ioi (β t₁), ENNReal.ofReal ((low s)⁻¹) :=
+        lintegral_mono_set Ioc_subset_Ioi_self
+      _ ≤ _ := lintegral_inv_thetaLow_le hc₁ hc₂ hinv hpos hcompare hlo
+  have hc₁pos : 0 < c₁ := by linarith
+  have hc₂pos : 0 < c₂ := by linarith
+  have hden : 0 < (c₁ * c₂) ^ 2 := sq_pos_of_pos (mul_pos hc₁pos hc₂pos)
+  have hc₂sq : 0 < c₂ ^ 2 := sq_pos_of_pos hc₂pos
+  have hy : 0 < β t₁ / c₂ ^ 2 := div_pos hlo hc₂sq
+  have hfinite : ENNReal.ofReal ((c₁ * c₂) ^ 2) * ckkwTail θ (β t₁ / c₂ ^ 2) ≠ ∞ :=
+    ENNReal.mul_ne_top ENNReal.ofReal_ne_top (hinv.1 _ hy).2
+  have htoreal := ENNReal.toReal_mono hfinite hen
+  rw [ENNReal.toReal_ofReal (sub_nonneg.mpr ht.le), ENNReal.toReal_mul,
+    ENNReal.toReal_ofReal hden.le] at htoreal
+  have htail : (t₁ - t₀) / (c₁ * c₂) ^ 2 ≤ (ckkwTail θ (β t₁ / c₂ ^ 2)).toReal := by
+    apply (div_le_iff₀ hden).2
+    nlinarith
+  have hphi := le_of_le_ckkwTail hinv (div_pos (sub_pos.mpr ht) hden) hy htail
+  have hres := (div_le_iff₀ hc₂sq).1 hphi
+  nlinarith
 
 end
 end LatticeProb.Davies

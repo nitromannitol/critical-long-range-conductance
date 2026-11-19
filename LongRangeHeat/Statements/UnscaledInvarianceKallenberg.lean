@@ -20,8 +20,9 @@ open LongRange (Edge)
 origin under its annealed law satisfies
 `((n log n)^(-1/2) Y_(nt))_(t ≥ 0) ⇒ (|S^(d-1)|/(2d))^(1/2) W` in
 `D([0, ∞), ℝ^d)`, where `W` is standard Brownian motion. Here
-`A = d * π^(d/2) / Γ(d/2 + 1) = |S^(d-1)|`; at `n = 0`, an arbitrary positive clock
-is used, which does not affect the limit.
+`A = d * π^(d/2) / Γ(d/2 + 1) = |S^(d-1)|`. At `n = 0` an arbitrary positive clock is used,
+and at `n = 0` and `n = 1` the space factor `(n log n)^(-1/2)` evaluates to `0`; neither
+affects the limit.
 
 The heat-kernel inputs `hMSC`, `hNash`, and `hDavies` are those of
 `annealed_invariance_principle_kallenberg`. -/

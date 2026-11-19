@@ -53,3 +53,9 @@ import LongRangeHeat.Statements.InvariancePrincipleProved
 import LongRangeHeat.Statements.UnscaledInvarianceProved
 import LongRangeHeat.Statements.InvariancePrincipleKallenberg
 import LongRangeHeat.Statements.UnscaledInvarianceKallenberg
+import LongRangeHeat.Statements.HeatKernelBoundsOfDavies
+import LongRangeHeat.Statements.AldousOfDavies
+import LongRangeHeat.Statements.FddOfDavies
+import LongRangeHeat.Statements.InvariancePrincipleOfDavies
+import LongRangeHeat.Statements.UnscaledInvarianceOfDavies
+import LongRangeHeat.KallenbergPartitionCollection

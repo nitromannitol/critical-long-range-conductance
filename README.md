@@ -26,8 +26,8 @@ represent physical positions `ε * q`; corrector slopes use those positions. The
 variational corrector and full and killed path-law densities retain their definition
 bodies and characterization theorems.
 
-These results are conditional on a finite list of **16 explicit cited propositions** in
-the pinned Lattice-Probability dependency. They are assumptions, not proofs of the outside
+These results are conditional on a finite list of **13 explicit cited propositions** in
+the library and its pinned Lattice-Probability dependency. They are assumptions, not proofs of the outside
 papers. Different exports use different subsets; [CITED_INPUTS.md](CITED_INPUTS.md)
 lists the exact names. The paper's applications and adapters are proved in the library.
 
@@ -37,11 +37,17 @@ lists the exact names. The paper's applications and adapters are proved in the l
 [`paper/heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
 Theorem 1.1, the scaled and unscaled annealed invariance principles (Theorem 1.2),
 and supporting results are listed in
-[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The heat-kernel, Aldous,
-finite-dimensional convergence and invariance-principle exports take the uniform
-Murugan–Saloff-Coste estimate and the Chen–Kim–Kumagai–Wang Nash and Davies estimates
-as explicit hypotheses. Both invariance-principle forms also take two Ethier–Kurtz criteria;
-see [CITED_INPUTS.md](CITED_INPUTS.md).
+[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The on-diagonal bound of
+Proposition 4.1, which the paper takes from Murugan–Saloff-Coste (Theorem 1.1), is proved
+in the library for the critical lattice kernel, with one constant for all admissible
+conductance fields. The exports `heat_kernel_bounds_proved`, `aldous_condition_proved`,
+`fdd_convergence_proved`, `annealed_invariance_principle_proved` and
+`unscaled_invariance_principle_proved` state Propositions 4.1–4.3 and both forms of
+Theorem 1.2 without a Murugan–Saloff-Coste hypothesis. They take the Chen–Kim–Kumagai–Wang
+Nash and Davies estimates as explicit hypotheses, and both invariance-principle forms also
+take two Ethier–Kurtz criteria; see [CITED_INPUTS.md](CITED_INPUTS.md). The exports of the
+same names without `_proved` are unchanged and still take the uniform Murugan–Saloff-Coste
+estimate as a hypothesis.
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
 revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned
@@ -54,7 +60,7 @@ The Lean toolchain, Mathlib and Lattice-Probability versions are pinned in
 
 ```sh
 lake exe cache get
-lake build LongRange
+lake build LongRange LongRangeHeat
 python3 scripts/check_axioms.py
 ```
 
@@ -65,6 +71,14 @@ ordinary proposition parameters and are separate from this kernel axiom check.
 The Build workflow checks main-branch pushes and pull requests. The Independent comparators
 workflow runs by manual dispatch; the badges above link to the current hosted results. See
 [the comparison instructions](LongRangeAudit/README.md).
+
+## Copied code
+
+Two modules under `LongRange/HeatKernel/` contain code copied from Leonardo Bonanno's
+[`lean-formalizations`](https://github.com/leobon12/lean-formalizations), commit `fdb5cad`:
+the complexification of real square-summable sequence operators. This code is copied
+source, not a dependency. Each file names its source modules and lists its changes in its
+header; [`NOTICE`](NOTICE) gives the details.
 
 ## Paper and citation
 

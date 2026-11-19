@@ -25,8 +25,8 @@ noncomputable section
 variable {d : ℕ}
 
 /-- Positivity comparison transfers unit heat decay to the truncated walk. -/
-theorem truncHeat_onDiagonal_uniform
-    (hMSC : External.MuruganSaloffCosteUniform) (hd : 1 ≤ d)
+theorem truncHeat_onDiagonal_uniform_proved
+    (hd : 1 ≤ d)
     {lam : ℝ} (hlam : 0 < lam) :
     ∃ C B : ℝ, 0 < C ∧ 0 < B ∧ ∀ a : Edge d → ℝ,
       ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹, ∀ ρ : ℝ, 1 ≤ ρ →
@@ -34,7 +34,7 @@ theorem truncHeat_onDiagonal_uniform
         ((truncRates hd hlam a ha ρ).transitionKernel t x).real {y} ≤
           C * (1 + t * Real.log (2 + t)) ^ (-((d : ℝ) / 2)) *
             Real.exp (B * ρ ^ (-(2 : ℝ)) * t) := by
-  obtain ⟨C, hC, hc⟩ := unitHeat_onDiagonal_uniform hMSC d hd hlam
+  obtain ⟨C, hC, hc⟩ := unitHeat_onDiagonal_uniform_proved d hd hlam
   obtain ⟨B, hB, hb⟩ := removed_intensity_le hd hlam
   refine ⟨C, B, hC, hB, ?_⟩
   intro a ha ρ hρ t x y
@@ -52,8 +52,20 @@ theorem truncHeat_onDiagonal_uniform
       mul_le_mul_of_nonneg_left (hc a ha t x y) (Real.exp_pos _).le
     _ = _ := mul_comm _ _
 
+/-- This estimate is compatible with the conditional interface. -/
+theorem truncHeat_onDiagonal_uniform
+    (_hMSC : External.MuruganSaloffCosteUniform) (hd : 1 ≤ d)
+    {lam : ℝ} (hlam : 0 < lam) :
+    ∃ C B : ℝ, 0 < C ∧ 0 < B ∧ ∀ a : Edge d → ℝ,
+      ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹, ∀ ρ : ℝ, 1 ≤ ρ →
+      ∀ (t : ℝ≥0) (x y : Site d),
+        ((truncRates hd hlam a ha ρ).transitionKernel t x).real {y} ≤
+          C * (1 + t * Real.log (2 + t)) ^ (-((d : ℝ) / 2)) *
+            Real.exp (B * ρ ^ (-(2 : ℝ)) * t) :=
+  truncHeat_onDiagonal_uniform_proved hd hlam
+
 /-- Truncated heat decay implies the explicit critical Nash inequality. -/
-theorem truncHeat_nash_uniform (hMSC : External.MuruganSaloffCosteUniform)
+theorem truncHeat_nash_uniform_proved
     (hNash : External.ChenKimKumagaiWangNash) (hd : 1 ≤ d)
     {lam : ℝ} (hlam : 0 < lam) :
     ∃ K : ℝ, 1 ≤ K ∧ ∃ B : ℝ, 0 < B ∧ ∀ a : Edge d → ℝ,
@@ -61,7 +73,7 @@ theorem truncHeat_nash_uniform (hMSC : External.MuruganSaloffCosteUniform)
       External.ckkwNashInequality (truncRates hd hlam a ha ρ)
         (fun r ↦ (4 * Real.exp 2 * K ^ (2 / (d : ℝ)))⁻¹ * nashRate d r)
         (B * ρ ^ (-(2 : ℝ))) := by
-  obtain ⟨C, B, hC, hB, hheat⟩ := truncHeat_onDiagonal_uniform hMSC hd hlam
+  obtain ⟨C, B, hC, hB, hheat⟩ := truncHeat_onDiagonal_uniform_proved hd hlam
   obtain ⟨D, hD, hprofile⟩ := criticalProfile_comparison d
   let K := max 1 (C * D)
   have hK : 1 ≤ K := le_max_left _ _
@@ -97,8 +109,19 @@ theorem truncHeat_nash_uniform (hMSC : External.MuruganSaloffCosteUniform)
   exact (ENNReal.ofReal_le_ofReal_iff
     (add_nonneg henergy (mul_nonneg hδ hn.le))).mp (hlower.trans hupper)
 
+/-- This estimate is compatible with the conditional interface. -/
+theorem truncHeat_nash_uniform (_hMSC : External.MuruganSaloffCosteUniform)
+    (hNash : External.ChenKimKumagaiWangNash) (hd : 1 ≤ d)
+    {lam : ℝ} (hlam : 0 < lam) :
+    ∃ K : ℝ, 1 ≤ K ∧ ∃ B : ℝ, 0 < B ∧ ∀ a : Edge d → ℝ,
+      ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹, ∀ ρ : ℝ, 1 ≤ ρ →
+      External.ckkwNashInequality (truncRates hd hlam a ha ρ)
+        (fun r ↦ (4 * Real.exp 2 * K ^ (2 / (d : ℝ)))⁻¹ * nashRate d r)
+        (B * ρ ^ (-(2 : ℝ))) :=
+  truncHeat_nash_uniform_proved hNash hd hlam
+
 /-- Finitely supported Euclidean tents give the truncated Davies estimate. -/
-theorem truncHeat_davies_uniform (hMSC : External.MuruganSaloffCosteUniform)
+theorem truncHeat_davies_uniform_proved
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
     {lam : ℝ} (hlam : 0 < lam) :
@@ -110,7 +133,7 @@ theorem truncHeat_davies_uniform (hMSC : External.MuruganSaloffCosteUniform)
           Real.exp (B * ρ ^ (-(2 : ℝ)) * t) *
           Real.exp (-(σ * radius (physical 1 (y - x)) / ρ) +
             B * σ ^ 2 * Real.exp (2 * σ) * (1 + Real.log ρ) * t / ρ ^ 2) := by
-  obtain ⟨K, hK, B₀, hB₀, hnash⟩ := truncHeat_nash_uniform hMSC hNash hd hlam
+  obtain ⟨K, hK, B₀, hB₀, hnash⟩ := truncHeat_nash_uniform_proved hNash hd hlam
   have hKpos : 0 < K := zero_lt_one.trans_le hK
   let α := (4 * Real.exp 2 * K ^ (2 / (d : ℝ)))⁻¹
   have hα : 0 < α := by dsimp only [α]; positivity
@@ -120,7 +143,7 @@ theorem truncHeat_davies_uniform (hMSC : External.MuruganSaloffCosteUniform)
     (by norm_num)
   obtain ⟨D, hD, hscale⟩ := criticalProfile_scale d (mul_pos hα ha₀)
   obtain ⟨T, hT, htent⟩ := tent_ckkwLambdaSq_le hd hlam
-  obtain ⟨C, E, hC, hE, hheat⟩ := truncHeat_onDiagonal_uniform hMSC hd hlam
+  obtain ⟨C, E, hC, hE, hheat⟩ := truncHeat_onDiagonal_uniform_proved hd hlam
   obtain ⟨F, hF, hprofile⟩ := criticalProfile_comparison d
   let A := A₀ * D + C * F
   let B := B₀ + E + 2 * T
@@ -229,9 +252,23 @@ theorem truncHeat_davies_uniform (hMSC : External.MuruganSaloffCosteUniform)
         apply mul_le_mul_of_nonneg_right _ (Real.exp_pos _).le
         exact mul_le_mul_of_nonneg_right (by dsimp only [A]; linarith [mul_pos hC hF]) hφ.le
 
+/-- This estimate is compatible with the conditional interface. -/
+theorem truncHeat_davies_uniform (_hMSC : External.MuruganSaloffCosteUniform)
+    (hNash : External.ChenKimKumagaiWangNash)
+    (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
+    {lam : ℝ} (hlam : 0 < lam) :
+    ∃ A B : ℝ, 0 < A ∧ 0 < B ∧ ∀ a : Edge d → ℝ,
+      ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹, ∀ ρ : ℝ, 1 ≤ ρ →
+      ∀ σ : ℝ, 0 ≤ σ → ∀ t : ℝ≥0, 0 < t → ∀ x y,
+      ((truncRates hd hlam a ha ρ).transitionKernel t x).real {y} ≤
+        A * (t * (1 + Real.log (1 + t))) ^ (-((d : ℝ) / 2)) *
+          Real.exp (B * ρ ^ (-(2 : ℝ)) * t) *
+          Real.exp (-(σ * radius (physical 1 (y - x)) / ρ) +
+            B * σ ^ 2 * Real.exp (2 * σ) * (1 + Real.log ρ) * t / ρ ^ 2) :=
+  truncHeat_davies_uniform_proved hNash hDavies d hd hlam
+
 /-- Unit conductances in dimension one satisfy the common truncated Davies bound. -/
 theorem truncHeat_davies_one
-    (hMSC : External.MuruganSaloffCosteUniform)
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) :
     ∃ A B : ℝ, 0 < A ∧ 0 < B ∧ ∀ ρ : ℝ, 1 ≤ ρ →
@@ -242,7 +279,7 @@ theorem truncHeat_davies_one
           Real.exp (B * ρ ^ (-(2 : ℝ)) * t) *
           Real.exp (-(σ * radius (physical 1 (y - x)) / ρ) +
             B * σ ^ 2 * Real.exp (2 * σ) * (1 + Real.log ρ) * t / ρ ^ 2) := by
-  obtain ⟨A, B, hA, hB, hbound⟩ := truncHeat_davies_uniform hMSC hNash hDavies
+  obtain ⟨A, B, hA, hB, hbound⟩ := truncHeat_davies_uniform_proved hNash hDavies
     1 (by norm_num) (by norm_num : (0 : ℝ) < 1)
   refine ⟨A, B, hA, hB, ?_⟩
   intro ρ hρ σ hσ t ht x y

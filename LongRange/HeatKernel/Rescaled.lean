@@ -110,8 +110,7 @@ theorem rescaled_spatial_profile {ε k t r : ℝ} (hε : 0 < ε) (hk : 0 < k)
   ring
 
 /-- One constant gives the source rescaled minimum bound for every scale and field. -/
-theorem rescaledDensity_offDiagonal_uniform
-    (hMSCUniform : External.MuruganSaloffCosteUniform)
+theorem rescaledDensity_offDiagonal_uniform_proved
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
     {lam : ℝ} (hlam : 0 < lam) :
@@ -124,7 +123,7 @@ theorem rescaledDensity_offDiagonal_uniform
         (t / kappa d ε * Real.log (2 + radius (physical ε (y - x)) / ε) /
           radius (physical ε (y - x)) ^ (d + 2)) := by
   obtain ⟨C, hC, hbound⟩ :=
-    unitHeat_offDiagonal_uniform hMSCUniform hNash hDavies d hd hlam
+    unitHeat_offDiagonal_uniform_proved hNash hDavies d hd hlam
   refine ⟨C, hC, ?_⟩
   intro ε hε a ha t ht x y hxy
   have hk := kappa_pos hd hε
@@ -148,6 +147,22 @@ theorem rescaledDensity_offDiagonal_uniform
     rescaled_spatial_profile hε.1 hk (lt_of_lt_of_le zero_lt_one
       (one_le_radius_displacement hxy)) d,
     radius_physical_eq_mul hε.1.le]
+
+/-- This bound is compatible with the conditional interface. -/
+theorem rescaledDensity_offDiagonal_uniform
+    (_hMSCUniform : External.MuruganSaloffCosteUniform)
+    (hNash : External.ChenKimKumagaiWangNash)
+    (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
+    {lam : ℝ} (hlam : 0 < lam) :
+    ∃ C : ℝ, 0 < C ∧ ∀ ε : ℝ, ∀ hε : ε ∈ Set.Ioo 0 1,
+      ∀ a : Edge d → ℝ, ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹,
+      ∀ t : ℝ≥0, 0 < t → ∀ x y : Site d, x ≠ y →
+      rescaledDensity hd hε hlam a ha t x y ≤ C * min
+        ((ε ^ 2 + t / kappa d ε * Real.log (2 + t / (kappa d ε * ε ^ 2))) ^
+          (-((d : ℝ) / 2)))
+        (t / kappa d ε * Real.log (2 + radius (physical ε (y - x)) / ε) /
+          radius (physical ε (y - x)) ^ (d + 2)) :=
+  rescaledDensity_offDiagonal_uniform_proved hNash hDavies d hd hlam
 
 end
 

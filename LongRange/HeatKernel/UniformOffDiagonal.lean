@@ -17,8 +17,7 @@ open scoped NNReal
 noncomputable section
 
 /-- One positive constant gives the minimum heat bound for every admissible field. -/
-theorem unitHeat_offDiagonal_uniform
-    (hMSCUniform : External.MuruganSaloffCosteUniform)
+theorem unitHeat_offDiagonal_uniform_proved
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
     {lam : ℝ} (hlam : 0 < lam) :
@@ -29,9 +28,9 @@ theorem unitHeat_offDiagonal_uniform
         C * min ((1 + t * Real.log (2 + t)) ^ (-((d : ℝ) / 2)))
           (t * Real.log (2 + radius (physical 1 (y - x))) /
             radius (physical 1 (y - x)) ^ (d + 2)) := by
-  obtain ⟨Ca, hCa, hdiag⟩ := unitHeat_onDiagonal_uniform hMSCUniform d hd hlam
+  obtain ⟨Ca, hCa, hdiag⟩ := unitHeat_onDiagonal_uniform_proved d hd hlam
   obtain ⟨A, B, _hA, _hB, hdav⟩ :=
-    truncHeat_davies_uniform hMSCUniform hNash hDavies d hd hlam
+    truncHeat_davies_uniform_proved hNash hDavies d hd hlam
   let Index := {a : Edge d → ℝ // ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹}
   obtain ⟨C, _hC, hoff⟩ := offDiagonal_of_truncated_bounds_uniform hd
     (fun (i : Index) t x y ↦
@@ -61,6 +60,21 @@ theorem unitHeat_offDiagonal_uniform
     rw [mul_assoc, mul_div_assoc] at ho
     exact ho.trans (mul_le_mul_of_nonneg_right (le_max_right Ca C) hsp)
 
+/-- This bound is compatible with the conditional interface. -/
+theorem unitHeat_offDiagonal_uniform
+    (_hMSCUniform : External.MuruganSaloffCosteUniform)
+    (hNash : External.ChenKimKumagaiWangNash)
+    (hDavies : External.ChenKimKumagaiWangDavies) (d : ℕ) (hd : 1 ≤ d)
+    {lam : ℝ} (hlam : 0 < lam) :
+    ∃ C : ℝ, 0 < C ∧ ∀ a : Edge d → ℝ,
+      ∀ ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹,
+      ∀ t : ℝ≥0, 0 < t → ∀ x y : Site d, x ≠ y →
+      ((unitRates hd hlam a ha).transitionKernel t x).real {y} ≤
+        C * min ((1 + t * Real.log (2 + t)) ^ (-((d : ℝ) / 2)))
+          (t * Real.log (2 + radius (physical 1 (y - x))) /
+            radius (physical 1 (y - x)) ^ (d + 2)) :=
+  unitHeat_offDiagonal_uniform_proved hNash hDavies d hd hlam
+
 /-- Constant-one conductances are admissible at dimension one and ellipticity one half. -/
 theorem one_field_admissible_half :
     ∀ e : Edge 1, (1 / 2 : ℝ) ≤ (fun _ : Edge 1 ↦ (1 : ℝ)) e ∧
@@ -71,7 +85,6 @@ theorem one_field_admissible_half :
 /-- The uniform minimum bound applies to the actual constant-one field at ellipticity
 one half in dimension one. -/
 theorem unitHeat_offDiagonal_one_half
-    (hMSCUniform : External.MuruganSaloffCosteUniform)
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) :
     ∃ C : ℝ, 0 < C ∧ ∀ t : ℝ≥0, 0 < t → ∀ x y : Site 1, x ≠ y →
@@ -80,7 +93,7 @@ theorem unitHeat_offDiagonal_one_half
         C * min ((1 + t * Real.log (2 + t)) ^ (-(1 / (2 : ℝ))))
           (t * Real.log (2 + radius (physical 1 (y - x))) /
             radius (physical 1 (y - x)) ^ 3) := by
-  obtain ⟨C, hC, hbound⟩ := unitHeat_offDiagonal_uniform hMSCUniform hNash hDavies
+  obtain ⟨C, hC, hbound⟩ := unitHeat_offDiagonal_uniform_proved hNash hDavies
     1 (by norm_num) (by norm_num : (0 : ℝ) < 1 / 2)
   refine ⟨C, hC, ?_⟩
   intro t ht x y hxy

@@ -6,10 +6,10 @@ The manual `Independent comparators` workflow builds production once, then check
 `LongRangeAudit`. Both pairs passed in the clean release checkout, including dependency
 comparison, NanoDa and Lean kernel replay.
 
-The project and standalone exporter use Lean 4.32.0; the comparator uses Lean
+The project and standalone exporter use Lean 4.35.0-rc2; the comparator uses Lean
 4.34.0-rc1. Tool source revisions are fixed in the workflow and verified by the runner.
 The comparator keeps its committed Lake manifest: its internal export parser is
-separate from the standalone Lean 4.32 exporter. No tool or dependency build cache
+separate from the standalone Lean 4.35 exporter. No tool or dependency build cache
 is restored; mathlib's official cache fetch is followed by a production build.
 
 From the project root, with those tools already built:
@@ -45,17 +45,7 @@ Lean 4.35 runner. The only permitted axioms are `propext`, `Classical.choice`, a
 `Quot.sound`. A successful comparison establishes agreement with the supplied
 Challenge declarations; source correspondence remains a separate review.
 
-Keep audits outside the default production glob. An optional separate Lake library
-can be registered as follows (no `@[default_target]`):
-
-```lean
-lean_lib LongRangeAudit where
-  globs := #[.andSubmodules `LongRangeAudit]
-  leanOptions := #[
-    ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
-  ]
-```
-
-The runner uses targeted direct Lean compilation, so it does not require this
-registration. Do not add `LongRangeAudit` to production imports or default targets.
+The separate `LongRangeAudit` Lake library is outside the default production targets.
+Its Challenge modules have intentional theorem placeholders; the comparator runner
+checks that their warnings are exactly the expected ones. The runner compiles its
+inputs directly to fresh directories.

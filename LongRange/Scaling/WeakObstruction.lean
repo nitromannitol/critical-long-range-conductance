@@ -1,3 +1,4 @@
+import LatticeProb.Analysis.Elliptic.WeakHomogeneousUniquenessProved
 import LongRange.Continuum.Weak
 import LongRange.Scaling.Obstruction
 
@@ -39,10 +40,7 @@ theorem weak_source_scaling_obstruction
     (h614 : External.GilbargTrudingerExistence)
     (h619 : External.GilbargTrudingerBoundaryRegularity)
     (h66 : External.GilbargTrudingerSchauderEstimate)
-    (h37 : External.GilbargTrudingerSupEstimate)
-    (h637 : External.GilbargTrudingerHolderExtension)
     (h75 : External.GilbargTrudingerZeroBoundaryApproximation)
-    (h82 : External.GilbargTrudingerWeakHomogeneousUniqueness)
     (hd : 1 ≤ d) {σ a₀ lam : ℝ} (hσ : σ ∈ Set.Ioo (0 : ℝ) 1)
     (ha₀ : 0 < a₀) {U : Set (Fin d → ℝ)} (hU : IsC2HolderDomain σ U)
     (hlam : 0 < lam) {a : Edge d → ℝ}
@@ -85,13 +83,14 @@ theorem weak_source_scaling_obstruction
             (fun q => v ε q - ū ((2 : ℝ) • physical (ε / 2) q)))
           (fun ε => 1 / |Real.log ε|)) := by
   obtain ⟨ū, hū, huniq⟩ := existsUnique_zero_extended_classicalDirichletSolution
-    h614 h37 hd hσ.1 hσ.2 hU (by norm_num : (0 : ℝ) ≤ 0) ha₀
+    h614 hd hσ.1 hσ.2 hU (by norm_num : (0 : ℝ) ≤ 0) ha₀
       (hf.trans_lt ENNReal.ofReal_lt_top)
   obtain ⟨V, hV, heq, hz, hpde, z, hzw, hae, _, _, _⟩ :=
-    Continuum.classical_solution_has_weak_graph h619 h66 h37 h637 h75 h82 hd hσ
+    Continuum.classical_solution_has_weak_graph h619 h66 h75 hd hσ
       (by norm_num) ha₀ hU hf hū.1
-  have hwz : w = z := hw.eq_of_same_data h82 (by omega) hU.1 hU.2.1
-    hU.2.2.1 ha₀ (by norm_num) hzw
+  have hwz : w = z := hw.eq_of_same_data
+    LatticeProb.External.gilbargTrudingerWeakHomogeneousUniqueness_holds
+    (by omega) hU.1 hU.2.1 hU.2.2.1 ha₀ (by norm_num) hzw
   have hwae : (fun x => w.val 0 x) =ᵐ[volume.restrict U] ū := hwz ▸ hae
   have hne := exists_nonzero_of_value_ne_zero hU.1 hn hwae
   have hopen : IsOpen (halfDomain U) := hU.1.preimage (doubleEquiv (d := d)).continuous
@@ -129,7 +128,9 @@ theorem weak_source_scaling_obstruction
     filter_upwards [ae_restrict_mem hopen.measurableSet] with x hx
     exact heq hx
   · intro z hz
-    exact hz.eq_of_same_data h82 (by omega) hopen hconn hbound ha₀ (by norm_num) hwh
+    exact hz.eq_of_same_data
+      LatticeProb.External.gilbargTrudingerWeakHomogeneousUniqueness_holds
+      (by omega) hopen hconn hbound ha₀ (by norm_num) hwh
 
 end
 

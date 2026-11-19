@@ -145,7 +145,7 @@ theorem lintegral_inv_thetaLow_le {c₁ c₂ : ℝ} {θ θstar φ : ℝ → ℝ}
       change ENNReal.ofReal (c₁ ^ 2) * (∫⁻ s in Ioi x, (fun u ↦ ENNReal.ofReal ((θ u)⁻¹)) (s / c₂ ^ 2)) = _
       congr 1
       exact lintegral_tail_div (fun u ↦ ENNReal.ofReal ((θ u)⁻¹)) (x := x) ha
-    _ = _ := by rw [← mul_assoc, ← ENNReal.ofReal_mul (sq_nonneg c₁)]; congr 1; ring
+    _ = _ := by rw [← mul_assoc, ← ENNReal.ofReal_mul (sq_nonneg c₁)]; congr 1; ring_nf
 
 theorem lintegral_inv_thetaLow_ne_top {c₁ c₂ : ℝ} {θ θstar φ : ℝ → ℝ}
     (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂)

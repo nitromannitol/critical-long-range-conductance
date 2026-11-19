@@ -167,17 +167,15 @@ theorem normalizedUnitLaw_tendsto_of_spacing {d : ℕ} (hd : 1 ≤ d) {lam : ℝ
   simpa only [m, Nat.cast_add] using he n
 
 
-/-- The unit walk has the unscaled annealed Brownian limit. -/
-theorem normalizedUnitLaw_tendsto
-    (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
-    (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
-    (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)
-    (hEK : LatticeProb.External.EthierKurtzRelativeCompactnessStopping)
-    (hFdd : LatticeProb.External.EthierKurtzConvergenceFromFdd)
+/-- The rescaled annealed Brownian limit gives the unscaled annealed Brownian limit of the
+unit walk. -/
+theorem normalizedUnitLaw_tendsto_of_annealed
     {d : ℕ} (hd : 1 ≤ d) {lam : ℝ} {Ω : Type} [MeasurableSpace Ω]
     (P : Measure Ω) (a : Ω → Edge d → ℝ) (hP : ConductanceLaw P lam a)
     (B : ProbabilityMeasure (LatticeProb.BrownianPath d))
-    (hB : IsStandardBrownianLaw (B : Measure (LatticeProb.BrownianPath d))) :
+    (hIP : Tendsto (fun ε : Ioo (0 : ℝ) (1 / 2) => annealedLaw hd P a hP ε.2.1)
+      (Filter.comap Subtype.val (𝓝 0))
+      (𝓝 (B.map (scaledBrownianPath ((d : ℝ) ^ (-(1 : ℝ) / 2)))))) :
     let A : ℝ := (d : ℝ) *
       (Real.pi ^ ((d : ℝ) / 2) / Real.Gamma ((d : ℝ) / 2 + 1))
     Tendsto (normalizedUnitLaw hd P a hP) atTop
@@ -213,13 +211,30 @@ theorem normalizedUnitLaw_tendsto
   let s : ℝ := (d : ℝ) ^ (-(1 : ℝ) / 2)
   have hbase : Tendsto (fun n => annealedLaw hd P a hP (e n).2.1) atTop
       (𝓝 (B.map (scaledBrownianPath s))) := by
-    exact (Statements.annealed_invariance_principle hMSC hNash hDavies hEK hFdd
-      hd P a hP B hB).2.comp he0
+    exact hIP.comp he0
   have hclock : Tendsto (fun n => LongRange.kappa d (e n) * (e n : ℝ) ^ 2 *
       (m n : ℝ)) atTop (𝓝 1) := (tendsto_kappa_unscaledSpacing hd).comp hmAt
   exact normalizedUnitLaw_tendsto_of_spacing hd P a hP B A s hA
     (sqrt_mul_dimension_rpow hA.le) N e (fun n => by have := hm n; omega)
     (fun n => by simp only [e, m, Nat.cast_add]) hclock hbase
+
+/-- The unit walk has the unscaled annealed Brownian limit. -/
+theorem normalizedUnitLaw_tendsto
+    (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
+    (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
+    (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)
+    (hEK : LatticeProb.External.EthierKurtzRelativeCompactnessStopping)
+    (hFdd : LatticeProb.External.EthierKurtzConvergenceFromFdd)
+    {d : ℕ} (hd : 1 ≤ d) {lam : ℝ} {Ω : Type} [MeasurableSpace Ω]
+    (P : Measure Ω) (a : Ω → Edge d → ℝ) (hP : ConductanceLaw P lam a)
+    (B : ProbabilityMeasure (LatticeProb.BrownianPath d))
+    (hB : IsStandardBrownianLaw (B : Measure (LatticeProb.BrownianPath d))) :
+    let A : ℝ := (d : ℝ) *
+      (Real.pi ^ ((d : ℝ) / 2) / Real.Gamma ((d : ℝ) / 2 + 1))
+    Tendsto (normalizedUnitLaw hd P a hP) atTop
+      (𝓝 (B.map (scaledBrownianPath (Real.sqrt (A / (2 * d)))))) :=
+  normalizedUnitLaw_tendsto_of_annealed hd P a hP B
+    (Statements.annealed_invariance_principle hMSC hNash hDavies hEK hFdd hd P a hP B hB).2
 
 end
 end LongRangeHeat

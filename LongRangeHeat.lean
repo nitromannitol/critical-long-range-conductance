@@ -46,3 +46,5 @@ import LongRangeHeat.Statements.Fdd
 import LongRangeHeat.InvariancePrinciple
 import LongRangeHeat.Statements.InvariancePrinciple
 import LongRangeHeat.Statements.UnscaledInvariance
+import LongRangeHeat.Statements.InvariancePrincipleKallenberg
+import LongRangeHeat.Statements.UnscaledInvarianceKallenberg

@@ -233,5 +233,59 @@ theorem le_phi_of_nash_deriv {c₁ c₂ : ℝ} {θ θstar φ a b b' : ℝ → �
     (fun u hu ↦ (hd u hu).div_const (a t₀)) hder
   exact (div_le_iff₀ ha0).1 hcomp
 
+/-- Undo the exponential normalization after a Nash differential comparison. -/
+theorem le_exp_mul_phi_of_nash_deriv
+    {c₁ c₂ κ : ℝ} {θ θstar φ n m b' : ℝ → ℝ} {t₀ t₁ : ℝ}
+    (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂) (hinv : ckkwInverseProfile θ φ)
+    (hpos : ∀ r > 0, 0 < θstar r) (hm : MonotoneOn θstar (Ioi 0))
+    (hratio : MonotoneOn (fun r ↦ θstar r / r) (Ioi 0))
+    (hcompare : ∀ r > 0, c₁⁻¹ * θstar (c₂⁻¹ * r) ≤ θ r ∧
+      θ r ≤ c₁ * θstar (c₂ * r)) (ht : t₀ < t₁)
+    (hn : ∀ u ∈ Icc t₀ t₁, 0 < n u)
+    (hmpos : ∀ u ∈ Icc t₀ t₁, 0 < m u)
+    (hanti : AntitoneOn (fun u ↦ Real.exp (-κ * u) * n u) (Icc t₀ t₁))
+    (hd : ∀ u ∈ Icc t₀ t₁, HasDerivAt
+      (fun s ↦ Real.exp (-(2 * κ) * s) * m s) (b' u) u)
+    (hle : ∀ u ∈ Icc t₀ t₁, b' u ≤
+      -(Real.exp (-κ * u) * n u) ^ 2 * thetaLow c₁ c₂ θstar
+        ((Real.exp (-(2 * κ) * u) * m u) / (Real.exp (-κ * u) * n u) ^ 2)) :
+    m t₁ ≤ c₂ ^ 2 * φ ((t₁ - t₀) / (c₁ * c₂) ^ 2) *
+      Real.exp ((2 * κ) * (t₁ - t₀)) * (n t₀) ^ 2 := by
+  let a : ℝ → ℝ := fun u ↦ (Real.exp (-κ * u) * n u) ^ 2
+  let b : ℝ → ℝ := fun u ↦ Real.exp (-(2 * κ) * u) * m u
+  have ha : ∀ u ∈ Icc t₀ t₁, 0 < a u ∧ a u ≤ a t₀ := by
+    intro u hu
+    have h0 : 0 ≤ Real.exp (-κ * u) * n u :=
+      (mul_pos (Real.exp_pos _) (hn u hu)).le
+    refine ⟨sq_pos_of_pos (mul_pos (Real.exp_pos _) (hn u hu)), ?_⟩
+    exact (sq_le_sq₀ h0 (mul_pos (Real.exp_pos _) (hn t₀ ⟨le_rfl, ht.le⟩)).le).2
+      (hanti ⟨le_rfl, ht.le⟩ hu hu.1)
+  have hb : ∀ u ∈ Icc t₀ t₁, 0 < b u := fun u hu ↦
+    mul_pos (Real.exp_pos _) (hmpos u hu)
+  have h := le_phi_of_nash_deriv hc₁ hc₂ hinv hpos hm hratio hcompare ht ha hb hd hle
+  have hscale : m t₁ = Real.exp ((2 * κ) * t₁) * b t₁ := by
+    dsimp [b]
+    rw [← mul_assoc, ← Real.exp_add]
+    have : (2 * κ) * t₁ + -(2 * κ) * t₁ = 0 := by ring
+    rw [this, Real.exp_zero, one_mul]
+  calc
+    m t₁ = Real.exp ((2 * κ) * t₁) * b t₁ := hscale
+    _ ≤ Real.exp ((2 * κ) * t₁) * (c₂ ^ 2 * φ ((t₁ - t₀) / (c₁ * c₂) ^ 2) * a t₀) :=
+      mul_le_mul_of_nonneg_left h (Real.exp_pos _).le
+    _ = _ := by
+      dsimp only [a]
+      have he : (2 * κ) * t₁ + (-κ * t₀ + -κ * t₀) = (2 * κ) * (t₁ - t₀) := by ring
+      have he' : Real.exp (-κ * t₀) ^ 2 = Real.exp (-κ * t₀ + -κ * t₀) := by
+        rw [Real.exp_add, pow_two]
+      have hexp : Real.exp ((2 * κ) * t₁) * Real.exp (-κ * t₀) ^ 2 =
+          Real.exp ((2 * κ) * (t₁ - t₀)) := by
+        rw [he', ← Real.exp_add, he]
+      calc
+        _ = c₂ ^ 2 * φ ((t₁ - t₀) / (c₁ * c₂) ^ 2) *
+            (Real.exp ((2 * κ) * t₁) * Real.exp (-κ * t₀) ^ 2) * (n t₀) ^ 2 := by
+          rw [mul_pow]
+          ring
+        _ = _ := by rw [hexp]
+
 end
 end LatticeProb.Davies

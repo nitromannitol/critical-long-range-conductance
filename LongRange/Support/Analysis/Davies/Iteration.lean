@@ -102,6 +102,31 @@ theorem timeGrid_increment {l t : ℝ} (hl : 2 < l) (n : ℕ) :
       rw [hexp, zpow_neg, zpow_natCast, pow_succ, mul_inv_rev, inv_pow, ← hid]
       ring
 
+/-- The geometric grid tends to the endpoint of the time interval. -/
+theorem tendsto_timeGrid {l t : ℝ} (hl : 2 < l) :
+    Tendsto (timeGrid l t) atTop (𝓝 t) := by
+  have hlpos : 0 < l := by linarith
+  have hq0 : 0 ≤ l⁻¹ := inv_nonneg.mpr hlpos.le
+  have hq1 : l⁻¹ < 1 := (inv_lt_one₀ hlpos).2 (by linarith)
+  have hpow := tendsto_pow_atTop_nhds_zero_of_lt_one hq0 hq1
+  have hbase : Tendsto (fun n : ℕ ↦ (1 : ℝ) - l⁻¹ ^ n) atTop (𝓝 1) := by
+    simpa only [sub_zero] using (tendsto_const_nhds.sub hpow)
+  change Tendsto (fun n : ℕ ↦ t * (1 - l⁻¹ ^ n)) atTop (𝓝 t)
+  simpa only [mul_one] using hbase.const_mul t
+
+/-- The final level correction tends to one along the geometric grid. -/
+theorem tendsto_exp_geometric_correction {l : ℝ} (hl : 2 < l) (c : ℝ) :
+    Tendsto (fun n : ℕ ↦ Real.exp (c * (2 / l) ^ n)) atTop (𝓝 1) := by
+  have hlpos : 0 < l := by linarith
+  have hq0 : 0 ≤ 2 / l := by positivity
+  have hq1 : 2 / l < 1 := (div_lt_one hlpos).2 hl
+  have hpow := tendsto_pow_atTop_nhds_zero_of_lt_one hq0 hq1
+  have harg : Tendsto (fun n : ℕ ↦ c * (2 / l) ^ n) atTop (𝓝 0) := by
+    simpa only [mul_zero] using hpow.const_mul c
+  have hres := (Real.continuous_exp.tendsto 0).comp harg
+  change Tendsto (fun n : ℕ ↦ Real.exp (c * (2 / l) ^ n)) atTop (𝓝 (Real.exp 0)) at hres
+  simpa only [Real.exp_zero] using hres
+
 /-- A product with half the exponents has the square root of the original product as its limit. -/
 theorem tendsto_prod_mul_rpow {a P : ℝ} {f w : ℕ → ℝ} (ha : 0 < a)
     (hf : ∀ n, 0 ≤ f n) (hw : HasSum w (1 / 2 : ℝ))

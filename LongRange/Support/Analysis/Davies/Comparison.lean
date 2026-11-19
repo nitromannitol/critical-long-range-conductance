@@ -195,5 +195,43 @@ theorem le_phi_of_deriv_le {c₁ c₂ : ℝ} {θ θstar φ β β' : ℝ → ℝ}
   have hres := (div_le_iff₀ hc₂sq).1 hphi
   nlinarith
 
+/-- Comparison with a fixed normalizing mass for a Nash differential inequality. -/
+theorem le_phi_of_nash_deriv {c₁ c₂ : ℝ} {θ θstar φ a b b' : ℝ → ℝ} {t₀ t₁ : ℝ}
+    (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂) (hinv : ckkwInverseProfile θ φ)
+    (hpos : ∀ r > 0, 0 < θstar r) (hm : MonotoneOn θstar (Ioi 0))
+    (hratio : MonotoneOn (fun r ↦ θstar r / r) (Ioi 0))
+    (hcompare : ∀ r > 0, c₁⁻¹ * θstar (c₂⁻¹ * r) ≤ θ r ∧
+      θ r ≤ c₁ * θstar (c₂ * r)) (ht : t₀ < t₁)
+    (ha : ∀ u ∈ Icc t₀ t₁, 0 < a u ∧ a u ≤ a t₀)
+    (hb : ∀ u ∈ Icc t₀ t₁, 0 < b u)
+    (hd : ∀ u ∈ Icc t₀ t₁, HasDerivAt b (b' u) u)
+    (hle : ∀ u ∈ Icc t₀ t₁, b' u ≤ -a u * thetaLow c₁ c₂ θstar (b u / a u)) :
+    b t₁ ≤ c₂ ^ 2 * φ ((t₁ - t₀) / (c₁ * c₂) ^ 2) * a t₀ := by
+  have ha0 : 0 < a t₀ := (ha t₀ ⟨le_rfl, ht.le⟩).1
+  have hratio' := thetaLow_ratio_mono hc₁ hc₂ hratio
+  have hder : ∀ u ∈ Icc t₀ t₁,
+      b' u / a t₀ ≤ -thetaLow c₁ c₂ θstar (b u / a t₀) := by
+    intro u hu
+    have hau := (ha u hu).1
+    have hble := (ha u hu).2
+    have hbpos := hb u hu
+    have hxpos : 0 < b u / a t₀ := div_pos hbpos ha0
+    have hypos : 0 < b u / a u := div_pos hbpos hau
+    have hxy : b u / a t₀ ≤ b u / a u :=
+      div_le_div_of_nonneg_left hbpos.le hau hble
+    have hrat := hratio' hxpos hypos hxy
+    have hfactor : a t₀ * thetaLow c₁ c₂ θstar (b u / a t₀) ≤
+        a u * thetaLow c₁ c₂ θstar (b u / a u) := by
+      have hrat' := mul_le_mul_of_nonneg_left hrat hbpos.le
+      field_simp at hrat'
+      nlinarith
+    apply (div_le_iff₀ ha0).2
+    nlinarith [hle u hu]
+  have hcomp := le_phi_of_deriv_le hc₁ hc₂ hinv hpos hm hcompare ht
+    (β := fun u ↦ b u / a t₀) (β' := fun u ↦ b' u / a t₀)
+    (fun u hu ↦ div_pos (hb u hu) ha0)
+    (fun u hu ↦ (hd u hu).div_const (a t₀)) hder
+  exact (div_le_iff₀ ha0).1 hcomp
+
 end
 end LatticeProb.Davies

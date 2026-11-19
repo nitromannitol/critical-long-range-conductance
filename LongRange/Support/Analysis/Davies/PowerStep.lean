@@ -77,5 +77,99 @@ theorem antitoneOn_compensated_powSum {ψ : ι → ℝ} {Λsq δ : ℝ}
     exact Finset.sum_nonneg fun i _ ↦ pow_nonneg (F.twist_nonneg ψ f hf hy i) p
   exact mul_le_mul hE (hbase' hx hy hxy) hN (Real.exp_pos _).le
 
+/-- The Nash comparison advances a finite power sum across a positive time interval. -/
+theorem powSum_step {ψ : ι → ℝ} {Λsq δ c₁ c₂ : ℝ}
+    {θ θstar φ : ℝ → ℝ} (hΛ : F.LambdaBound ψ Λsq) (hδ : 0 ≤ δ)
+    (f : ι → ℝ) (hf : ∀ i, 0 ≤ f i) (hf0 : f ≠ 0)
+    (q : ℕ) (hq : 1 ≤ q) (hN : F.Nash θ δ)
+    (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂) (hinv : External.ckkwInverseProfile θ φ)
+    (hpos : ∀ r > 0, 0 < θstar r) (hm : MonotoneOn θstar (Ioi 0))
+    (hratio : MonotoneOn (fun r ↦ θstar r / r) (Ioi 0))
+    (hcompare : ∀ r > 0, c₁⁻¹ * θstar (c₂⁻¹ * r) ≤ θ r ∧
+      θ r ≤ c₁ * θstar (c₂ * r)) {t₀ t₁ : ℝ} (ht₀ : 0 ≤ t₀) (ht : t₀ < t₁) :
+    let p : ℕ := 2 * q
+    (∑ i, (F.twist ψ f t₁ i) ^ (2 * p)) ≤
+      c₂ ^ 2 * φ ((t₁ - t₀) / (c₁ * c₂) ^ 2) *
+      Real.exp ((2 * (p : ℝ) * ((2 * (p : ℝ) + 1) * Λsq) + 2 * δ) * (t₁ - t₀)) *
+      (∑ i, (F.twist ψ f t₀ i) ^ p) ^ 2 := by
+  let p : ℕ := 2 * q
+  let c : ℝ := (2 * (p : ℝ) + 1) * Λsq + δ / p
+  let κ : ℝ := (p : ℝ) * c
+  let n : ℝ → ℝ := fun t ↦ ∑ i, (F.twist ψ f t i) ^ p
+  let m : ℝ → ℝ := fun t ↦ ∑ i, (F.twist ψ f t i) ^ (2 * p)
+  let b : ℝ → ℝ := fun t ↦ Real.exp (-(2 * κ) * t) * m t
+  have hp : 2 ≤ p := by dsimp [p]; omega
+  have hp0 : (p : ℝ) ≠ 0 := by positivity
+  have hnorm (t : ℝ) (k : ℕ) :
+      (∑ i, (Real.exp (-c * t) * F.twist ψ f t i) ^ k) =
+        Real.exp (-(k : ℝ) * c * t) * ∑ i, (F.twist ψ f t i) ^ k := by
+    simp only [mul_pow, ← Finset.mul_sum, ← Real.exp_nat_mul]
+    congr 2
+    ring
+  have hfun : (fun t ↦ ∑ i, (Real.exp (-c * t) * F.twist ψ f t i) ^ (2 * p)) = b := by
+    funext t
+    rw [hnorm]
+    dsimp only [b, m, κ]
+    congr 2
+    push_cast
+    ring
+  have hsingle (t : ℝ) : (∑ i, (Real.exp (-c * t) * F.twist ψ f t i) ^ p) =
+      Real.exp (-κ * t) * n t := by
+    rw [hnorm]
+    dsimp [κ, n]
+    congr 2
+    ring
+  have hbder (t : ℝ) : DifferentiableAt ℝ b t := by
+    have h := F.hasDerivAt_rescaled_powSum ψ f p c t
+    apply h.differentiableAt.congr_of_eventuallyEq
+    filter_upwards with s
+    dsimp [b, m, κ]
+    congr 2
+    ring
+  have hd (u : ℝ) (hu : u ∈ Icc t₀ t₁) : HasDerivAt b (deriv b u) u :=
+    (hbder u).hasDerivAt
+  have hder (u : ℝ) (hu : u ∈ Icc t₀ t₁) : deriv b u ≤
+      -(Real.exp (-κ * u) * n u) ^ 2 * thetaLow c₁ c₂ θstar
+        (b u / (Real.exp (-κ * u) * n u) ^ 2) := by
+    have hu0 : 0 ≤ u := le_trans ht₀ hu.1
+    have h := F.deriv_le_nash hΛ f hf hf0 p hp hδ hN
+      (fun r hr ↦ thetaLow_le hcompare hr) u hu0
+    dsimp only at h
+    change deriv (fun t ↦ ∑ i, (Real.exp (-c * t) * F.twist ψ f t i) ^ (2 * p)) u ≤ _ at h
+    rw [hfun, hsingle, hnorm] at h
+    have htwo : Real.exp (-(↑(2 * p) : ℝ) * c * u) *
+        (∑ i, F.twist ψ f u i ^ (2 * p)) = b u := by
+      dsimp [b, m, κ]
+      congr 2
+      push_cast
+      ring
+    rw [htwo] at h
+    exact h
+  have hn : ∀ u ∈ Icc t₀ t₁, 0 < n u := fun u hu ↦
+    F.twist_powSum_pos ψ f hf hf0 p (le_trans ht₀ hu.1)
+  have hmpos : ∀ u ∈ Icc t₀ t₁, 0 < m u := fun u hu ↦
+    F.twist_powSum_pos ψ f hf hf0 (2 * p) (le_trans ht₀ hu.1)
+  have hanti : AntitoneOn (fun u ↦ Real.exp (-κ * u) * n u) (Icc t₀ t₁) := by
+    have h := F.antitoneOn_compensated_powSum hΛ hδ f hf q hq
+    have heq : (fun u ↦ Real.exp (-κ * u) * n u) =
+        (fun u ↦ Real.exp (-(p : ℝ) * c * u) * n u) := by
+      funext u
+      dsimp only [κ]
+      congr 2
+      ring
+    rw [heq]
+    apply h.mono
+    intro u hu
+    exact le_trans ht₀ hu.1
+  have h := le_exp_mul_phi_of_nash_deriv hc₁ hc₂ hinv hpos hm hratio hcompare ht
+    hn hmpos hanti hd hder
+  change m t₁ ≤ _
+  have hk : 2 * κ = 2 * (p : ℝ) * ((2 * (p : ℝ) + 1) * Λsq) + 2 * δ := by
+    dsimp [κ, c]
+    field_simp
+    <;> ring
+  rw [hk] at h
+  exact h
+
 end
 end LatticeProb.Davies.FiniteJumpForm

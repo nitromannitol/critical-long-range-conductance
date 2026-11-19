@@ -37,10 +37,9 @@ theorem pair_one (a b h : ℝ) :
 
 namespace FiniteJumpForm
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] (F : FiniteJumpForm ι)
-
 /-- The two bounds on the weight are interchanged by changing its sign. -/
-theorem LambdaBound.neg {ψ : ι → ℝ} {Λsq : ℝ} (h : F.LambdaBound ψ Λsq) :
+theorem LambdaBound.neg {ι : Type*} [Fintype ι] [DecidableEq ι] (F : FiniteJumpForm ι)
+    {ψ : ι → ℝ} {Λsq : ℝ} (h : F.LambdaBound ψ Λsq) :
     F.LambdaBound (-ψ) Λsq := by
   rcases h with ⟨h₀, h₁, h₂⟩
   refine ⟨h₀, ?_, ?_⟩

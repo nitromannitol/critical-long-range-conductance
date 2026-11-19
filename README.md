@@ -26,10 +26,11 @@ represent physical positions `ε * q`; corrector slopes use those positions. The
 variational corrector and full and killed path-law densities retain their definition
 bodies and characterization theorems.
 
-These results are conditional on a finite list of **13 explicit cited propositions** in
-the library and its pinned Lattice-Probability dependency. They are assumptions, not proofs of the outside
-papers. Different exports use different subsets; [CITED_INPUTS.md](CITED_INPUTS.md)
-lists the exact names. The paper's applications and adapters are proved in the library.
+These results are conditional on a finite list of **16 explicit cited propositions**,
+formulated in the library and its pinned Lattice-Probability dependency. They are
+assumptions, not proofs of the outside papers. Different exports use different subsets;
+[CITED_INPUTS.md](CITED_INPUTS.md) lists the exact names. The paper's applications and
+adapters are proved in the library.
 
 ## Heat-kernel version
 
@@ -37,19 +38,16 @@ lists the exact names. The paper's applications and adapters are proved in the l
 [`paper/heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
 Theorem 1.1, the scaled and unscaled annealed invariance principles (Theorem 1.2),
 and supporting results are listed in
-[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The on-diagonal bound of
-Proposition 4.1, which the paper takes from Murugan–Saloff-Coste (Theorem 1.1), is proved
-in the library for the critical lattice kernel, with one constant for all admissible
-conductance fields. The exports `heat_kernel_bounds_proved`, `aldous_condition_proved`,
-`fdd_convergence_proved`, `annealed_invariance_principle_proved` and
-`unscaled_invariance_principle_proved` state Propositions 4.1–4.3 and both forms of
-Theorem 1.2 without a Murugan–Saloff-Coste hypothesis. They take the Chen–Kim–Kumagai–Wang
-Nash and Davies estimates as explicit hypotheses, and both invariance-principle forms also
-take two Ethier–Kurtz criteria; see [CITED_INPUTS.md](CITED_INPUTS.md). The exports of the
-same names without `_proved` are unchanged and still take the uniform Murugan–Saloff-Coste
-estimate as a hypothesis. The forms `annealed_invariance_principle_kallenberg` and
-`unscaled_invariance_principle_kallenberg` do not take the Ethier–Kurtz criteria, since the
-Kallenberg–Aldous criterion is proved in the library.
+[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). Of the cited inputs of the
+heat-kernel version, the on-diagonal bound of Murugan–Saloff-Coste (Theorem 1.1, for the
+critical lattice kernel), the Nash inequality of Chen–Kim–Kumagai–Wang (Proposition 3.1(ii))
+and the Kallenberg–Aldous criterion for convergence in `D([0, ∞), ℝ^d)` are proved in the
+library. The exports `heat_kernel_bounds_of_davies`, `aldous_condition_of_davies`,
+`fdd_convergence_of_davies`, `annealed_invariance_principle_of_davies` and
+`unscaled_invariance_principle_of_davies` state Propositions 4.1–4.3 and both forms of
+Theorem 1.2 with the Chen–Kim–Kumagai–Wang Davies estimate as the only cited hypothesis.
+Earlier forms of these statements, which take more cited inputs as hypotheses, are kept
+unchanged; see [CITED_INPUTS.md](CITED_INPUTS.md#heat-kernel-version).
 
 The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
 revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned

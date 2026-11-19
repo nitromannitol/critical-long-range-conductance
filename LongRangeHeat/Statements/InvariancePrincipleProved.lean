@@ -25,7 +25,7 @@ The measurability of `W ↦ d^{-1/2} W` as a map into `D([0, ∞), ℝ^d)` is pa
 
 The heat-kernel inputs of Proposition 4.1 enter as the hypotheses `hNash` and `hDavies`.
 The paper obtains tightness and the identification of the limit from Kallenberg (2002,
-Theorems 14.10 and 14.11) and Aldous (1978); the same two steps are the cited criteria of
+Theorems 16.10 and 16.11) and Aldous (1978); the same two steps are the cited criteria of
 Ethier–Kurtz (Chapter 3, Theorem 8.6 and Theorem 7.8(b)) taken as the hypotheses `hEK` and
 `hFdd`. Proposition 4.3 is used as a proved result. -/
 theorem annealed_invariance_principle_proved

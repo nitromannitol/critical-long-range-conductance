@@ -15,7 +15,7 @@ finite-dimensional marginals do.
 * The cited criterion of Ethier–Kurtz (Chapter 3, Theorem 8.6) turns the stopping-increment
   condition into relative compactness; the cited convergence theorem of Ethier–Kurtz
   (Chapter 3, Theorem 7.8(b)) turns relative compactness and finite-dimensional convergence into
-  weak convergence. The paper cites Kallenberg (2002, Theorems 14.10 and 14.11) and Aldous (1978)
+  weak convergence. The paper cites Kallenberg (2002, Theorems 16.10 and 16.11) and Aldous (1978)
   for the same two steps.
 -/
 

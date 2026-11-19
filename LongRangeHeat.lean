@@ -59,3 +59,5 @@ import LongRangeHeat.Statements.FddOfDavies
 import LongRangeHeat.Statements.InvariancePrincipleOfDavies
 import LongRangeHeat.Statements.UnscaledInvarianceOfDavies
 import LongRangeHeat.KallenbergPartitionCollection
+import LongRangeHeat.Statements.HeatEquations
+import LongRangeHeat.Statements.Measurability

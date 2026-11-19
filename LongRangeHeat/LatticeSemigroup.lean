@@ -368,7 +368,8 @@ private theorem lp_norm_sq_eq {d : ℕ} (f : lp (fun _ : Site d => ℝ) 2) :
   have h := lp.norm_rpow_eq_tsum (p := (2 : ENNReal)) (by norm_num) f
   simpa [Real.norm_eq_abs, Real.rpow_two] using h
 
-private theorem summable_generator_of_bounded {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
+/-- At a bounded lattice function the series defining the generator converges absolutely. -/
+theorem summable_generator_of_bounded {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 < ε)
     (hlam : 0 < lam) {a : Edge d → ℝ} (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹)
     {v : Site d → ℝ} {M : ℝ} (hM : 0 ≤ M) (hv : ∀ q, |v q| ≤ M) (q : Site d) :
     Summable (fun w : Site d => if hw : w = 0 then 0 else

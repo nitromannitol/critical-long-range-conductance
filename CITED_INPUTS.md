@@ -1,12 +1,15 @@
 # Explicit cited propositions
 
-These 13 proposition formulations are explicit hypotheses wherever used. Their statements
-are formalized; the cited results remain unproved inputs. Some formulations are supplied
-by the pinned Lattice-Probability dependency, and others are defined in this repository.
-The paper's applications are proved.
+These 16 proposition definitions live in the namespace `LatticeProb.External`. Six
+Gilbarg–Trudinger formulations are supplied by the pinned Lattice-Probability revision
+`721505023bc12a20241c73449ec33339fcf4555f`; the other ten are defined in this repository under
+`LongRange/Support/External`. They are explicit hypotheses wherever used. The paper's
+applications are proved. The exports of the April version take them exactly as released. The
+cited inputs of the heat-kernel version and their status are listed under
+[Heat-kernel version](#heat-kernel-version).
 
 The links below give the complete Lean proposition bodies, their source carriers,
-quantifier order, constants and bibliographic details at the referenced revision.
+quantifier order, constants and bibliographic details at an immutable revision.
 The count is of registered proposition formulations, rather than distinct references or
 logically independent assumptions. In particular, the library proves that the uniform
 Murugan–Saloff-Coste formulation implies the other formulation.
@@ -14,9 +17,12 @@ Murugan–Saloff-Coste formulation implies the other formulation.
 | Proposition in `LatticeProb.External` | Cited result | Exact Lean statement |
 | --- | --- | --- |
 | `GilbargTrudingerExistence` | GT, Theorem 6.14: classical Dirichlet existence | [source](LongRange/Support/External/GilbargTrudingerExistence.lean) |
-| `GilbargTrudingerBoundaryRegularity` | GT, Theorem 6.19: boundary regularity | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
-| `GilbargTrudingerSchauderEstimate` | GT, Theorem 6.6: Schauder estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudinger.lean) |
-| `GilbargTrudingerZeroBoundaryApproximation` | GT, §7.5: approximation in the Sobolev space with zero boundary values | [source](https://github.com/nitromannitol/Lattice-Probability/blob/47027b49b6660ee34c323869b0c88b7eb72f1124/LatticeProb/External/GilbargTrudingerSobolev.lean) |
+| `GilbargTrudingerBoundaryRegularity` | GT, Theorem 6.19: boundary regularity | [source](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/External/GilbargTrudinger.lean) |
+| `GilbargTrudingerSchauderEstimate` | GT, Theorem 6.6: Schauder estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/External/GilbargTrudinger.lean) |
+| `GilbargTrudingerSupEstimate` | GT, Theorem 3.7: supremum estimate | [source](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/External/GilbargTrudinger.lean) |
+| `GilbargTrudingerHolderExtension` | GT, Lemma 6.37: Hölder extension | [source](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/External/GilbargTrudinger.lean) |
+| `GilbargTrudingerZeroBoundaryApproximation` | GT, §7.5: approximation in the Sobolev space with zero boundary values | [source](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/External/GilbargTrudingerSobolev.lean) |
+| `GilbargTrudingerWeakHomogeneousUniqueness` | GT, Corollary 8.2: uniqueness of homogeneous weak solutions | [source](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/External/GilbargTrudingerSobolev.lean) |
 | `MuruganSaloffCoste` | MSC, Theorem 1.1, estimate (10): discrete on-diagonal bound | [source](LongRange/Support/External/MuruganSaloffCoste.lean) |
 | `MuruganSaloffCosteUniform` | MSC, the same theorem with constant dependence traced through its proof | [source](LongRange/Support/External/MuruganSaloffCosteUniform.lean) |
 | `ChenKimKumagaiWangNash` | CKKW, Proposition 3.1(ii): ultracontractivity implies a Nash inequality | [source](LongRange/Support/External/ChenKimKumagaiWang.lean) |
@@ -26,15 +32,6 @@ Murugan–Saloff-Coste formulation implies the other formulation.
 | `EthierKurtzRelativeCompactnessStopping` | EK, Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b): stopping-time criterion | [source](LongRange/Support/External/EthierKurtzStopping.lean) |
 | `EthierKurtzConvergenceFromFdd` | EK, Chapter 3, Theorem 7.8(b): convergence from finite-dimensional laws | [source](LongRange/Support/External/EthierKurtzSkorokhod.lean) |
 | `BillingsleySkorokhodPolish` | Billingsley, Theorems 12.1–12.2, with pp. 131 and 166: finite-horizon Skorokhod space | [source](LongRange/Support/External/BillingsleySkorokhod.lean) |
-
-The following three formerly explicit inputs are proved by the pinned Lattice-Probability
-revision `721505023bc12a20241c73449ec33339fcf4555f`:
-
-| Proposition | Proof |
-| --- | --- |
-| `GilbargTrudingerSupEstimate` | [proof](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/SupEstimateProved.lean) |
-| `GilbargTrudingerHolderExtension` | [proof](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/HolderExtensionProved.lean) |
-| `GilbargTrudingerWeakHomogeneousUniqueness` | [proof](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/WeakHomogeneousUniquenessProved.lean) |
 
 GT denotes Gilbarg–Trudinger, *Elliptic Partial Differential Equations of Second Order*,
 Springer, Classics in Mathematics (2001 reprint). MSC denotes Murugan–Saloff-Coste,
@@ -49,22 +46,53 @@ Chen–Kim–Kumagai–Wang (2021) Nash and Davies results, recorded in the corr
 The applications to the lattice kernel, truncation, normalization, uniform constants,
 stopping times and finite-horizon laws are proved in the library.
 
-In the heat-kernel version, the exports ending in `_proved` (the kernel bounds, Aldous
-condition, finite-dimensional convergence and both annealed invariance principles) use
-`ChenKimKumagaiWangNash` and `ChenKimKumagaiWangDavies`; the scaled and unscaled annealed
-invariance principles `annealed_invariance_principle_proved` and
-`unscaled_invariance_principle_proved` also use `EthierKurtzRelativeCompactnessStopping` and
-`EthierKurtzConvergenceFromFdd`. They do not use `MuruganSaloffCosteUniform`: the
-on-diagonal bound that the paper takes from MSC, Theorem 1.1, is proved in the library for
-the critical lattice kernel (`weightedLattice_critical_diagonal` and, in the form of the
-even-time diagonal supremum, `weightedLattice_evenKernelSup_le`). Neither MSC proposition
-is proved in its general weighted-graph form. The heat exports of the same names without
-`_proved` are unchanged and also use `MuruganSaloffCosteUniform`. The forms
-`annealed_invariance_principle_kallenberg` and `unscaled_invariance_principle_kallenberg`
-use `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash` and `ChenKimKumagaiWangDavies` but
-not the Ethier–Kurtz criteria: the Kallenberg–Aldous criterion they use (Kallenberg (2002),
-Theorems 16.10 and 16.11) is proved in
-[`LongRangeHeat/KallenbergCriterion.lean`](LongRangeHeat/KallenbergCriterion.lean).
+Three of the Gilbarg–Trudinger formulations are proved at the pinned Lattice-Probability
+revision:
+[`GilbargTrudingerSupEstimate`](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/SupEstimateProved.lean),
+[`GilbargTrudingerHolderExtension`](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/HolderExtensionProved.lean)
+and
+[`GilbargTrudingerWeakHomogeneousUniqueness`](https://github.com/nitromannitol/Lattice-Probability/blob/721505023bc12a20241c73449ec33339fcf4555f/LatticeProb/Analysis/Elliptic/WeakHomogeneousUniquenessProved.lean).
+`ChenKimKumagaiWangNash` is proved in this repository
+([`chenKimKumagaiWangNash_holds`](LongRange/Support/External/ChenKimKumagaiWangNashProof.lean)).
+The April exports still list these as hypotheses, as released.
+
+## Heat-kernel version
+
+The heat-kernel version uses four cited inputs. Three are proved in the library; one remains an
+explicit hypothesis.
+
+| Cited input (paper) | Status | Lean |
+| --- | --- | --- |
+| MSC, Theorem 1.1: on-diagonal bound (Proposition 4.1, Step 1) | proved for the critical lattice kernel, the case the paper uses | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
+| CKKW, Proposition 3.1(ii): Nash inequality (Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
+| Kallenberg (2002), Theorems 16.10 and 16.11, and Aldous (1978): tightness and identification in `D([0, ∞), ℝ^d)` (Theorem 1.2) | proved (the sufficiency direction, for proper separable state spaces) | `LatticeProb.Cadlag.HalfLine.tendsto_of_ordered_fdd_of_optional_increment` |
+| CKKW, Theorem 4.4 with Example 4.3: Davies upper bound (Proposition 4.1, Step 2) | remains the hypothesis `hDavies` | `ChenKimKumagaiWangDavies` |
+
+The paper prints the Kallenberg reference as Theorems 14.10 and 14.11; in the second edition
+(2002) cited in its bibliography they are Theorems 16.10 (p. 313) and 16.11 (p. 314). The
+general weighted-graph formulations `MuruganSaloffCoste` and `MuruganSaloffCosteUniform` are not
+proved. Neither are the Ethier–Kurtz formulations `EthierKurtzRelativeCompactnessStopping` and
+`EthierKurtzConvergenceFromFdd`; the forms of Theorem 1.2 below that do not take them use the
+Kallenberg–Aldous criterion instead.
+
+Hypotheses of the heat exports, all in `LongRangeHeat.Statements`:
+
+| Paper result | Export | Cited hypotheses |
+| --- | --- | --- |
+| Proposition 4.1 | `heat_kernel_bounds_of_davies` | `ChenKimKumagaiWangDavies` |
+| Proposition 4.2 | `aldous_condition_of_davies` | `ChenKimKumagaiWangDavies` |
+| Proposition 4.3 | `fdd_convergence_of_davies` | `ChenKimKumagaiWangDavies` |
+| Theorem 1.2 | `annealed_invariance_principle_of_davies` | `ChenKimKumagaiWangDavies` |
+| Theorem 1.2, unscaled form | `unscaled_invariance_principle_of_davies` | `ChenKimKumagaiWangDavies` |
+| Propositions 4.1–4.3 | `heat_kernel_bounds_proved`, `aldous_condition_proved`, `fdd_convergence_proved` | `ChenKimKumagaiWangNash`, `ChenKimKumagaiWangDavies` |
+| Theorem 1.2, both forms | `annealed_invariance_principle_kallenberg`, `unscaled_invariance_principle_kallenberg` | `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash`, `ChenKimKumagaiWangDavies` |
+| Theorem 1.2, both forms | `annealed_invariance_principle_proved`, `unscaled_invariance_principle_proved` | `ChenKimKumagaiWangNash`, `ChenKimKumagaiWangDavies`, `EthierKurtzRelativeCompactnessStopping`, `EthierKurtzConvergenceFromFdd` |
+| Propositions 4.1–4.3 | `heat_kernel_bounds`, `aldous_condition`, `fdd_convergence` | `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash`, `ChenKimKumagaiWangDavies` |
+| Theorem 1.2, both forms | `annealed_invariance_principle`, `unscaled_invariance_principle` | `MuruganSaloffCosteUniform`, `ChenKimKumagaiWangNash`, `ChenKimKumagaiWangDavies`, `EthierKurtzRelativeCompactnessStopping`, `EthierKurtzConvergenceFromFdd` |
+
+Theorem 1.1 and the other heat exports take no cited hypotheses. The forms without a suffix
+are the statements as first formalized and are kept unchanged; each later form drops
+hypotheses that have been proved or replaced by proved results.
 
 Checking that the public exports use only `propext`, `Classical.choice` and `Quot.sound`
 does not prove these hypotheses: they are ordinary proposition parameters of the theorems.

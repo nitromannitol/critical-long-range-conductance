@@ -7,9 +7,7 @@ Paper labels identify the source statements. The table includes semantic units, 
 proof ingredients, repetitions and context; these categories do not count as additional theorems.
 All 23 theorem exports and three complete definition exports are available through
 `import LongRange.Statements`. A compiling declaration alone does not certify a source match.
-Thirteen cited propositions remain explicit assumptions; the supremum estimate, Hölder
-extension and weak homogeneous uniqueness are proved in Lattice-Probability. See
-[CITED_INPUTS.md](CITED_INPUTS.md).
+Cited propositions remain explicit assumptions; see [CITED_INPUTS.md](CITED_INPUTS.md).
 
 The main export produces an actual `H10 U` weak solution, proves uniqueness among all
 `H10 U` weak solutions, and identifies its unique continuous classical representative.
@@ -71,57 +69,121 @@ The three definitions retain their complete bodies and associated characterizati
 ## Heat-kernel version
 
 The following refers to [`heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
-Names below are in `LongRangeHeat.Statements`.
+Names below are in `LongRangeHeat.Statements`. Where a result has several exports, the first one
+listed has the fewest cited hypotheses; [CITED_INPUTS.md](CITED_INPUTS.md#heat-kernel-version)
+lists the hypotheses of each.
 
 | Paper result | Lean declaration |
 | --- | --- |
 | Theorem 1.1 | `main_theorem` |
-| Theorem 1.2 | `annealed_invariance_principle_proved` (also `annealed_invariance_principle`) |
-| Theorem 1.2, unscaled form | `unscaled_invariance_principle_proved` (also `unscaled_invariance_principle`) |
-| Theorem 1.2, without the Ethier–Kurtz criteria | `annealed_invariance_principle_kallenberg` |
-| Theorem 1.2, unscaled form, without the Ethier–Kurtz criteria | `unscaled_invariance_principle_kallenberg` |
+| Theorem 1.2 | `annealed_invariance_principle_of_davies` (also `annealed_invariance_principle_kallenberg`, `annealed_invariance_principle_proved`, `annealed_invariance_principle`) |
+| Theorem 1.2, unscaled form | `unscaled_invariance_principle_of_davies` (also `unscaled_invariance_principle_kallenberg`, `unscaled_invariance_principle_proved`, `unscaled_invariance_principle`) |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |
 | Lemma 2.3 | `O_squares`, `O_expectation`, `O_sums`, `O_sums_countable`, `O_integrals`, `O_constants` |
 | Lemma 3.1 | `mean_operator_consistency` |
 | Proposition 3.2 | `forcing_representation` (also `forcing_representation_of_increment`) |
 | Lemma 3.3 | `G_gaussian_tails` (also `G_gaussian_tails_of_increment`) |
-| Proposition 4.1 | `heat_kernel_bounds_proved` (also `heat_kernel_bounds`) |
+| Proposition 4.1 | `heat_kernel_bounds_of_davies` (also `heat_kernel_bounds_proved`, `heat_kernel_bounds`) |
 | Proposition 4.1, Step 1, discrete on-diagonal bound | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
-| Proposition 4.2 | `aldous_condition_proved` (also `aldous_condition`) |
-| Proposition 4.3 | `fdd_convergence_proved` (also `fdd_convergence`) |
+| Proposition 4.1, Step 2, Nash inequality | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
+| Proposition 4.2 | `aldous_condition_of_davies` (also `aldous_condition_proved`, `aldous_condition`) |
+| Proposition 4.3 | `fdd_convergence_of_davies` (also `fdd_convergence_proved`, `fdd_convergence`) |
+| (1.3), (1.4): the lattice and continuum heat equations | `lattice_heat_equation`, `continuum_heat_equation` |
 | (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving`, `scaling_obstruction` |
 | (2.3) | `second_moment` |
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |
+| Measurability of the maps in Proposition 4.3 and Theorem 1.2 | `measurable_fdd_maps`, `measurable_scaled_path` |
+
+`lattice_heat_equation` states that the exponential series defining `latticeHeat` converges,
+that it solves (1.3) with the restricted initial data and summable generator series, and that it
+is the only bounded classical solution. `continuum_heat_equation` states that `continuumHeat`
+solves (1.4) with initial data `f`, including the right time derivative at every `t ≥ 0` that
+Lemma 3.1 uses through `derivWithin`. `measurable_fdd_maps` and `measurable_scaled_path` state
+that the evaluation maps and space-time scalings along which Proposition 4.3 and the unscaled
+form of Theorem 1.2 push laws forward are measurable.
+
+### Cited inputs
 
 The step of Proposition 4.1 that the paper takes from Murugan–Saloff-Coste,
 *Electronic Journal of Probability* 20 (2015), Theorem 1.1, is proved in the library for the
-critical lattice kernel, following Sections 2 and 3 of that article (the subordinated
-kernel, the pseudo-Poincaré inequality, the Nash inequality and its iteration), with one
-constant for all kernels satisfying the lower jump bound. `heat_kernel_bounds_proved`,
-`aldous_condition_proved`, `fdd_convergence_proved`, `annealed_invariance_principle_proved`
-and `unscaled_invariance_principle_proved` take two explicit cited propositions:
-Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021), Proposition 3.1(ii) and
-Theorem 4.4 with Example 4.3. The exports of the same names without `_proved` are
-unchanged and also take the Murugan–Saloff-Coste Theorem 1.1 in uniform form. The other
-heat exports do not take these cited propositions. The paper cites Chen–Kumagai–Wang's
-stability Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
-Nash and Davies inputs above for that bound instead.
+critical lattice kernel, following Sections 2 and 3 of that article (the subordinated kernel,
+the pseudo-Poincaré inequality, the Nash inequality and its iteration), with one constant for
+all kernels satisfying the lower jump bound. Chen–Kim–Kumagai–Wang, *Journal of Functional
+Analysis* (2021), Proposition 3.1(ii), is proved as formulated, following Coulhon's argument
+(*J. Funct. Anal.* 141 (1996), Proposition II.2) for the semigroup `e^{-δt} P_t`; the
+monotonicity of the profile and `δ ≥ 0` are not used. Theorem 1.2 is proved along the paper's
+route from Propositions 4.2 and 4.3 and the criterion of Kallenberg (2002), Theorems 16.10 and
+16.11, with Aldous (1978), proved in `LongRangeHeat/KallenbergCriterion.lean`. The paper prints
+these as Theorems 14.10 and 14.11; in the second edition (2002) cited in its bibliography they
+are Theorems 16.10 (p. 313) and 16.11 (p. 314), with Lemmas 16.12–16.13 used in the proof of the
+latter. The paper source in `paper/` is kept as written; the library text uses the second-edition
+numbers. Chen–Kim–Kumagai–Wang, Theorem 4.4 with Example 4.3 (the Davies estimate), remains the
+explicit hypothesis `hDavies`.
 
-`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`, and the forms of Theorem 1.2
-without `_proved` take three explicit cited propositions: Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
-uniform form; and Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
-Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other heat exports do not
-take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15
-together with Malmquist (2023) for (4.5); the formalization uses the Nash and Davies inputs
-above for that bound instead.
+### Deviations from the paper's proofs
 
-`annealed_invariance_principle` and `unscaled_invariance_principle` additionally assume the
-stopping-time relative compactness and finite-dimensional convergence criteria of
-Ethier–Kurtz (1986), Chapter 3, Theorem 8.6 with Remark 8.7(b), and Theorem 7.8(b).
-`annealed_invariance_principle_kallenberg` and `unscaled_invariance_principle_kallenberg`
-follow the paper instead: Propositions 4.2 and 4.3 and the Kallenberg–Aldous criterion,
-proved in `LongRangeHeat/KallenbergCriterion.lean`. The paper cites Kallenberg (2002),
-Theorems 14.10–14.11; in that second edition they are Theorems 16.10 (p. 313) and
-16.11 (p. 314), with Lemmas 16.12–16.13 used in the proof of the latter.
+The formalization proves the paper's statements; at the following steps the proof differs
+from the paper's argument.
+
+* **D1. Proposition 4.1, Step 2, the off-diagonal bound (4.5).** The paper applies the stability
+  theorem of Chen–Kumagai–Wang (Theorem 1.15) on graphs, with Malmquist (2023), checking
+  FK(φ) via their Proposition 7.6, the jump upper bound J_{φ,≤} from `a ≤ λ⁻¹`, and CSJ(φ) from
+  an explicit cutoff. The formalization truncates the jumps at a scale ρ with a Meyer
+  comparison (`LongRange/HeatKernel/Truncated.lean`), obtains a Nash inequality for the
+  truncated form from the on-diagonal decay by Chen–Kim–Kumagai–Wang, Proposition 3.1(ii),
+  applies their Davies bound (Theorem 4.4 with Example 4.3) with Euclidean tent functions
+  (`Tent.lean`, `UniformDavies.lean`), and combines three truncation regimes into the minimum
+  bound (`PropositionA.lean`, `UniformOffDiagonal.lean`). The conclusion (4.5) and the uniform
+  constant `C(d, λ)` are the paper's.
+* **D2. Theorem 1.2, assembly.** `annealed_invariance_principle` and
+  `annealed_invariance_principle_proved` obtain relative compactness from the stopping-time
+  criterion of Ethier–Kurtz (Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b)), with compact
+  containment from Proposition 4.1(ii), and convergence from Ethier–Kurtz, Theorem 7.8(b). The
+  forms ending in `_kallenberg` and `_of_davies` follow the paper: conditions (i) and (ii) of the
+  Kallenberg–Aldous criterion, from Propositions 4.3 and 4.2. The criterion is proved for proper
+  separable metric state spaces, with convergence of the finite-dimensional laws at all times
+  and only its sufficiency direction, which is what the theorem uses.
+* **D3. Proposition 4.2.** The paper applies the strong Markov property at the stopping times
+  `τ_n`. The formalization proves the increment bound conditionally on events of the canonical
+  σ-algebra at fixed times (`Aldous.lean`), applies it at the dyadic approximations
+  `⌈2^k τ⌉ / 2^k` from above, and lets `k → ∞` by right continuity of the paths: the textbook
+  proof of the strong Markov property, used in inequality form.
+* **D4. Proposition 4.3, end of Step 1 and Step 2.** The paper extends the convergence of
+  `∫ g` from `g ∈ C_c^∞` to `C_0(ℝ^d)` by density and uses Stone–Weierstrass density of tensor
+  products in `C_0((ℝ^d)^k)`. The formalization proves tightness of the annealed
+  finite-dimensional laws from Proposition 4.1(ii) (`FddTight.lean`) and convergence of the
+  integrals of products `∏_{j ∈ S} (c_j + ψ_j)` over a separating subalgebra of bounded
+  continuous functions (`FddAlgebra.lean`, `FddWeak.lean`), and concludes by Mathlib's
+  `ProbabilityMeasure.tendsto_of_tight_of_separatesPoints`.
+* **D5. (2.6) and (2.7).** The paper uses Taylor's formula with integral remainder for `ū_s`,
+  Minkowski's inequality in `L²(εℤ^d)` and Lemma 2.2 at the translates `y = θz`. The
+  formalization (`Sampling.lean`) bounds the increment `f(· + z) - f`, respectively the Taylor
+  remainder of `f`, pointwise by `C min(|z|, 1)`, respectively `C |z|³`, with support in two
+  balls, writes the increment or remainder of `ū_s` as the heat flow of that of `f`, and
+  concludes by the counting and Jensen steps of the proof of Lemma 2.2.
+
+The proofs of the cited inputs differ from their sources as follows. Murugan–Saloff-Coste: the
+weak law in the binomial window is obtained from a Chernoff bound for `n ≥ 128` and a finite
+minimum; an explicit integral test and a factorial bound replace Potter's bound and
+Bingham–Goldie–Teugels 1.5.10; the block ratio is `2n / b` instead of `4R^γ / k^γ`; the
+balancing radius is found by the intermediate value theorem with the explicit scale
+`s / (1 + log(1 + s))` instead of `η̃ ∘ V⁻¹`; and Theorem 3.3 is obtained by the integral
+comparison of Pittet–Saloff-Coste (survey Theorem 3.3.2) applied to `‖K^n δ_x‖²` instead of
+(49)–(55). Kallenberg–Aldous: the modulus condition is used in the form of explicit partitions
+with small oscillation (the modified modulus of Ethier–Kurtz, Chapter 3), bounded through outer
+measure, so that measurability of the modulus is not needed; completeness of the Skorokhod space
+follows Ethier–Kurtz, Chapter 3, Theorem 5.6.
+
+### Generator series in the statements
+
+The pointwise series defining `generator` and `meanGenerator`
+(`LongRange/Model/Operator.lean`) appear in the bounds of `dirichlet_form`,
+`forcing_representation` and `mean_operator_consistency` without a summability conjunct. A
+complete export would add companion statements asserting, for each lattice function `v` in those
+bounds, `∀ q, Summable (fun w => if hw : w = 0 then 0 else a (edgeAdd q w hw) * (v (q + w) - v q)
+* jumpKernel (physical ε w))`, and the analogous statement for the kernel of `meanGenerator`.
+They would follow from `summable_generatorPair`, `memL2_generator` and
+`summable_generator_of_bounded`; `lattice_heat_equation` contains this statement for
+`latticeHeat`.

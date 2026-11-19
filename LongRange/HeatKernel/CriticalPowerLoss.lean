@@ -63,7 +63,8 @@ theorem norm_sq_block_loss_succ_le {H : Type*} [NormedAddCommGroup H]
       ‖(T ^ n) f‖ ^ 2 - ‖(T ^ (n + 1)) f‖ ^ 2 := by
   let R := CFC.sqrt (1 - T ^ 2)
   have hc : Commute R T := by
-    have h : Commute (1 - T ^ 2) T := (Commute.one_left T).sub_left (Commute.pow_left (Commute.refl T) 2)
+    have h : Commute (1 - T ^ 2) T :=
+      (Commute.one_left T).sub_left (Commute.pow_left (Commute.refl T) 2)
     exact h.cfcₙ_nnreal NNReal.sqrt
   have hswap (g : H) : R (T g) = T (R g) := by
     have h := congrArg (fun A : H →L[ℂ] H => A g) hc.eq

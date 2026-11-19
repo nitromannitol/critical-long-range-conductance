@@ -113,7 +113,6 @@ theorem rescaledDensity_and_killed_offDiagonal_uniform_proved
   have hb := hbound ε hε a ha t ht x y hxy
   exact ⟨hb, fun U ↦ (rescaledKilledDensity_le hd hε hlam a ha U t x y).trans hb⟩
 
-
 /-- This bound is compatible with the conditional interface. -/
 theorem rescaledDensity_and_killed_offDiagonal_uniform
     (_hMSCUniform : External.MuruganSaloffCosteUniform)

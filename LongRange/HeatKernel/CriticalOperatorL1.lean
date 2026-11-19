@@ -37,7 +37,9 @@ theorem markovOperatorCLM_summable_abs {X : Type*} (k : X → X → ℝ≥0∞)
       simpa only [Real.norm_eq_abs, abs_mul, abs_of_nonneg ENNReal.toReal_nonneg] using hrow x
     have h := norm_tsum_le_tsum_norm hnorm
     simpa only [Real.norm_eq_abs, abs_mul, abs_of_nonneg ENNReal.toReal_nonneg] using h
-  have hsums : Summable (fun x => ∑' y, (k x y).toReal * |f y|) := (summable_prod_of_nonneg (fun p => mul_nonneg ENNReal.toReal_nonneg (abs_nonneg _))).1 hs |>.2
+  have hsums : Summable (fun x => ∑' y, (k x y).toReal * |f y|) :=
+    (summable_prod_of_nonneg
+      (fun p => mul_nonneg ENNReal.toReal_nonneg (abs_nonneg _))).1 hs |>.2
   have hout : Summable (fun x => |markovOperatorCLM k hk hsym f x|) :=
     Summable.of_nonneg_of_le (fun _ => abs_nonneg _) hpoint hsums
   refine ⟨hout, (hout.tsum_le_tsum hpoint hsums).trans ?_⟩

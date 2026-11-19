@@ -80,7 +80,6 @@ theorem tendsto_fddLaw_proved
     exact tendsto_integral_chainExp_proved hNash hDavies hd P a hP hM0 (t ∘ e) hts
       (fun u => (hψ (e u)).1) (fun u => (hψ (e u)).2) hgM ε hε hε0
 
-
 end
 
 end LongRangeHeat

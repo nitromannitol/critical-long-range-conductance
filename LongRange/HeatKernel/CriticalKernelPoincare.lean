@@ -33,8 +33,10 @@ theorem weightedLattice_critical_pseudoPoincare {d : ℕ} (hd : 0 < d)
   let m := (weightedLattice d hd).mass
   let q := averagedDensity m (weightedLattice d hd).referenceDensity
   let p := criticalSubordinateDensity m q
-  have hm : ∀ x, m x ≠ 0 := by intro x; simp only [m, weightedLattice_mass, ne_eq, one_ne_zero, not_false_eq_true]
-  have hq : IsMarkovDensity m q := averagedDensity_isMarkov m hm _ (weightedLattice_isMarkovDensity hd)
+  have hm : ∀ x, m x ≠ 0 := by
+    intro x; simp only [m, weightedLattice_mass, ne_eq, one_ne_zero, not_false_eq_true]
+  have hq : IsMarkovDensity m q :=
+    averagedDensity_isMarkov m hm _ (weightedLattice_isMarkovDensity hd)
   have hqs : ∀ x y, q x y = q y x :=
     averagedDensity_symmetric m hm _ (weightedLattice d hd).referenceDensity_symmetric
   have hp : ∀ x, ∑' y, p x y = 1 := by

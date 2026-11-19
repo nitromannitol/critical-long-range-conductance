@@ -179,11 +179,13 @@ theorem densityPower_add (m : X → ℝ≥0) (hm : ∀ x, m x ≠ 0)
     (k : X → X → ℝ≥0∞) (a b : ℕ) (x y : X) :
     densityPower m k (a + b) x y = densityComp m (densityPower m k a) (densityPower m k b) x y := by
   induction a generalizing x y with
-  | zero => simpa [densityPower] using (densityComp_identity_left m hm (densityPower m k b) x y).symm
+  | zero =>
+    simpa [densityPower] using (densityComp_identity_left m hm (densityPower m k b) x y).symm
   | succ a ih =>
     rw [show a + 1 + b = (a + b) + 1 by omega]
     change densityComp m k (densityPower m k (a + b)) x y = _
-    have heq : densityPower m k (a + b) = densityComp m (densityPower m k a) (densityPower m k b) := by
+    have heq : densityPower m k (a + b) =
+        densityComp m (densityPower m k a) (densityPower m k b) := by
       funext x y; exact ih x y
     rw [heq, ← densityComp_assoc]
     rfl

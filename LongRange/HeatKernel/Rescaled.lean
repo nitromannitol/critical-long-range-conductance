@@ -148,7 +148,6 @@ theorem rescaledDensity_offDiagonal_uniform_proved
       (one_le_radius_displacement hxy)) d,
     radius_physical_eq_mul hε.1.le]
 
-
 /-- This bound is compatible with the conditional interface. -/
 theorem rescaledDensity_offDiagonal_uniform
     (_hMSCUniform : External.MuruganSaloffCosteUniform)

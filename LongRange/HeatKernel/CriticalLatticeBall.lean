@@ -187,7 +187,9 @@ theorem weightedLattice_ball_average_le_power_loss {d : ℕ} (hd : 0 < d) :
             intro x
             simpa only [weightedLattice_mass, ENNReal.coe_one, mul_one] using
               averagedDensity_isMarkov (weightedLattice d hd).mass
-                (by intro y; simp only [weightedLattice_mass, ne_eq, one_ne_zero, not_false_eq_true])
+                (by
+                  intro y
+                  simp only [weightedLattice_mass, ne_eq, one_ne_zero, not_false_eq_true])
                 _ (weightedLattice_isMarkovDensity hd) x)
           (averagedDensity_symmetric (weightedLattice d hd).mass
             (by intro y; simp only [weightedLattice_mass, ne_eq, one_ne_zero, not_false_eq_true])

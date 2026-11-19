@@ -69,6 +69,5 @@ theorem normalizedUnitLaw_tendsto_proved
     (sqrt_mul_dimension_rpow hA.le) N e (fun n => by have := hm n; omega)
     (fun n => by simp only [e, m, Nat.cast_add]) hclock hbase
 
-
 end
 end LongRangeHeat

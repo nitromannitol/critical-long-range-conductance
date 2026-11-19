@@ -47,7 +47,6 @@ theorem transitionKernel_displacement_le_proved
     refine ENNReal.ofReal_le_ofReal ?_
     exact (hbound ε hε a ha x x).2 u (pos_iff_ne_zero.mpr hu) η hεη |>.trans_eq (by ring)
 
-
 section Annealed
 
 variable (hd : 1 ≤ d) {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω) {lam : ℝ}
@@ -84,7 +83,6 @@ theorem annealedLaw_marginal_tail_le_proved
         exact hk ε hε (a ω) (hP.bounds ω) 0 t R hεR
     _ = _ := by rw [lintegral_const, measure_univ, mul_one]
 
-
 variable {hd P a hP}
 
 include hP in
@@ -100,7 +98,6 @@ theorem annealedLaw_exists_radius_proved
   refine ⟨R, by linarith, fun n => (hbound (ε n) (hε n) t R ?_).trans
     (ENNReal.ofReal_le_ofReal hR)⟩
   linarith [(hε n).2]
-
 
 include hP in
 /-- The annealed laws satisfy the stated compactness or convergence property. -/
@@ -126,7 +123,6 @@ theorem annealedLaw_marginals_isTight_proved
   rw [ENNReal.ofReal_coe_nnreal]
   exact hη.le
 
-
 include hP in
 /-- The annealed laws satisfy the stated compactness or convergence property. -/
 theorem annealedLaw_exists_compact_proved
@@ -146,7 +142,6 @@ theorem annealedLaw_exists_compact_proved
     simp [not_lt]
   rw [hset, prob_compl_eq_one_sub hm, ENNReal.ofReal_sub _ hη.le, ENNReal.ofReal_one]
   exact tsub_le_tsub_left (hR n) 1
-
 
 include hP in
 /-- The annealed laws satisfy the stated compactness or convergence property. -/
@@ -198,7 +193,6 @@ theorem annealedLaw_stoppingIncrementCondition_proved
     simpa using ENNReal.tendsto_ofReal h1
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hlim (fun δ => bot_le) hle
 
-
 include hP in
 /-- The annealed laws satisfy the stated compactness or convergence property. -/
 theorem annealedLaw_isCompact_closure_range_proved
@@ -217,7 +211,6 @@ theorem annealedLaw_isCompact_closure_range_proved
     funext n
     exact Subtype.ext Measure.map_id
   simpa only [hmap] using this
-
 
 include hP in
 /-- The annealed laws satisfy the stated compactness or convergence property. -/
@@ -239,7 +232,6 @@ theorem annealed_invariance_of_fdd_proved
   have h := (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.1 (hfdd ss hmono hpos))
     (LatticeProb.productTest φ)
   simpa only [LatticeProb.productTest_apply] using h
-
 
 end Annealed
 
@@ -272,7 +264,6 @@ theorem annealed_invariance_of_brownian_fdd_proved
       rw [jointLaw_map_scaledBrownianPath]
       exact hfdd (fun n => (ε n : ℝ)) (fun n => (ε n).2) hε0' ts hts hpos)
 
-
 /-- The annealed law converges under the stated finite-dimensional assumptions. -/
 theorem annealed_invariance_of_fdd_convergence_proved
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
@@ -293,7 +284,6 @@ theorem annealed_invariance_of_fdd_convergence_proved
   · have : Subsingleton (ProbabilityMeasure (Fin 0 → EuclideanSpace ℝ (Fin d))) := subsingleton_probabilityMeasure
     exact tendsto_const_nhds.congr fun n => Subsingleton.elim _ _
   · exact hfdd ε hε hε0 hk ts hts
-
 
 end Brownian
 

@@ -43,7 +43,8 @@ theorem exists_criticalNashRadiusScale_eq (d : ℕ) {t : ℝ}
     unfold criticalNashRadiusScale latticeVolumeProfile
     apply ((continuousOn_id.pow 2).div ?_ ?_).mul
       ((continuousOn_const.add continuousOn_id).pow d)
-    · exact (continuousOn_const.add continuousOn_id).log (by intro x hx; simp only [Pi.add_apply, id_eq]; linarith [hx.1])
+    · exact (continuousOn_const.add continuousOn_id).log (by
+        intro x hx; simp only [Pi.add_apply, id_eq]; linarith [hx.1])
     · intro x hx
       exact (Real.log_pos (by linarith [hx.1])).ne'
   obtain ⟨r, hr, heq⟩ := intermediate_value_Icc hb hc ⟨ht, htb⟩

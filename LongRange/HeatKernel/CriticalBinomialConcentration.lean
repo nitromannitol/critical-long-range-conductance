@@ -113,7 +113,6 @@ theorem central_binomial_mass_large {n : ℕ} (hn : 128 ≤ n) :
   change (3 / 5 : ℝ) ≤ ∑ k ∈ center, w k
   linarith
 
-
 /-- The central binomial window has a positive uniform mass. -/
 theorem central_binomial_mass_uniform :
     ∃ δ : ℝ≥0∞, 0 < δ ∧ ∀ n, δ ≤ (2 : ℝ≥0∞)⁻¹ ^ n *

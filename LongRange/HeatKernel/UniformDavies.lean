@@ -52,7 +52,6 @@ theorem truncHeat_onDiagonal_uniform_proved
       mul_le_mul_of_nonneg_left (hc a ha t x y) (Real.exp_pos _).le
     _ = _ := mul_comm _ _
 
-
 /-- This estimate is compatible with the conditional interface. -/
 theorem truncHeat_onDiagonal_uniform
     (_hMSC : External.MuruganSaloffCosteUniform) (hd : 1 ≤ d)
@@ -109,7 +108,6 @@ theorem truncHeat_nash_uniform_proved
       (fun j ↦ mul_nonneg ((truncRates hd hlam a ha ρ).q_nonneg i j) (sq_nonneg _))))
   exact (ENNReal.ofReal_le_ofReal_iff
     (add_nonneg henergy (mul_nonneg hδ hn.le))).mp (hlower.trans hupper)
-
 
 /-- This estimate is compatible with the conditional interface. -/
 theorem truncHeat_nash_uniform (_hMSC : External.MuruganSaloffCosteUniform)
@@ -254,7 +252,6 @@ theorem truncHeat_davies_uniform_proved
         apply mul_le_mul_of_nonneg_right _ (Real.exp_pos _).le
         exact mul_le_mul_of_nonneg_right (by dsimp only [A]; linarith [mul_pos hC hF]) hφ.le
 
-
 /-- This estimate is compatible with the conditional interface. -/
 theorem truncHeat_davies_uniform (_hMSC : External.MuruganSaloffCosteUniform)
     (hNash : External.ChenKimKumagaiWangNash)
@@ -272,7 +269,6 @@ theorem truncHeat_davies_uniform (_hMSC : External.MuruganSaloffCosteUniform)
 
 /-- Unit conductances in dimension one satisfy the common truncated Davies bound. -/
 theorem truncHeat_davies_one
-    (hMSC : External.MuruganSaloffCosteUniform)
     (hNash : External.ChenKimKumagaiWangNash)
     (hDavies : External.ChenKimKumagaiWangDavies) :
     ∃ A B : ℝ, 0 < A ∧ 0 < B ∧ ∀ ρ : ℝ, 1 ≤ ρ →
@@ -283,7 +279,7 @@ theorem truncHeat_davies_one
           Real.exp (B * ρ ^ (-(2 : ℝ)) * t) *
           Real.exp (-(σ * radius (physical 1 (y - x)) / ρ) +
             B * σ ^ 2 * Real.exp (2 * σ) * (1 + Real.log ρ) * t / ρ ^ 2) := by
-  obtain ⟨A, B, hA, hB, hbound⟩ := truncHeat_davies_uniform hMSC hNash hDavies
+  obtain ⟨A, B, hA, hB, hbound⟩ := truncHeat_davies_uniform_proved hNash hDavies
     1 (by norm_num) (by norm_num : (0 : ℝ) < 1)
   refine ⟨A, B, hA, hB, ?_⟩
   intro ρ hρ σ hσ t ht x y

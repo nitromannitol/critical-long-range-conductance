@@ -25,7 +25,8 @@ theorem one_sub_pow_le_nat_smul_one_sub {A : Type*} [CStarAlgebra A]
     apply (cfc_le_iff _ _ a (by fun_prop) (by fun_prop) ha).2
     intro t ht
     apply one_sub_pow_le_nat_mul_one_sub _ n
-    simpa only [Real.norm_eq_abs] using (quasispectrum.norm_le_norm_of_mem (spectrum_subset_quasispectrum ℝ a ht)).trans hnorm
+    simpa only [Real.norm_eq_abs] using
+      (quasispectrum.norm_le_norm_of_mem (spectrum_subset_quasispectrum ℝ a ht)).trans hnorm
   rw [cfc_sub (fun _ : ℝ => 1) (fun t => t ^ n) a (by fun_prop) (by fun_prop),
     cfc_const_one ℝ a ha, cfc_pow_id a n ha] at h
   rw [cfc_const_mul (n : ℝ) (fun t => 1 - t) a (by fun_prop),

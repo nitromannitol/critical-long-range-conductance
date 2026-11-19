@@ -43,7 +43,6 @@ theorem tendsto_integral_chainExp_of_pos_proved
   obtain ⟨K₂, hK₂, h₂⟩ := exists_integral_stepError_le hd hFs hFc hP.lam_mem T
   rw [Metric.tendsto_nhds]
   intro δ hδ
-  -- the small time `h`
   set B : ℝ → ℝ := fun r => (L + 4 * M' * C) * r ^ ((1 : ℝ) / 3) + M₂ * r with hB
   have hBc : ContinuousAt B 0 := by
     refine ((continuousAt_const.mul (Real.continuousAt_rpow_const 0 ((1 : ℝ) / 3)
@@ -136,7 +135,6 @@ theorem tendsto_integral_chainExp_of_pos_proved
   rw [Real.dist_eq]
   linarith
 
-
 theorem tendsto_integral_chainExp_proved
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
     (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)
@@ -193,7 +191,6 @@ theorem tendsto_integral_chainExp_proved
         rw [this]
   · exact tendsto_integral_chainExp_of_pos_proved hNash hDavies hd P a hP hM t ht.monotone h0 hg hgc
       hgM ε hε hε0
-
 
 end
 

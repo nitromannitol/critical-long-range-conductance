@@ -67,7 +67,6 @@ theorem isTightMeasureSet_fddLaw_proved
     _ = ENNReal.ofReal (2 * C * T / R) := by
         rw [hT, Finset.mul_sum, Finset.sum_div]
 
-
 end
 
 end LongRangeHeat

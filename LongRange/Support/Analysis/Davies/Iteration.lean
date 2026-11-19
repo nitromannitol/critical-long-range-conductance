@@ -128,5 +128,43 @@ theorem ckkw_product_limit {φ : ℝ → ℝ} {l c C a t : ℝ}
     simpa only [hexp, f] using hp
   exact tendsto_prod_mul_rpow ha hf hw hp'
 
+/-- A scalar product iteration passes finite bounds to the limit. -/
+theorem le_of_product_iteration {M A E D : ℕ → ℝ} {z B P : ℝ}
+    (hA : ∀ n, 0 ≤ A n) (hD : ∀ n, 0 ≤ D n) (hM0 : 0 ≤ M 0)
+    (hstep : ∀ n, M (n + 1) ≤ A n * Real.exp (E n) * M n)
+    (hcoordinate : ∀ n, z ≤ D n * M n)
+    (hsum : ∀ n, (∑ k ∈ Finset.range n, E k) ≤ B)
+    (hprod : Tendsto (fun n ↦ ∏ k ∈ Finset.range n, A k) atTop (𝓝 P))
+    (hDlim : Tendsto D atTop (𝓝 1)) : z ≤ P * Real.exp B * M 0 := by
+  have hiter : ∀ n, M n ≤ (∏ k ∈ Finset.range n, A k) *
+      Real.exp (∑ k ∈ Finset.range n, E k) * M 0 := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      have hc : 0 ≤ A n * Real.exp (E n) := mul_nonneg (hA n) (Real.exp_pos _).le
+      have hmul := mul_le_mul_of_nonneg_left ih hc
+      calc
+        M (n + 1) ≤ A n * Real.exp (E n) * M n := hstep n
+        _ ≤ A n * Real.exp (E n) * ((∏ k ∈ Finset.range n, A k) *
+            Real.exp (∑ k ∈ Finset.range n, E k) * M 0) := hmul
+        _ = (∏ k ∈ Finset.range (n + 1), A k) *
+            Real.exp (∑ k ∈ Finset.range (n + 1), E k) * M 0 := by
+          rw [Finset.prod_range_succ, Finset.sum_range_succ, Real.exp_add]
+          ring
+  have hbounded : ∀ n, M n ≤ (∏ k ∈ Finset.range n, A k) * Real.exp B * M 0 := by
+    intro n
+    have hprod0 : 0 ≤ ∏ k ∈ Finset.range n, A k := Finset.prod_nonneg fun k hk ↦ hA k
+    have hexp : Real.exp (∑ k ∈ Finset.range n, E k) ≤ Real.exp B :=
+      Real.exp_le_exp.mpr (hsum n)
+    exact (hiter n).trans (mul_le_mul_of_nonneg_right
+      (mul_le_mul_of_nonneg_left hexp hprod0) hM0)
+  have hlim : Tendsto (fun n ↦ D n * ((∏ k ∈ Finset.range n, A k) * Real.exp B * M 0))
+      atTop (𝓝 (P * Real.exp B * M 0)) := by
+    convert hDlim.mul ((hprod.mul_const (Real.exp B)).mul_const (M 0)) using 1 <;> simp
+  apply ge_of_tendsto hlim
+  exact Filter.Eventually.of_forall fun n ↦ (hcoordinate n).trans
+    (mul_le_mul_of_nonneg_left (hbounded n) (hD n))
+
 end
 end LatticeProb.Davies

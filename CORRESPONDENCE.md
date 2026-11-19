@@ -76,30 +76,36 @@ Names below are in `LongRangeHeat.Statements`.
 | Paper result | Lean declaration |
 | --- | --- |
 | Theorem 1.1 | `main_theorem` |
-| Theorem 1.2 | `annealed_invariance_principle` |
-| Theorem 1.2, unscaled form | `unscaled_invariance_principle` |
+| Theorem 1.2 | `annealed_invariance_principle_proved` (also `annealed_invariance_principle`) |
+| Theorem 1.2, unscaled form | `unscaled_invariance_principle_proved` (also `unscaled_invariance_principle`) |
 | Lemma 2.1 | `dirichlet_form` |
 | Lemma 2.2 | `sampling` |
 | Lemma 2.3 | `O_squares`, `O_expectation`, `O_sums`, `O_sums_countable`, `O_integrals`, `O_constants` |
 | Lemma 3.1 | `mean_operator_consistency` |
 | Proposition 3.2 | `forcing_representation` (also `forcing_representation_of_increment`) |
 | Lemma 3.3 | `G_gaussian_tails` (also `G_gaussian_tails_of_increment`) |
-| Proposition 4.1 | `heat_kernel_bounds` |
-| Proposition 4.2 | `aldous_condition` |
-| Proposition 4.3 | `fdd_convergence` |
+| Proposition 4.1 | `heat_kernel_bounds_proved` (also `heat_kernel_bounds`) |
+| Proposition 4.1, Step 1, discrete on-diagonal bound | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
+| Proposition 4.2 | `aldous_condition_proved` (also `aldous_condition`) |
+| Proposition 4.3 | `fdd_convergence_proved` (also `fdd_convergence`) |
 | (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving`, `scaling_obstruction` |
 | (2.3) | `second_moment` |
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |
 
-`heat_kernel_bounds`, `aldous_condition`, `fdd_convergence`,
-`annealed_invariance_principle`, and `unscaled_invariance_principle` take three explicit
-cited propositions: Murugan–Saloff-Coste, *Electronic Journal of Probability* 20 (2015), Theorem 1.1 in
-uniform form; and Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
-Proposition 3.1(ii) and Theorem 4.4 with Example 4.3. The other heat exports do not
-take these cited propositions. The paper cites Chen–Kumagai–Wang's stability Theorem 1.15
-together with Malmquist (2023) for (4.5); the formalization uses the Nash and Davies inputs
-above for that bound instead.
+The step of Proposition 4.1 that the paper takes from Murugan–Saloff-Coste,
+*Electronic Journal of Probability* 20 (2015), Theorem 1.1, is proved in the library for the
+critical lattice kernel, following Sections 2 and 3 of that article (the subordinated
+kernel, the pseudo-Poincaré inequality, the Nash inequality and its iteration), with one
+constant for all kernels satisfying the lower jump bound. `heat_kernel_bounds_proved`,
+`aldous_condition_proved`, `fdd_convergence_proved`, `annealed_invariance_principle_proved`
+and `unscaled_invariance_principle_proved` take two explicit cited propositions:
+Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021), Proposition 3.1(ii) and
+Theorem 4.4 with Example 4.3. The exports of the same names without `_proved` are
+unchanged and also take the Murugan–Saloff-Coste Theorem 1.1 in uniform form. The other
+heat exports do not take these cited propositions. The paper cites Chen–Kumagai–Wang's
+stability Theorem 1.15 together with Malmquist (2023) for (4.5); the formalization uses the
+Nash and Davies inputs above for that bound instead.
 
 Both forms of Theorem 1.2 additionally assume the stopping-time relative compactness and
 finite-dimensional convergence criteria of Ethier–Kurtz (1986), Chapter 3,

@@ -46,3 +46,8 @@ import LongRangeHeat.Statements.Fdd
 import LongRangeHeat.InvariancePrinciple
 import LongRangeHeat.Statements.InvariancePrinciple
 import LongRangeHeat.Statements.UnscaledInvariance
+import LongRangeHeat.Statements.HeatKernelBoundsProved
+import LongRangeHeat.Statements.AldousProved
+import LongRangeHeat.Statements.FddProved
+import LongRangeHeat.Statements.InvariancePrincipleProved
+import LongRangeHeat.Statements.UnscaledInvarianceProved

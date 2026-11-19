@@ -3,7 +3,9 @@ import LongRange.HeatKernel.UniformOnDiagonal
 /-!
 # Uniform on-diagonal heat-kernel bound
 
-Proposition B.1 holds with one constant depending only on dimension and ellipticity.
+Proposition B.1 holds with one constant depending only on dimension and ellipticity. The
+discrete on-diagonal estimate of Murugan–Saloff-Coste is proved for the critical lattice
+kernel, so the cited theorem is not a hypothesis.
 -/
 
 open LongRange LatticeProb LatticeProb.Euclidean.Lattice

@@ -25,8 +25,9 @@ conductances with values in `[λ, λ⁻¹]` and all `x, y ∈ εℤ^d`:
 * (ii) displacement bound: `P^a_x[|X^ε_h - x| > R] ≤ C h (1 + ln (1 + R)) / R²` for every `h > 0`
   and every `R ≥ ε`.
 
-The off-diagonal argument uses the Nash and Davies inputs of Chen–Kim–Kumagai–Wang.
--/
+The on-diagonal estimate of Step 1, which the paper takes from Murugan–Saloff-Coste
+(Theorem 1.1), is proved for the critical lattice kernel, so it is not a hypothesis. The
+off-diagonal argument uses the Nash and Davies inputs of Chen–Kim–Kumagai–Wang. -/
 theorem heat_kernel_bounds_proved
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)
     (hDavies : LatticeProb.External.ChenKimKumagaiWangDavies)

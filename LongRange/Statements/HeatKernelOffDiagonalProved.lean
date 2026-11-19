@@ -4,7 +4,8 @@ import LongRange.HeatKernel.UniformOffDiagonal
 # off-diagonal heat kernel bound
 
 Proposition B.2 with one constant depending only on dimension and ellipticity.
-The Chen–Kim–Kumagai–Wang cited inputs remain explicit hypotheses. The truncation, Nash, Davies and indexed uniform-constant adapters are proved.
+The Chen–Kim–Kumagai–Wang cited inputs remain explicit hypotheses. The truncation, Nash,
+Davies and indexed uniform-constant adapters are proved.
 -/
 
 open LongRange LatticeProb LatticeProb.Euclidean.Lattice

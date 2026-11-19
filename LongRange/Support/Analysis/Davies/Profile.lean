@@ -1,4 +1,5 @@
 import LongRange.Support.External.ChenKimKumagaiWang
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Comparison profiles for the Davies bound
@@ -83,6 +84,80 @@ theorem le_of_le_ckkwTail {θ φ : ℝ → ℝ} (h : ckkwInverseProfile θ φ)
   have := h.2.2 y hy
   rw [heq] at this
   linarith
+
+/-- Change variables in a nonnegative tail integral under positive dilation. -/
+theorem lintegral_tail_div (f : ℝ → ℝ≥0∞) {a x : ℝ} (ha : 0 < a) :
+    (∫⁻ s in Ioi x, f (s / a)) = ENNReal.ofReal a * ∫⁻ s in Ioi (x / a), f s := by
+  let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ a⁻¹ (inv_ne_zero (ne_of_gt ha))).toMeasurableEquiv
+  have hpre : (fun s : ℝ ↦ a⁻¹ * s) ⁻¹' Ioi (x / a) = Ioi x := by
+    ext s
+    simp only [mem_preimage, mem_Ioi, div_eq_mul_inv]
+    simpa [div_eq_mul_inv, mul_comm] using (div_lt_div_iff_of_pos_right ha : x / a < s / a ↔ x < s)
+  have hmap : Measure.map e (volume.restrict (Ioi x)) =
+      ENNReal.ofReal a • volume.restrict (Ioi (x / a)) := by
+    have hpre' : e ⁻¹' Ioi (x / a) = Ioi x := hpre
+    rw [← hpre', ← Measure.restrict_map e.measurable measurableSet_Ioi]
+    change (Measure.map (fun s : ℝ ↦ a⁻¹ * s) volume).restrict _ = _
+    rw [Real.map_volume_mul_left (inv_ne_zero (ne_of_gt ha))]
+    simp only [inv_inv, abs_of_pos ha, Measure.restrict_smul]
+  calc
+    _ = ∫⁻ s, f s ∂Measure.map e (volume.restrict (Ioi x)) := by
+      rw [lintegral_map_equiv]
+      change (∫⁻ s in Ioi x, f (s / a)) = ∫⁻ s in Ioi x, f (a⁻¹ * s)
+      simp only [div_eq_mul_inv, mul_comm]
+    _ = _ := by rw [hmap, lintegral_smul_measure]; rfl
+
+theorem lintegral_inv_thetaLow_le {c₁ c₂ : ℝ} {θ θstar φ : ℝ → ℝ}
+    (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂)
+    (hinv : ckkwInverseProfile θ φ)
+    (hpos : ∀ r > 0, 0 < θstar r)
+    (hcompare : ∀ r > 0, c₁⁻¹ * θstar (c₂⁻¹ * r) ≤ θ r ∧
+      θ r ≤ c₁ * θstar (c₂ * r)) {x : ℝ} (hx : 0 < x) :
+    (∫⁻ s in Ioi x, ENNReal.ofReal ((thetaLow c₁ c₂ θstar s)⁻¹)) ≤
+      ENNReal.ofReal ((c₁ * c₂) ^ 2) * ckkwTail θ (x / c₂ ^ 2) := by
+  have hc₁pos : 0 < c₁ := by linarith
+  have hc₂pos : 0 < c₂ := by linarith
+  have ha : 0 < c₂ ^ 2 := sq_pos_of_pos hc₂pos
+  have hpoint : ∀ s ∈ Ioi x, (thetaLow c₁ c₂ θstar s)⁻¹ ≤
+      c₁ ^ 2 * (θ (s / c₂ ^ 2))⁻¹ := by
+    intro s hs
+    have hspos : 0 < s := lt_trans hx hs
+    have htpos : 0 < θ (s / c₂ ^ 2) := (hinv.1 _ (div_pos hspos ha)).1
+    have hlpos := thetaLow_pos hc₁ hc₂ hpos hspos
+    have hcomp := le_thetaLow_scaled hc₁ hc₂ hcompare (div_pos hspos ha)
+    have harg : c₂ ^ 2 * (s / c₂ ^ 2) = s := mul_div_cancel₀ s (ne_of_gt ha)
+    rw [harg] at hcomp
+    have hi := (inv_le_inv₀ (mul_pos (sq_pos_of_pos hc₁pos) hlpos) htpos).2 hcomp
+    rw [mul_inv_rev] at hi
+    have hsq : c₁ ^ 2 * (c₁ ^ 2)⁻¹ = 1 := mul_inv_cancel₀ (ne_of_gt (sq_pos_of_pos hc₁pos))
+    have hmul := mul_le_mul_of_nonneg_left hi (sq_nonneg c₁)
+    calc
+      (thetaLow c₁ c₂ θstar s)⁻¹ = c₁ ^ 2 * ((thetaLow c₁ c₂ θstar s)⁻¹ * (c₁ ^ 2)⁻¹) := by
+        rw [← mul_assoc, mul_comm (c₁ ^ 2) ((thetaLow c₁ c₂ θstar s)⁻¹), mul_assoc, hsq, mul_one]
+      _ ≤ _ := hmul
+  calc
+    _ ≤ ∫⁻ s in Ioi x, ENNReal.ofReal (c₁ ^ 2) * ENNReal.ofReal ((θ (s / c₂ ^ 2))⁻¹) := by
+      apply lintegral_mono_ae
+      filter_upwards [ae_restrict_mem measurableSet_Ioi] with s hs
+      rw [← ENNReal.ofReal_mul (sq_nonneg c₁)]
+      exact ENNReal.ofReal_le_ofReal (hpoint s hs)
+    _ = ENNReal.ofReal (c₁ ^ 2) * ∫⁻ s in Ioi x, ENNReal.ofReal ((θ (s / c₂ ^ 2))⁻¹) :=
+      lintegral_const_mul' _ _ ENNReal.ofReal_ne_top
+    _ = ENNReal.ofReal (c₁ ^ 2) * (ENNReal.ofReal (c₂ ^ 2) * ckkwTail θ (x / c₂ ^ 2)) := by
+      change ENNReal.ofReal (c₁ ^ 2) * (∫⁻ s in Ioi x, (fun u ↦ ENNReal.ofReal ((θ u)⁻¹)) (s / c₂ ^ 2)) = _
+      congr 1
+      exact lintegral_tail_div (fun u ↦ ENNReal.ofReal ((θ u)⁻¹)) (x := x) ha
+    _ = _ := by rw [← mul_assoc, ← ENNReal.ofReal_mul (sq_nonneg c₁)]; congr 1; ring
+
+theorem lintegral_inv_thetaLow_ne_top {c₁ c₂ : ℝ} {θ θstar φ : ℝ → ℝ}
+    (hc₁ : 1 ≤ c₁) (hc₂ : 1 ≤ c₂)
+    (hinv : ckkwInverseProfile θ φ) (hpos : ∀ r > 0, 0 < θstar r)
+    (hcompare : ∀ r > 0, c₁⁻¹ * θstar (c₂⁻¹ * r) ≤ θ r ∧
+      θ r ≤ c₁ * θstar (c₂ * r)) {x : ℝ} (hx : 0 < x) :
+    (∫⁻ s in Ioi x, ENNReal.ofReal ((thetaLow c₁ c₂ θstar s)⁻¹)) ≠ ∞ := by
+  have hx' : 0 < x / c₂ ^ 2 := div_pos hx (sq_pos_of_pos (by linarith))
+  exact ne_top_of_le_ne_top (ENNReal.mul_ne_top ENNReal.ofReal_ne_top (hinv.1 _ hx').2)
+    (lintegral_inv_thetaLow_le hc₁ hc₂ hinv hpos hcompare hx)
 
 end
 end LatticeProb.Davies

@@ -128,6 +128,28 @@ theorem ckkw_product_limit {φ : ℝ → ℝ} {l c C a t : ℝ}
     simpa only [hexp, f] using hp
   exact tendsto_prod_mul_rpow ha hf hw hp'
 
+/-- The product limit is bounded by the source product profile. -/
+theorem ckkw_product_limit_le {φ : ℝ → ℝ} {l c C a t : ℝ}
+    (hl : 2 < l) (ha : 0 < a) (ht : 0 < t)
+    (hφ : ∀ s > 0, 0 < φ s) (hprofile : External.ckkwProductBound φ l c C) :
+    ∃ Q : ℝ,
+      Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.range N, Real.rpow
+        (a ^ 2 * φ ((l - 1) * l ^ (-(n + 2 : ℤ)) * t))
+        ((1 / 2 : ℝ) / 2 / 2 ^ n)) atTop (𝓝 Q) ∧
+      Q ≤ a * Real.rpow (C * φ (c * t)) (1 / 2) := by
+  obtain ⟨P, hp, hP, hlim⟩ := ckkw_product_limit hl ha ht hφ hprofile
+  have hP0 : 0 ≤ P := by
+    apply ge_of_tendsto hp.tendsto_prod_nat
+    filter_upwards with N
+    apply Finset.prod_nonneg
+    intro n hn
+    apply Real.rpow_nonneg
+    apply (hφ _ ?_).le
+    have hlpos : 0 < l := by linarith
+    exact mul_pos (mul_pos (by linarith) (zpow_pos hlpos _)) ht
+  refine ⟨a * Real.rpow P (1 / 2), hlim, ?_⟩
+  exact mul_le_mul_of_nonneg_left (Real.rpow_le_rpow hP0 hP (by norm_num)) ha.le
+
 /-- A scalar product iteration passes finite bounds to the limit. -/
 theorem le_of_product_iteration {M A E D : ℕ → ℝ} {z B P : ℝ}
     (hA : ∀ n, 0 ≤ A n) (hD : ∀ n, 0 ≤ D n) (hM0 : 0 ≤ M 0)

@@ -1,6 +1,6 @@
 import LongRangeAudit.AnnealedInvariance.SolutionBasic
 import LongRangeAudit.QuenchedInvariance.SolutionBridge
-import LongRangeHeat.Statements.InvariancePrincipleOfDavies
+import LongRangeHeat.Statements.InvariancePrincipleUnconditional
 
 /-! # Transport between path-law vocabularies -/
 

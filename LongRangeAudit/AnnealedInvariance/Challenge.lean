@@ -151,10 +151,8 @@ open LongRangeAudit.QuenchedInvariance.LongRange (Edge)
 open scoped Topology
 noncomputable section
 attribute [local instance 2000] LongRangeAudit.QuenchedInvariance.LatticeProb.continuousMapMeasurableSpace
-/-- Theorem 1.2: convergence of the annealed rescaled walks, with the Davies estimate of
-Chen–Kim–Kumagai–Wang as the only cited hypothesis. -/
-theorem annealed_invariance_principle_of_davies
-    (hDavies : LongRangeAudit.QuenchedInvariance.LatticeProb.External.ChenKimKumagaiWangDavies)
+/-- Theorem 1.2: convergence of the annealed rescaled walks. -/
+theorem annealed_invariance_principle
     {d : ℕ} (hd : 1 ≤ d) {lam : ℝ}
     {Ω : Type} [MeasurableSpace Ω] (P : Measure Ω) (a : Ω → Edge d → ℝ)
     (hP : LongRangeAudit.QuenchedInvariance.ConductanceLaw P lam a)

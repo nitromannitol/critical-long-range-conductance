@@ -5,7 +5,18 @@ import LongRangeHeat.KallenbergContinuity
 # The Kallenberg–Aldous convergence criterion
 
 Bounded optional increments and convergent finite-dimensional distributions
-imply weak convergence in half-line path space.
+imply weak convergence in half-line path space: the sufficiency part of
+Kallenberg (2002), *Foundations of Modern Probability*, second edition, Theorem 16.10
+(p. 313), with its modulus condition (9) supplied by Aldous' condition through
+Theorem 16.11 (p. 314) and Aldous (1978).
+
+The state space is a proper separable metric space, the optional times are those of
+the raw natural filtration of the coordinate process, and the finite-dimensional
+laws are required to converge at all finite families of times; this suffices for limits
+with continuous paths. Condition (9) enters through high-probability oscillation
+partitions, bounded in outer measure, which with compact containment and completeness of
+the path space give tightness; Prokhorov's theorem and the identification of limits by
+finite-dimensional laws at almost surely continuous times complete the argument.
 -/
 
 namespace LatticeProb.Cadlag.HalfLine
@@ -128,9 +139,9 @@ theorem tendsto_marginal_of_tendsto_jointLaw
     rfl
   simpa only [heq] using hmap
 
-/-- **Kallenberg–Aldous criterion.** Convergence of finite-dimensional laws
-and vanishing increments at bounded natural stopping times imply convergence
-of the path laws in the half-line Skorokhod topology. -/
+/-- **Kallenberg–Aldous criterion** (Kallenberg (2002), Theorems 16.10 and 16.11).
+Convergence of finite-dimensional laws and vanishing increments at bounded natural
+stopping times imply convergence of the path laws in the half-line Skorokhod topology. -/
 theorem tendsto_of_fdd_of_optional_increment
     (μ : ℕ → ProbabilityMeasure (D E)) (ν : ProbabilityMeasure (D E)) (z : E)
     (hfdd : ∀ (k : ℕ) (ts : Fin k → Time),

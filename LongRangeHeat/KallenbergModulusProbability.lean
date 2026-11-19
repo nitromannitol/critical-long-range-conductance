@@ -121,8 +121,9 @@ theorem exists_pos_eventually_oscillation_partition_of_optional_increment
       (show 0 < (T : ℝ) by exact_mod_cast hT) hε
 
 
-/-- Aldous' sequential condition gives the truncated modified-modulus
-nonnegative-integral bound of Kallenberg, Theorem 16.11. -/
+/-- Aldous' sequential condition gives the truncated modified-modulus bound (9) of
+Kallenberg (2002), Theorem 16.11, for the lower Lebesgue integral `∫⁻`, which is the
+expectation in (9) whenever the modulus is measurable. -/
 theorem exists_pos_eventually_truncatedModulus_lintegral
     (P : ∀ n, ProbabilityMeasure (Ω n)) (Y : ∀ n, Ω n → D E)
     (hY : ∀ n, Measurable (Y n)) (t : Time) (ht : 0 < t)

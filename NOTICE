@@ -1,0 +1,17 @@
+Critical long-range conductance
+
+Copied code
+
+LongRange/HeatKernel/CriticalComplexification.lean is copied from Leonardo Bonanno's
+lean-formalizations, https://github.com/leobon12/lean-formalizations, commit fdb5cad,
+modules ReflectedGMS.Forms.ComplexSequenceSpace and ReflectedGMS.Forms.ComplexifiedOperator.
+The two modules are concatenated, the namespace is renamed, the real sequence space is
+defined in the file instead of being imported, and docstrings are shortened; statements and
+proofs are unchanged. The header of the file lists these changes.
+
+In LongRange/HeatKernel/CriticalOperatorSpectral.lean, the theorem inner_decomposition is
+copied from the module ReflectedGMS.Forms.ComplexResolvent of the same repository and
+commit, and complexify_isSelfAdjoint follows the proof of complexOneResolvent_isSelfAdjoint
+in that module. The header of the file states this.
+
+This code is copied source, not a dependency: the library builds without that repository.

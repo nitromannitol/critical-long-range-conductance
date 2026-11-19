@@ -1,6 +1,9 @@
-/- The complex inner-product decomposition is adapted from Leonardo Bonanno's
-lean-formalizations (https://github.com/leobon12/lean-formalizations), module
-ReflectedGMS.Forms.ComplexResolvent, commit fdb5cad. -/
+/- `inner_decomposition` is copied from Leonardo Bonanno's lean-formalizations
+(https://github.com/leobon12/lean-formalizations), commit fdb5cad, module
+ReflectedGMS.Forms.ComplexResolvent, with the namespace renamed as in
+`CriticalComplexification` and its final tactic combinator written as `all_goals`.
+`complexify_isSelfAdjoint` follows the proof of `complexOneResolvent_isSelfAdjoint` in
+the same module, for a general self-adjoint operator. -/
 import LongRange.HeatKernel.CriticalComplexification
 import LongRange.HeatKernel.CriticalSpectralComparison
 import LongRange.HeatKernel.CriticalOperatorPositive

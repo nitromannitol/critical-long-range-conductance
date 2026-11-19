@@ -1,6 +1,11 @@
-/- Adapted from Leonardo Bonanno's lean-formalizations
-(https://github.com/leobon12/lean-formalizations), modules
-ReflectedGMS.Forms.ComplexSequenceSpace and ComplexifiedOperator, commit fdb5cad. -/
+/- Copied from Leonardo Bonanno's lean-formalizations
+(https://github.com/leobon12/lean-formalizations), commit fdb5cad, modules
+ReflectedGMS.Forms.ComplexSequenceSpace and ReflectedGMS.Forms.ComplexifiedOperator,
+concatenated in this file. Changes: the namespace `ReflectedGMS.ComplexSequenceSpace` is
+renamed `LatticeProb.Graph.LongRangeKernel.ComplexSequenceSpace`; the real sequence space
+`ValueSpace`, imported there from `ReflectedGMS.Forms.FullNetworkForm`, is defined here as
+the same `lp` space; the local import is replaced by Mathlib imports; the module and
+declaration docstrings are shortened. Statements and proofs are unchanged. -/
 import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.Analysis.Normed.Lp.lpHolder
 import Mathlib.Analysis.Complex.OperatorNorm
@@ -18,6 +23,7 @@ open scoped ENNReal
 
 namespace LatticeProb.Graph.LongRangeKernel.ComplexSequenceSpace
 
+/-- The real `lp 2` space. -/
 abbrev ValueSpace (V : Type*) := lp (fun _ : V => ℝ) 2
 
 /-- The complex `lp 2` space. -/
@@ -111,7 +117,6 @@ end LatticeProb.Graph.LongRangeKernel.ComplexSequenceSpace
 open scoped InnerProductSpace
 
 namespace LatticeProb.Graph.LongRangeKernel.ComplexSequenceSpace
-
 
 variable {V : Type*}
 

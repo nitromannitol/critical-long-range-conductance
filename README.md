@@ -31,6 +31,22 @@ the pinned Lattice-Probability dependency. They are assumptions, not proofs of t
 papers. Different exports use different subsets; [CITED_INPUTS.md](CITED_INPUTS.md)
 lists the exact names. The paper's applications and adapters are proved in the library.
 
+## Heat-kernel version
+
+`LongRangeHeat` contains the formalization of the heat-kernel version in
+[`paper/heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
+Theorem 1.1, the scaled and unscaled annealed invariance principles (Theorem 1.2),
+and supporting results are listed in
+[CORRESPONDENCE.md](CORRESPONDENCE.md#heat-kernel-version). The heat-kernel, Aldous,
+finite-dimensional convergence and invariance-principle exports take the uniform
+Murugan–Saloff-Coste estimate and the Chen–Kim–Kumagai–Wang Nash and Davies estimates
+as explicit hypotheses. Both invariance-principle forms also take two Ethier–Kurtz criteria;
+see [CITED_INPUTS.md](CITED_INPUTS.md).
+
+The April version carries 135 modules under `LongRange/Support` from Lattice-Probability
+revision `47027b49b6660ee34c323869b0c88b7eb72f1124`, alongside the currently pinned
+Lattice-Probability dependency.
+
 ## Reading and building
 
 The Lean toolchain, Mathlib and Lattice-Probability versions are pinned in

@@ -263,7 +263,7 @@ Starting from an AI-generated draft, in which each jump was routed along a neare
 In this paper, the heat equation is posed on the whole rescaled lattice, and Theorem~\ref{thm:main} is proved by this routing argument.
 Under the direction of the authors, Claude Opus~5.5 wrote the proofs, adapted the manuscript to the present format, edited the exposition and checked the manuscript for errors.
 Claude Fable~5.2 (Anthropic), run through Claude Code, then revised the manuscript, and the models \texttt{gpt-6.1-sol} and \texttt{gpt-6-astra} (OpenAI), run through Codex, audited its mathematics.
-Claude Fable~5.2 found, and these audits confirmed, that the theorem of Chen, Kumagai and Wang used for the off-diagonal heat-kernel bound does not apply to the lattice directly; Step~2 of the proof of Proposition~\ref{prop:hk} now relies on the extension of such results to graphs by Malmquist, which Claude Fable~5.2 located.
+Claude Fable~5.2 found, and these audits confirmed, that the theorem of Chen, Kumagai and Wang used for the off-diagonal heat-kernel bound does not apply to the lattice directly; Step~2 of the proof of Proposition~\ref{prop:hk} now relies instead on the Davies-type bound of Chen, Kim, Kumagai and Wang.
 The authors take responsibility for the mathematical content and presentation of the paper.
 
 \subsection*{Acknowledgments}
@@ -685,34 +685,172 @@ We show that, for every $t > 0$ and all distinct $x, y \in \Z^d$,
 \begin{equation} \label{eq:offdiagonal}
    p_t(x, y) \leq \frac{C t \ln(2 + |x - y|)}{|x - y|^{d+2}}\,.
 \end{equation}
-To prove this result, we rely on the general theory of \citet*{CKW2021Stability} which provides upper and lower bounds for a large class of heat kernels (and to the result \citet{Malmquist2023} which extends their results to functions defined on graphs). We will in particular use \citet*[Theorem 1.15, (5) implies (1)]{CKW2021Stability} and check the three conditions of (5): the Faber-Krahn inequality FK$(\phi)$, the upper bound on the decay of the long-range interaction $J_{\phi, \leq}$ and the cutoff Sobolev inequality CSJ$(\phi)$.
-
-We consider $\Z^d$ with the Euclidean distance and the counting measure, and the Dirichlet form of the walk $Y$, whose jump kernel is $\ba(\{x,y\}) |x-y|^{-d-2}$ up to the factor $\nf12$ that comes from the normalization of the Dirichlet form in these references.
-For $r > 0$, let $V(r)$ denote the number of points of $\Z^d$ in an open ball of radius $r$, which equals $1$ for $r \leq 1$ and is comparable to $r^d$ for $r > 1$.
-We use the scale function
-\begin{equation} \label{eq:hk.scale}
-    \phi(r) := \frac{r^2 \ln 3}{\ln(2 + r)} \qquad \text{for } r \geq 0\,.
-\end{equation}
-This function is continuous and increasing, it satisfies $\phi(0) = 0$ and $\phi(1) = 1$, and the ratio $\phi(r_1)/\phi(r_2)$ lies between $(r_1/r_2)^{\nf32}$ and $(r_1/r_2)^2$ for all $r_1 \geq r_2 > 0$.
-The following three conditions hold on $\Z^d$.
-\begin{itemize}
-    \item \emph{Faber-Krahn inequality FK$(\phi)$.} By \citet*[Proposition 7.6]{CKW2021Stability}, it is enough to prove the on-diagonal bound $p_t(x,x) \leq C / V(\phi^{-1}(t))$ for every $t > 0$ and every $x \in \Z^d$. This is implied by~\eqref{eq:hk.micro.diag} and the inequality $V(\phi^{-1}(t)) \leq C (1 + t \ln(2+t))^{\nf{d}{2}}$ for every $t > 0$.
-    \item \emph{Upper bound $J_{\phi,\le}$ on the jump kernel.} The bound $\ba(\{x,y\}) \leq \lambda^{-1}$ gives $\ba(\{x,y\}) |x-y|^{-d-2} \leq C / (V(|x-y|) \phi(|x-y|))$ for all distinct $x, y \in \Z^d$.
-    \item \emph{Cutoff Sobolev inequality $\mathrm{CSJ}(\phi)$.} For $x_0 \in \Z^d$ and $r_1 \geq r_2 > 0$, the cutoff function $\chi(x) := \max(0, 1 - \max(0, |x - x_0| - r_1) / r_2)$ has finite support and satisfies $|\chi(x) - \chi(y)| \leq \min(1, |x-y|/r_2)$, so, for every $x \in \Z^d$,
-    \begin{equation*}
-        \sum_{y \in \Z^d \setminus \{x\}} \frac{\ba(\{x,y\})}{|x - y|^{d+2}} \bigl( \chi(x) - \chi(y) \bigr)^2
-        \leq C \sum_{z \in \Z^d \setminus \{0\}} \min \Bigl( 1, \frac{|z|^2}{r_2^2} \Bigr) \frac{1}{|z|^{d+2}}
-        \leq \frac{C}{\phi(r_2)}\,.
-    \end{equation*}
-    For $r_2 \geq 1$, the sum over $|z| \leq r_2$ is at most $C r_2^{-2} \ln(2+r_2)$, and the remaining sum is at most $C r_2^{-2}$; for $r_2 < 1$, the full sum is bounded by $C$.
-    Multiplying this pointwise bound by the square of a function in the form domain and summing over the ball in the definition gives $\mathrm{CSJ}(\phi)$.
-\end{itemize}
-These conditions imply, for every $t > 0$ and all distinct $x, y \in \Z^d$,
+We delete the jumps longer than a scale comparable to $|x - y|$, and we apply to the truncated walk the Davies-type bound of \citet*[Theorem~4.4 and Example~4.3]{ChenKimKumagaiWang2021}, with test functions that are tents in the Euclidean distance.
+The Nash-type inequality that this bound requires follows from~\eqref{eq:hk.micro.diag} and \citet[Proposition~3.1(ii)]{ChenKimKumagaiWang2021}.
+Throughout this step, the spaces $\ell^1(\Z^d)$, $\ell^2(\Z^d)$ and $\ell^\infty(\Z^d)$ refer to the counting measure on $\Z^d$, $\mathbf{1}_y$ denotes the indicator function of the set $\{y\}$, the numbers $A_1, \ldots, A_4$ and $a_3$ denote positive constants that depend only on $d$ and $\lambda$, and
 \begin{equation*}
-    p_t(x,y) \leq C \min \Bigl( \frac{1}{V(\phi^{-1}(t))}, \frac{t}{V(|x-y|) \phi(|x-y|)} \Bigr)\,,
+    \varphi_0(t) := \bigl( t (1 + \ln(1 + t)) \bigr)^{-\nf{d}{2}} \qquad \text{for } t > 0\,.
 \end{equation*}
-which gives~\eqref{eq:offdiagonal}.
-The constants in these results depend only on the constants in their hypotheses, so, as in Step~1, the constant $C$ depends only on $d$ and $\lambda$.
+The function $\varphi_0$ is decreasing.
+For $s \geq 1$, $\sigma \in (0,1]$ and $\tau > 0$, we have $\ln(1 + s \tau) \geq \ln(1 + \tau)$ and, by the concavity of the logarithm, $\ln(1 + \sigma \tau) \geq \sigma \ln(1 + \tau)$, so that
+\begin{equation*}
+    \varphi_0(s \tau) \leq s^{-\nf{d}{2}} \varphi_0(\tau)
+    \qquad \text{and} \qquad
+    \varphi_0(\sigma \tau) \leq \sigma^{-d} \varphi_0(\tau)\,.
+\end{equation*}
+
+We first compare the walk $Y$ with the walk whose long jumps are deleted.
+For $\rho > 0$, let $L^\rho$ be the generator of the walk on $\Z^d$ that jumps from $x$ to $x + z$ at rate $q^\rho(x, x + z) := \ba(\{x, x+z\}) |z|^{-d-2} \mathbf{1}_{\{|z| \leq \rho\}}$ for $z \in \Z^d \setminus \{0\}$, and set $q^\rho(x, x) := 0$.
+The operators $L$ and $L^\rho$ are bounded on $\ell^\infty(\Z^d)$, with norms at most $2 \Lambda$, and we let $p^\rho_t(x,y) := e^{t L^\rho} \mathbf{1}_y(x)$ be the transition probabilities of this walk; similarly, $p_t(x,y) = e^{tL} \mathbf{1}_y(x)$.
+The operators $L + \Lambda$ and $L^\rho + \Lambda$ have nonnegative kernels, and $L$ and $L^\rho$ vanish on the constant functions, so the semigroups $e^{tL}$ and $e^{t L^\rho}$ map nonnegative functions to nonnegative functions and fix the constant functions.
+Since the jump rates are symmetric, $p_t(x,y) = p_t(y,x)$.
+We write $L - L^\rho = Q_\rho - V_\rho$, where, for $g \in \ell^\infty(\Z^d)$ and $w \in \Z^d$,
+\begin{equation*}
+    Q_\rho g(w) := \sum_{\substack{z \in \Z^d \\ |z| > \rho}} \frac{\ba(\{w, w+z\})}{|z|^{d+2}} g(w + z)
+    \qquad \text{and} \qquad
+    V_\rho(w) := \sum_{\substack{z \in \Z^d \\ |z| > \rho}} \frac{\ba(\{w, w+z\})}{|z|^{d+2}}\,.
+\end{equation*}
+Every $z \in \Z^d \setminus \{0\}$ satisfies $|z| \geq 1$, so the coefficients of $g(w+z)$ in the sum defining $Q_\rho g(w)$ are at most $\lambda^{-1} \max(1, \rho)^{-d-2}$.
+For every $\rho \geq 1$, a decomposition into dyadic scales gives $V_\rho \leq \lambda^{-1} \sum_{z \in \Z^d, |z| > \rho} |z|^{-d-2} \leq A_1 \rho^{-2}$.
+For bounded operators $S_1$ and $S_2$ on $\ell^\infty(\Z^d)$ and $t \geq 0$, differentiating the function $s \mapsto e^{(t-s) S_2} e^{s S_1}$ gives Duhamel's formula
+\begin{equation*}
+    e^{t S_1} - e^{t S_2} = \int_0^t e^{(t-s) S_2} (S_1 - S_2) e^{s S_1} \, ds\,.
+\end{equation*}
+We apply it to the function $\mathbf{1}_y$ and evaluate the result at $x$.
+For $S_1 = L$ and $S_2 = L^\rho$, the function $e^{sL} \mathbf{1}_y = p_s(\cdot, y)$ is nonnegative, so the symmetry of $p_s$ gives
+\begin{equation*}
+    (L - L^\rho) e^{sL} \mathbf{1}_y \leq Q_\rho p_s(\cdot, y) \leq \frac{1}{\lambda \max(1, \rho)^{d+2}} \sum_{v \in \Z^d} p_s(v, y) = \frac{1}{\lambda \max(1, \rho)^{d+2}}\,.
+\end{equation*}
+For $\rho \geq 1$, $S_1 = L^\rho - A_1 \rho^{-2}$ and $S_2 = L$, the operator $S_1 - S_2 = - Q_\rho + V_\rho - A_1 \rho^{-2}$ maps nonnegative functions to nonpositive functions.
+Since the semigroups $e^{tL}$ and $e^{t L^\rho}$ preserve the nonnegative functions and fix the constant functions, we obtain, for every $t \geq 0$ and all $x, y \in \Z^d$,
+\begin{equation} \label{eq:hk.truncation}
+\begin{aligned}
+    p_t(x,y) & \leq p^\rho_t(x,y) + \frac{t}{\lambda \max(1, \rho)^{d+2}} && \text{for every } \rho > 0\,, \\
+    p^\rho_t(x,y) & \leq e^{A_1 t / \rho^2} p_t(x,y) && \text{for every } \rho \geq 1\,.
+\end{aligned}
+\end{equation}
+If $\rho < 1$, then $L^\rho = 0$, so $p^\rho_t(x,y) = 0$ for all distinct $x, y \in \Z^d$.
+
+We next derive a Nash-type inequality for the truncated walk, and we fix $\rho \geq 1$.
+Since $\ln(2 + t) \geq \nf12$, we have $t (1 + \ln(1 + t)) \leq 3 (1 + t \ln(2 + t))$ for every $t > 0$, so~\eqref{eq:hk.micro.diag} and the second inequality of~\eqref{eq:hk.truncation} give a constant $A_2 \geq 1$ such that
+\begin{equation*}
+    \sup_{x, y \in \Z^d} p^\rho_t(x,y) \leq A_2 \varphi_0(t) e^{A_1 t / \rho^2} \qquad \text{for every } t > 0\,.
+\end{equation*}
+We now place ourselves in the setting of \citet{ChenKimKumagaiWang2021}, with $\Z^d$ equipped with the discrete topology and the counting measure.
+The bilinear form
+\begin{equation*}
+    \mathcal{E}^\rho(f, g) := \frac12 \sum_{x \in \Z^d} \sum_{y \in \Z^d} q^\rho(x, y) \bigl( f(y) - f(x) \bigr) \bigl( g(y) - g(x) \bigr)\,, \qquad f, g \in \ell^2(\Z^d)\,,
+\end{equation*}
+satisfies $\mathcal{E}^\rho(f, f) \leq 2 \Lambda \|f\|_{\ell^2(\Z^d)}^2$, it does not increase under normal contractions of $f$, and the finitely supported functions are dense in $\ell^2(\Z^d)$.
+It is therefore a regular symmetric Dirichlet form on $\ell^2(\Z^d)$, with domain $\ell^2(\Z^d)$, jumping measure $q^\rho$ and no killing.
+The summation by parts in the proof of Lemma~\ref{lem:Dirichlet}(i) shows that its semigroup is $(e^{t L^\rho})_{t \geq 0}$, whose heat kernel with respect to the counting measure is $p^\rho_t$.
+Every point of $\Z^d$ has positive measure, so the properly exceptional sets in the results of \citet{ChenKimKumagaiWang2021} are empty, and the norm of $e^{t L^\rho}$ from $\ell^1(\Z^d)$ to $\ell^\infty(\Z^d)$ equals $\sup_{x, y} p^\rho_t(x,y)$.
+By \citet[Proposition~3.1(ii)]{ChenKimKumagaiWang2021}, applied with the decreasing function $A_2 \varphi_0$ and the constant $\delta := A_1 \rho^{-2}$, every nonzero $f \in \ell^2(\Z^d)$ with $\|f\|_{\ell^1(\Z^d)} \leq 1$ satisfies
+\begin{equation*}
+    \sup_{t > 0} \frac{r}{t} \ln \frac{r}{A_2 \varphi_0(t)} \leq \mathcal{E}^\rho(f, f) + \frac{A_1 r}{\rho^2}\,, \qquad \text{where } r := \|f\|_{\ell^2(\Z^d)}^2\,.
+\end{equation*}
+We bound the left side from below by an explicit function of $r$.
+For $u > 0$ and $r > 0$, let
+\begin{equation*}
+    N(u) := \frac{u}{1 + \ln(1 + u)}
+    \qquad \text{and} \qquad
+    \mathcal{T}(r) := N \bigl( r^{-\nf{2}{d}} \bigr)\,.
+\end{equation*}
+The derivative $N'(u) = (1 + \ln(1 + u) - \frac{u}{1 + u}) (1 + \ln(1 + u))^{-2}$ satisfies $N(u)/(2u) \leq N'(u) \leq N(u)/u$, where the lower bound follows from the inequality $\ln v \geq 1 - \nf{1}{v}$ with $v = 1 + u$.
+Since $N(u) \to 0$ as $u \to 0$ and, by the inequality $\ln(1 + u) \leq 2 u^{\nf12}$, $N(u) \geq u / (1 + 2 u^{\nf12}) \to \infty$ as $u \to \infty$, the function $\mathcal{T}$ is a decreasing $C^1$ bijection of $(0, \infty)$, and the chain rule gives
+\begin{equation*}
+    \frac{\mathcal{T}(r)}{d r} \leq - \mathcal{T}'(r) \leq \frac{2 \mathcal{T}(r)}{d r} \qquad \text{for every } r > 0\,.
+\end{equation*}
+Let $\tau > 0$ and $u := \mathcal{T}^{-1}(\tau)^{-\nf{2}{d}}$, so that $u = \tau (1 + \ln(1 + u))$ and $\tau \leq u$.
+We claim that $1 + \ln(1 + u) \leq 4 (1 + \ln(1 + \tau))$.
+This is clear if $u \leq 1$.
+If $u > 1$, then $1 + \ln(1 + u) \leq 1 + 2 \ln(1 + u^{\nf12}) \leq 3 u^{\nf12}$, so $\tau \geq u^{\nf12}/3$ and $1 + \ln(1 + u) \leq 1 + 2 \ln 3 + 2 \ln(1 + u^{\nf12}/3) \leq 4 (1 + \ln(1 + \tau))$.
+Since $\mathcal{T}^{-1}(\tau) = u^{-\nf{d}{2}}$, the claim and the inequality $u \geq \tau (1 + \ln(1 + \tau))$ give
+\begin{equation*}
+    2^{-d} \varphi_0(\tau) \leq \mathcal{T}^{-1}(\tau) \leq \varphi_0(\tau) \qquad \text{for every } \tau > 0\,.
+\end{equation*}
+Let $\mu := (4 e^2 A_2^{\nf{2}{d}})^{-1}$, which satisfies $\mu \leq 1$, and let
+\begin{equation*}
+    \theta(r) := \frac{\mu}{- \mathcal{T}'(r)} \qquad \text{for } r > 0\,.
+\end{equation*}
+For $r > 0$, we choose $t := \mathcal{T}(r)/\mu$ in the supremum above.
+The bound on $\varphi_0(s \tau)$ with $s = \nf{1}{\mu}$ and the previous display at $\tau = \mathcal{T}(r)$ give $A_2 \varphi_0(\mathcal{T}(r)/\mu) \leq A_2 \mu^{\nf{d}{2}} 2^d r = e^{-d} r$, so the supremum is at least $d \mu r / \mathcal{T}(r)$, which is at least $\theta(r)$ by the lower bound on $-\mathcal{T}'(r)$.
+We conclude that, for every $\rho \geq 1$ and every nonzero $f \in \ell^2(\Z^d)$ with $\|f\|_{\ell^1(\Z^d)} \leq 1$,
+\begin{equation*}
+    \theta \bigl( \|f\|_{\ell^2(\Z^d)}^2 \bigr) \leq \mathcal{E}^\rho(f, f) + \frac{A_1}{\rho^2} \|f\|_{\ell^2(\Z^d)}^2\,.
+\end{equation*}
+
+This is the Nash-type hypothesis of \citet[Theorem~4.4]{ChenKimKumagaiWang2021}, with $\delta = A_1 \rho^{-2}$.
+The other hypotheses of that theorem are the following three conditions on $\theta$, which we check with constants that depend only on $d$.
+\begin{enumerate}
+    \item[\textup{(i)}] \emph{Integrability.} The integral $\int_r^\infty \theta(s)^{-1} \, ds$ is finite for every $r > 0$.
+    Indeed, $\theta(s)^{-1} = - \mathcal{T}'(s)/\mu$ and $\mathcal{T}(s) \to 0$ as $s \to \infty$, so this integral equals $\mathcal{T}(r)/\mu$.
+    In particular, the inverse function $\varphi$ of $r \mapsto \int_r^\infty \theta(s)^{-1} \, ds$ is $\varphi(t) = \mathcal{T}^{-1}(\mu t)$, and the comparison of $\mathcal{T}^{-1}$ with $\varphi_0$ gives $2^{-d} \varphi_0(\mu t) \leq \varphi(t) \leq \varphi_0(\mu t)$ for every $t > 0$.
+    \item[\textup{(ii)}] \emph{Comparison.} There exist constants $c_1, c_2 \geq 1$ and an increasing function $\theta_*$ on $(0, \infty)$ such that $r \mapsto \theta_*(r)/r$ is increasing and $c_1^{-1} \theta_*(r/c_2) \leq \theta(r) \leq c_1 \theta_*(c_2 r)$ for every $r > 0$.
+    Indeed, since $\mathcal{T}$ is continuous and decreasing, the function $\theta_*(r) := \mu r / \mathcal{T}(r)$ is continuous and increasing, and $\theta_*(r)/r = \mu / \mathcal{T}(r)$ is increasing; the bounds on $-\mathcal{T}'$ give $\frac{d}{2} \theta_* \leq \theta \leq d \, \theta_*$, so we may take $c_1 := \max(2, d)$ and $c_2 := 1$.
+    The function $\theta$ is continuous as well.
+    \item[\textup{(iii)}] \emph{Product condition.} For every $\ell > 2$, there exist constants $c(\ell), C(\ell) > 0$ such that, for every $t > 0$,
+    \begin{equation*}
+        \prod_{k=1}^\infty \varphi \bigl( (\ell - 1) \ell^{-(k+1)} t \bigr)^{2^{-k}} \leq C(\ell) \varphi \bigl( c(\ell) t \bigr)\,.
+    \end{equation*}
+    Indeed, let $\sigma_k := (\ell - 1) \ell^{-(k+1)} \in (0, 1)$ for $k \geq 1$.
+    By~(i) and the bound on $\varphi_0(\sigma \tau)$, we have $\varphi(\sigma_k t) \leq \varphi_0(\mu \sigma_k t) \leq \sigma_k^{-d} \varphi_0(\mu t) \leq 2^d \sigma_k^{-d} \varphi(t)$.
+    Since $\sum_{k \geq 1} 2^{-k} = 1$ and $\sum_{k \geq 1} (k+1) 2^{-k} = 3$, the product is at most $2^d \varphi(t) \prod_{k \geq 1} \sigma_k^{-d 2^{-k}} = 2^d (\ell^3/(\ell - 1))^d \varphi(t)$, so we may take $c(\ell) := 1$ and $C(\ell) := 2^d (\ell^3/(\ell - 1))^d$.
+\end{enumerate}
+For a finitely supported function $\psi \colon \Z^d \to \R$, let
+\begin{equation*}
+    \mathcal{D}_\rho(\psi) := \max_{\pm} \sup_{w \in \Z^d} \frac12 \sum_{v \in \Z^d} q^\rho(w, v) \bigl( e^{\pm (\psi(v) - \psi(w))} - 1 \bigr)^2\,,
+\end{equation*}
+which is finite.
+A direct computation shows that, for every bounded function $g \in \ell^2(\Z^d)$, the energy measure of $g$ for $\mathcal{E}^\rho$, in the sense of \citet[Section~2.1]{ChenKimKumagaiWang2021}, has the density $w \mapsto \frac12 \sum_{v} q^\rho(w, v) (g(v) - g(w))^2$ with respect to the counting measure.
+Hence $\mathcal{D}_\rho(\psi)$ is the quantity denoted $\Lambda(\psi)^2$ in \citet[Example~4.3]{ChenKimKumagaiWang2021}, computed for the form $\mathcal{E}^\rho$.
+The function $\psi$ is bounded and belongs to $\ell^2(\Z^d)$, so, by that example, applied with its parameter $s = \nf12$, it is admissible in the sense of \citet[Definition~4.1]{ChenKimKumagaiWang2021}, with the constants $C_0 = \nf12$, $C = 10$ and $\eta = 2$ of that definition, which do not depend on $\psi$, and with the value $\mathcal{D}_\rho(\psi)$ of its admissibility function at $p = 1$.
+Theorem~4.4 of \citet{ChenKimKumagaiWang2021}, applied with the factor $1 + \varepsilon$ in its conclusion equal to $2$, therefore yields constants $A_3, a_3 > 0$ such that, for every $\rho \geq 1$, every finitely supported function $\psi \colon \Z^d \to \R$, every $t > 0$ and all $x, y \in \Z^d$,
+\begin{equation*}
+    p^\rho_t(x,y) \leq A_3 \varphi(a_3 t) e^{A_1 t / \rho^2} \exp \bigl( - |\psi(y) - \psi(x)| + 2 \mathcal{D}_\rho(\psi) t \bigr)\,.
+\end{equation*}
+The constants $A_3$ and $a_3$ depend on $\theta$ only through the constants in~(ii) and~(iii), so they depend only on $d$; in particular, they do not depend on $\rho$, on $\psi$ or on the conductances.
+By~(i), the monotonicity of $\varphi_0$ and the bound on $\varphi_0(\sigma \tau)$, we have $\varphi(a_3 t) \leq \varphi_0(\mu a_3 t) \leq \max(1, (\mu a_3)^{-d}) \varphi_0(t)$.
+
+We now choose $\psi$.
+Let $x, y \in \Z^d$ be distinct, let $r := |x - y|$, let $\rho \geq 1$ and $\sigma \geq 0$, and let
+\begin{equation*}
+    \psi(z) := \frac{\sigma}{\rho} \max \bigl( 0, r - \bigl| |z - x| - r \bigr| \bigr) \qquad \text{for } z \in \Z^d\,.
+\end{equation*}
+This function satisfies $\psi(x) = 0$ and $\psi(y) = \sigma r / \rho$, it vanishes outside the ball of radius $2r$ centered at $x$, and it satisfies $|\psi(v) - \psi(w)| \leq \sigma |v - w| / \rho$ for all $v, w \in \Z^d$, since the functions $z \mapsto |z - x|$ and $s \mapsto \max(0, r - |s - r|)$ are $1$-Lipschitz.
+If $0 < |v - w| \leq \rho$, then $b := \pm (\psi(v) - \psi(w))$ satisfies $|b| \leq \sigma$, and the inequality $|e^b - 1| \leq |b| e^{|b|}$ gives $(e^b - 1)^2 \leq \sigma^2 e^{2 \sigma} |v - w|^2 / \rho^2$.
+Since $q^\rho(w, v) \leq \lambda^{-1} |v - w|^{-d-2}$ vanishes unless $0 < |v - w| \leq \rho$, a decomposition into dyadic scales gives
+\begin{equation*}
+    \mathcal{D}_\rho(\psi) \leq \frac{\sigma^2 e^{2 \sigma}}{2 \lambda \rho^2} \sum_{\substack{z \in \Z^d \\ 0 < |z| \leq \rho}} \frac{1}{|z|^d} \leq \frac{A_4 \sigma^2 e^{2 \sigma} (1 + \ln \rho)}{\rho^2}\,.
+\end{equation*}
+We insert the bound on $\varphi(a_3 t)$, the values $\psi(x) = 0$ and $\psi(y) = \sigma |x - y| / \rho$, and the bound on $\mathcal{D}_\rho(\psi)$ into the Davies-type bound above.
+Enlarging $A_4$, we obtain, for every $\rho \geq 1$, every $\sigma \geq 0$, every $t > 0$ and all distinct $x, y \in \Z^d$,
+\begin{equation*}
+    p^\rho_t(x,y) \leq A_4 \varphi_0(t) \exp \Bigl( \frac{A_4 t}{\rho^2} - \frac{\sigma |x - y|}{\rho} + \frac{A_4 \sigma^2 e^{2 \sigma} (1 + \ln \rho) t}{\rho^2} \Bigr)\,.
+\end{equation*}
+
+We finally prove~\eqref{eq:offdiagonal}.
+We fix $t > 0$ and distinct $x, y \in \Z^d$, and we let $r := |x - y| \geq 1$ and $\rho := r / (3 (\nf{d}{2} + 2))$, so that $r / \rho = 3 (\nf{d}{2} + 2)$.
+We distinguish three cases.
+\begin{itemize}
+    \item If $\rho < 1$, then $p^\rho_t(x,y) = 0$, and the first inequality of~\eqref{eq:hk.truncation} gives $p_t(x,y) \leq \lambda^{-1} t$.
+    Since $r < 3 (\nf{d}{2} + 2)$ and $\ln(2 + r) \geq 1$, the right side is at most $C t \ln(2 + r) / r^{d+2}$.
+    \item If $\rho \geq 1$ and $t \geq \rho^2 / (1 + \ln \rho)$, then $t \geq \rho$, since $\ln \rho \leq \rho - 1$.
+    Hence $\ln \rho \leq \ln(2 + t)$ and $1 + \ln \rho \leq (1 + \nf{1}{\ln 2}) \ln(2 + t)$, so $\rho^2 \leq t (1 + \ln \rho) \leq C t \ln(2 + t)$, and~\eqref{eq:hk.micro.diag} gives $p_t(x,y) \leq C \rho^{-d}$.
+    Since $\rho^{-d} \leq t (1 + \ln \rho) \rho^{-d-2}$ and $1 + \ln \rho \leq 2 \ln(2 + r)$, the right side is at most $C t \ln(2 + r) / r^{d+2}$.
+    \item If $\rho \geq 1$ and $t < \rho^2 / (1 + \ln \rho)$, then we let $w := t (1 + \ln \rho) / \rho^2 \in (0, 1)$ and $\sigma := \frac13 \ln(\nf{1}{w}) \geq 0$.
+    Then $\sigma r / \rho = (\nf{d}{2} + 2) \ln(\nf{1}{w})$, $\sigma^2 e^{2 \sigma} w = \sigma^2 e^{-\sigma} \leq 4$ and $t / \rho^2 \leq w \leq 1$, so the bound obtained at the end of the previous paragraph gives
+    \begin{equation*}
+        p^\rho_t(x,y) \leq A_4 e^{5 A_4} \varphi_0(t) w^{\nf{d}{2} + 2}\,.
+    \end{equation*}
+    A direct computation gives $\varphi_0(t) w^{\nf{d}{2} + 1} \rho^d = w \bigl( (1 + \ln \rho)/(1 + \ln(1 + t)) \bigr)^{\nf{d}{2}}$.
+    If $t \geq \rho^{\nf12}$, then $1 + \ln(1 + t) \geq \frac12 (1 + \ln \rho)$, so this quantity is at most $2^{\nf{d}{2}}$.
+    If $t < \rho^{\nf12}$, then $w \leq \rho^{-\nf32} (1 + \ln \rho)$, and the inequality $(1 + \ln \rho)^{\nf{d}{2} + 1} \leq (\nf{d}{2} + 1)^{\nf{d}{2} + 1} \rho$, which follows from the inequality $\ln(\rho^{1/(\nf{d}{2} + 1)}) \leq \rho^{1/(\nf{d}{2} + 1)} - 1$, shows that this quantity is at most $\rho^{-\nf32} (1 + \ln \rho)^{\nf{d}{2} + 1} \leq (\nf{d}{2} + 1)^{\nf{d}{2} + 1}$.
+    In both cases, $p^\rho_t(x,y) \leq C w \rho^{-d} = C t (1 + \ln \rho) \rho^{-d-2} \leq C t \ln(2 + r) / r^{d+2}$.
+    The first inequality of~\eqref{eq:hk.truncation} adds at most $\lambda^{-1} \rho^{-d-2} t \leq C t / r^{d+2}$.
+\end{itemize}
+The three cases prove~\eqref{eq:offdiagonal}.
+The constants of this step depend only on $d$, $\lambda$ and the constant in~\eqref{eq:hk.micro.diag}, so, as in Step~1, the constant $C$ depends only on $d$ and $\lambda$.
 
 \smallskip
 
@@ -915,15 +1053,15 @@ Z.-Q.~Chen, X.~Chen, T.~Kumagai, and J.~Wang,
 \emph{Homogenization of symmetric stable-like processes in stationary ergodic media},
 SIAM J.\ Math.\ Anal.\ \textbf{53} (2021), 2957--3001.
 
+\bibitem[Chen et~al.(2021d)Chen, Kim, Kumagai, and Wang]{ChenKimKumagaiWang2021}
+Z.-Q.~Chen, P.~Kim, T.~Kumagai, and J.~Wang,
+\emph{Heat kernel upper bounds for symmetric Markov semigroups},
+J.\ Funct.\ Anal.\ \textbf{281} (2021), no.~4, 109074; arXiv:2010.05414.
+
 \bibitem[Chen and Kumagai(2008)]{ChenKumagai2008}
 Z.-Q.~Chen and T.~Kumagai,
 \emph{Heat kernel estimates for jump processes of mixed types on metric measure spaces},
 Probab.\ Theory Related Fields \textbf{140} (2008), 277--317.
-
-\bibitem[Chen et~al.(2021d)Chen, Kumagai, and Wang]{CKW2021Stability}
-Z.-Q.~Chen, T.~Kumagai, and J.~Wang,
-\emph{Stability of heat kernel estimates for symmetric non-local Dirichlet forms},
-Mem. Amer. Math. Soc. \textbf{271} (2021), no.~1330, v+89; arXiv:1604.04035.
 
 \bibitem[Flegel et~al.(2019)Flegel, Heida, and Slowik]{FlegelHeidaSlowik2019}
 F.~Flegel, M.~Heida, and M.~Slowik,
@@ -959,11 +1097,6 @@ SIAM J.\ Math.\ Anal.\ \textbf{51} (2019), 3641--3665.
 S.~M.~Kozlov,
 \emph{Averaging of random operators},
 Mat.\ Sb.\ (N.S.)\ \textbf{109(151)} (1979), no.~2, 188--202.
-
-\bibitem[Malmquist(2023)]{Malmquist2023}
-J.~Malmquist,
-\emph{Stability results for symmetric jump processes on metric measure spaces with atoms},
-Potential Anal. \textbf{59} (2023), 167--235; arXiv:2009.10220.
 
 \bibitem[Murugan and Saloff-Coste(2015)]{MSC2015}
 M.~Murugan and L.~Saloff-Coste,

@@ -134,17 +134,24 @@ hypothesis.
 The formalization proves the paper's statements; at the following steps the proof differs
 from the paper's argument.
 
-* **D1. Proposition 4.1, Step 2, the off-diagonal bound (4.5).** The paper applies the stability
-  theorem of Chen–Kumagai–Wang (Theorem 1.15) on graphs, with Malmquist (2023), checking
-  FK(φ) via their Proposition 7.6, the jump upper bound J_{φ,≤} from `a ≤ λ⁻¹`, and CSJ(φ) from
-  an explicit cutoff. The formalization truncates the jumps at a scale ρ with a Meyer
-  comparison (`LongRange/HeatKernel/Truncated.lean`), obtains a Nash inequality for the
-  truncated form from the on-diagonal decay by Chen–Kim–Kumagai–Wang, Proposition 3.1(ii),
-  applies their Davies bound (Theorem 4.4 with Example 4.3) with Euclidean tent functions
-  (`Tent.lean`, `UniformDavies.lean`), and combines three truncation regimes into the minimum
-  bound (`PropositionA.lean`, `UniformOffDiagonal.lean`). The conclusion (4.5) and the uniform
-  constant `C(d, λ)` are the paper's. Both Chen–Kim–Kumagai–Wang results used on this route are
-  proved; the stability theorem of Chen–Kumagai–Wang is not used.
+* **D1. Proposition 4.1, Step 2, the off-diagonal bound (4.6).** The paper and the formalization
+  follow the same route. They delete the jumps longer than `ρ = |x - y| / (3(d/2 + 2))`, obtain a
+  Nash inequality for the truncated form from the on-diagonal bound (4.5) by
+  Chen–Kim–Kumagai–Wang, Proposition 3.1(ii), apply their Davies bound (Theorem 4.4 with
+  Example 4.3, with `s = 1/2` and the factor `1 + ε` equal to `2`) to Euclidean tent functions
+  (`Tent.lean`, `UniformDavies.lean`), and combine the regimes `ρ < 1`, `t ≥ ρ² / (1 + ln ρ)`
+  and `t < ρ² / (1 + ln ρ)` (`PropositionA.lean`, `UniformOffDiagonal.lean`), with the same
+  explicit parameters. Three differences remain. The paper proves the truncation comparisons
+  (4.7), `p_t ≤ p^ρ_t + t / (λ max(1, ρ)^{d+2})` and `p^ρ_t ≤ e^{A₁ t / ρ²} p_t`, from Duhamel's
+  formula and the positivity of the two semigroups; the formalization proves them by
+  uniformizing both chains at a common rate (`LongRange/HeatKernel/Truncated.lean`, with
+  `LongRange/Support/Prob/JumpChain/Duhamel.lean` and `Truncation.lean`). The paper writes
+  `𝒟_ρ(ψ)` for the Davies functional of the truncated form, the quantity `Λ(ψ)²` of
+  Chen–Kim–Kumagai–Wang (`ckkwLambdaSq`), because `Λ` denotes the jump-rate bound in Step 1. The
+  paper records that its functions `θ` and `θ_*` are continuous, as the chain rule for `∫ 1/θ`
+  in the source's proof of Theorem 4.4 requires; the formalized proof of that theorem replaces
+  the chain rule by a comparison of right Dini derivatives (see the notes on
+  Chen–Kim–Kumagai–Wang below) and does not use this continuity.
 * **D2. Theorem 1.2, assembly.** `annealed_invariance_principle` and
   `annealed_invariance_principle_proved` obtain relative compactness from the stopping-time
   criterion of Ethier–Kurtz (Chapter 3, Theorem 8.6(c) ⇒ (a), Remark 8.7(b)), with compact

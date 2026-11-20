@@ -41,8 +41,10 @@ bounds for symmetric Markov semigroups*, Journal of Functional Analysis 281 (202
 EK denotes Ethier–Kurtz, *Markov Processes: Characterization and Convergence*, Wiley (1986).
 Billingsley refers to *Convergence of Probability Measures*, second edition, Wiley (1999).
 
-The original source cites Chen–Kumagai–Wang (2019). The corrected proof route uses the
-Chen–Kim–Kumagai–Wang (2021) Nash and Davies results, recorded in the corrected bibliography.
+The original source cites Chen–Kumagai–Wang (2019) for its off-diagonal heat-kernel bound. The
+corrected proof route of the companion, and Step 2 of the proof of Proposition 4.1 in the
+heat-kernel version, use the Chen–Kim–Kumagai–Wang (2021) Nash and Davies results, recorded in
+their bibliographies.
 The applications to the lattice kernel, truncation, normalization, uniform constants,
 stopping times and finite-horizon laws are proved in the library.
 

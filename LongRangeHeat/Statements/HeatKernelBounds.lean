@@ -27,8 +27,8 @@ conductances with values in `[λ, λ⁻¹]` and all `x, y ∈ εℤ^d`:
 The cited heat-kernel theorems enter as the hypotheses `hMSC` (Murugan–Saloff-Coste on-diagonal
 bound, uniform in the kernel constants), `hNash` and `hDavies` (the Nash and Davies inputs of
 Chen–Kim–Kumagai–Wang for the off-diagonal bound). The off-diagonal bound of Step 2 is derived
-from these inputs, not from the stability theorem and its extension to graphs that the paper
-cites. -/
+from these inputs along the paper's route: truncation of the long jumps, the Nash inequality for
+the truncated walk, and the Davies bound applied to Euclidean tent functions. -/
 theorem heat_kernel_bounds
     (hMSC : LatticeProb.External.MuruganSaloffCosteUniform)
     (hNash : LatticeProb.External.ChenKimKumagaiWangNash)

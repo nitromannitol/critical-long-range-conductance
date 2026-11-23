@@ -1,5 +1,9 @@
 # Paper–Lean correspondence
 
+This file covers both arXiv versions. The second version, formalized in `LongRangeHeat`, is
+treated under [Heat-kernel version](#heat-kernel-version). The table that follows treats the
+first version, formalized in `LongRange`.
+
 The specification is *Quantitative homogenization for the critical long-range random
 conductance model*, arXiv:2604.21143v1, included unchanged in `paper/`.
 The corrected companion preserves the abstract and all three main theorem statements.
@@ -68,7 +72,8 @@ The three definitions retain their complete bodies and associated characterizati
 
 ## Heat-kernel version
 
-The following refers to [`heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex).
+The following refers to [`critical-long-range-rw-v2.tex`](paper/critical-long-range-rw-v2.tex),
+the source of the second arXiv version; equation numbers are those of this source.
 Names below are in `LongRangeHeat.Statements`. Where a result has several exports, the first one
 listed has the fewest cited hypotheses; [CITED_INPUTS.md](CITED_INPUTS.md#heat-kernel-version)
 lists the hypotheses of each.
@@ -86,21 +91,21 @@ lists the hypotheses of each.
 | Lemma 3.3 | `G_gaussian_tails` (also `G_gaussian_tails_of_increment`) |
 | Proposition 4.1 | `heat_kernel_bounds_unconditional` (also `heat_kernel_bounds_of_davies`, `heat_kernel_bounds_proved`, `heat_kernel_bounds`) |
 | Proposition 4.1, Step 1, discrete on-diagonal bound | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
-| Proposition 4.1, Step 2, Nash inequality | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
-| Proposition 4.1, Step 2, Davies estimate | `LatticeProb.External.chenKimKumagaiWangDavies_holds` |
+| Proposition 4.1, Step 2 (formal route, D1), Nash inequality | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
+| Proposition 4.1, Step 2 (formal route, D1), Davies estimate | `LatticeProb.External.chenKimKumagaiWangDavies_holds` |
 | Proposition 4.2 | `aldous_condition_unconditional` (also `aldous_condition_of_davies`, `aldous_condition_proved`, `aldous_condition`) |
 | Proposition 4.3 | `fdd_convergence_unconditional` (also `fdd_convergence_of_davies`, `fdd_convergence_proved`, `fdd_convergence`) |
-| (1.3), (1.4): the lattice and continuum heat equations | `lattice_heat_equation`, `continuum_heat_equation` |
-| (1.7), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving`, `scaling_obstruction` |
-| (2.3) | `second_moment` |
+| (1.4), (1.5): the lattice and continuum heat equations | `lattice_heat_equation`, `continuum_heat_equation` |
+| (1.9), scaling identities and normalization | `scaling_identity`, `kappa_halving_increment`, `kappa_halving`, `scaling_obstruction` |
+| (2.1) | `second_moment` |
 | (2.6), (2.7) | `increment_bound`, `taylor_bound` |
 | (3.2) | `telescoping` |
 | Measurability of the maps in Proposition 4.3 and Theorem 1.2 | `measurable_fdd_maps`, `measurable_scaled_path` |
 
 `lattice_heat_equation` states that the exponential series defining `latticeHeat` converges,
-that it solves (1.3) with the restricted initial data and summable generator series, and that it
+that it solves (1.4) with the restricted initial data and summable generator series, and that it
 is the only bounded classical solution. `continuum_heat_equation` states that `continuumHeat`
-solves (1.4) with initial data `f`, including the right time derivative at every `t ≥ 0` that
+solves (1.5) with initial data `f`, including the right time derivative at every `t ≥ 0` that
 Lemma 3.1 uses through `derivWithin`. `measurable_fdd_maps` and `measurable_scaled_path` state
 that the evaluation maps and space-time scalings along which Proposition 4.3 and the unscaled
 form of Theorem 1.2 push laws forward are measurable.
@@ -111,16 +116,15 @@ The step of Proposition 4.1 that the paper takes from Murugan–Saloff-Coste,
 *Electronic Journal of Probability* 20 (2015), Theorem 1.1, is proved in the library for the
 critical lattice kernel, following Sections 2 and 3 of that article (the subordinated kernel,
 the pseudo-Poincaré inequality, the Nash inequality and its iteration), with one constant for
-all kernels satisfying the lower jump bound. Chen–Kim–Kumagai–Wang, *Journal of Functional
-Analysis* (2021), Proposition 3.1(ii), is proved as formulated, following Coulhon's argument
+all kernels satisfying the lower jump bound. Theorem 1.2 is proved along the paper's route from
+Propositions 4.2 and 4.3 and the criterion of Kallenberg (2002), Theorems 16.10 (p. 313) and
+16.11 (p. 314), with Aldous (1978), proved in `LongRangeHeat/KallenbergCriterion.lean`; Lemmas
+16.12–16.13 are used in the proof of the latter. The formal proof of Step 2 of Proposition 4.1
+(D1 below) uses two results of Chen–Kim–Kumagai–Wang, *Journal of Functional Analysis* (2021),
+both proved. Proposition 3.1(ii) is proved as formulated, following Coulhon's argument
 (*J. Funct. Anal.* 141 (1996), Proposition II.2) for the semigroup `e^{-δt} P_t`; the
-monotonicity of the profile and `δ ≥ 0` are not used. Theorem 1.2 is proved along the paper's
-route from Propositions 4.2 and 4.3 and the criterion of Kallenberg (2002), Theorems 16.10 and
-16.11, with Aldous (1978), proved in `LongRangeHeat/KallenbergCriterion.lean`. The paper prints
-these as Theorems 14.10 and 14.11; in the second edition (2002) cited in its bibliography they
-are Theorems 16.10 (p. 313) and 16.11 (p. 314), with Lemmas 16.12–16.13 used in the proof of the
-latter. The paper source in `paper/` is kept as written; the library text uses the second-edition
-numbers. Chen–Kim–Kumagai–Wang, Theorem 4.4 with Example 4.3 (the Davies estimate), is proved
+monotonicity of the profile and `δ ≥ 0` are not used. Theorem 4.4 with Example 4.3 (the Davies
+estimate) is proved
 as formulated (`LongRange/Support/External/ChenKimKumagaiWangDaviesProof.lean`, with the
 argument in `LongRange/Support/Analysis/Davies/`), following the source's proof of Theorem 4.4
 through Proposition 4.5 with `s = 1/2`: the perturbed semigroup, the derivative of
@@ -134,21 +138,26 @@ hypothesis.
 The formalization proves the paper's statements; at the following steps the proof differs
 from the paper's argument.
 
-* **D1. Proposition 4.1, Step 2, the off-diagonal bound (4.6).** The paper and the formalization
-  follow the same route. They delete the jumps longer than `ρ = |x - y| / (3(d/2 + 2))`, obtain a
+* **D1. Proposition 4.1, Step 2, the off-diagonal bound (4.6).** The paper proves (4.6) with the
+  stability theory of Chen–Kumagai–Wang (*Mem. Amer. Math. Soc.* 271 (2021), Theorem 1.15 and
+  Proposition 7.6), as extended to graphs by Malmquist (*Potential Anal.* 59 (2023)): it checks
+  the Faber–Krahn inequality, the upper bound on the jump kernel and the cutoff Sobolev
+  inequality for the scale function (4.7). The formalization does not use these results. It
+  proves (4.6) by the route of Step 2 in the November 2026 draft
+  [`heat-kernel-without-ECP-v2.tex`](paper/heat-kernel-without-ECP-v2.tex). It deletes the jumps longer than `ρ = |x - y| / (3(d/2 + 2))`, obtain a
   Nash inequality for the truncated form from the on-diagonal bound (4.5) by
   Chen–Kim–Kumagai–Wang, Proposition 3.1(ii), apply their Davies bound (Theorem 4.4 with
   Example 4.3, with `s = 1/2` and the factor `1 + ε` equal to `2`) to Euclidean tent functions
   (`Tent.lean`, `UniformDavies.lean`), and combine the regimes `ρ < 1`, `t ≥ ρ² / (1 + ln ρ)`
   and `t < ρ² / (1 + ln ρ)` (`PropositionA.lean`, `UniformOffDiagonal.lean`), with the same
-  explicit parameters. Three differences remain. The paper proves the truncation comparisons
-  (4.7), `p_t ≤ p^ρ_t + t / (λ max(1, ρ)^{d+2})` and `p^ρ_t ≤ e^{A₁ t / ρ²} p_t`, from Duhamel's
+  explicit parameters as that draft. Three further differences remain. The draft proves the
+  truncation comparisons (its (4.7)), `p_t ≤ p^ρ_t + t / (λ max(1, ρ)^{d+2})` and `p^ρ_t ≤ e^{A₁ t / ρ²} p_t`, from Duhamel's
   formula and the positivity of the two semigroups; the formalization proves them by
   uniformizing both chains at a common rate (`LongRange/HeatKernel/Truncated.lean`, with
-  `LongRange/Support/Prob/JumpChain/Duhamel.lean` and `Truncation.lean`). The paper writes
+  `LongRange/Support/Prob/JumpChain/Duhamel.lean` and `Truncation.lean`). The draft writes
   `𝒟_ρ(ψ)` for the Davies functional of the truncated form, the quantity `Λ(ψ)²` of
   Chen–Kim–Kumagai–Wang (`ckkwLambdaSq`), because `Λ` denotes the jump-rate bound in Step 1. The
-  paper records that its functions `θ` and `θ_*` are continuous, as the chain rule for `∫ 1/θ`
+  draft records that its functions `θ` and `θ_*` are continuous, as the chain rule for `∫ 1/θ`
   in the source's proof of Theorem 4.4 requires; the formalized proof of that theorem replaces
   the chain rule by a comparison of right Dini derivatives (see the notes on
   Chen–Kim–Kumagai–Wang below) and does not use this continuity.

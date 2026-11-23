@@ -9,7 +9,7 @@ Lemma 3.1 (`lem:mean`): for `f ∈ C_c^∞(ℝ^d)`, `‖∂_s ū_s - L̄ ū_s‖
 
 Following the paper, the sum (3.1) is split into the short jumps `0 < |z| ≤ 1` and the long jumps
 `|z| > 1`. On the short jumps `ū_s(· + z) - ū_s` is expanded to second order: the linear terms
-cancel (`sum_first_moment_eq_zero`) and, by (2.3), the quadratic terms give `(2d)⁻¹ Δ ū_s = ∂_s ū_s`
+cancel (`sum_first_moment_eq_zero`) and, by (2.1), the quadratic terms give `(2d)⁻¹ Δ ū_s = ∂_s ū_s`
 (`quadratic_moment`). This leaves the identity `meanGenerator_eq` for `∂_s ū_s - L̄ ū_s` as a
 series over the jumps of the Taylor remainders (short jumps) and the increments (long jumps). Their
 norms are bounded by (2.7) and (2.6), and the series is bounded in `L²(εℤ^d)` by the sum of the
@@ -186,7 +186,7 @@ theorem bilin_apply_eq_sum (B : (Fin d → ℝ) →L[ℝ] (Fin d → ℝ) →L[�
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
   ring
 
-/-- The quadratic terms of the short jumps: by (2.3),
+/-- The quadratic terms of the short jumps: by (2.1),
 `(ε^d / κ_ε) ∑_{0<|z|≤1} J(z) ½ B(z, z) = (2d)⁻¹ ∑_i B(e_i, e_i)`. -/
 theorem quadratic_moment (hd : 1 ≤ d) {ε : ℝ} (hε : ε ∈ Ioo (0 : ℝ) 1)
     (B : (Fin d → ℝ) →L[ℝ] (Fin d → ℝ) →L[ℝ] ℝ) :

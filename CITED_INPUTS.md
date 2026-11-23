@@ -42,9 +42,9 @@ EK denotes Ethier–Kurtz, *Markov Processes: Characterization and Convergence*,
 Billingsley refers to *Convergence of Probability Measures*, second edition, Wiley (1999).
 
 The original source cites Chen–Kumagai–Wang (2019) for its off-diagonal heat-kernel bound. The
-corrected proof route of the companion, and Step 2 of the proof of Proposition 4.1 in the
-heat-kernel version, use the Chen–Kim–Kumagai–Wang (2021) Nash and Davies results, recorded in
-their bibliographies.
+corrected proof route of the companion uses the Chen–Kim–Kumagai–Wang (2021) Nash and Davies
+results, recorded in its bibliography; the formal proof of Step 2 of Proposition 4.1 in the
+heat-kernel version uses the same two results.
 The applications to the lattice kernel, truncation, normalization, uniform constants,
 stopping times and finite-horizon laws are proved in the library.
 
@@ -61,18 +61,20 @@ The April exports still list these as hypotheses, as released.
 
 ## Heat-kernel version
 
-The heat-kernel version uses four cited inputs. All four are proved in the library, and the
-exports ending in `_unconditional` take no cited hypothesis.
+The formalization of the second version uses four cited inputs. All four are proved in the
+library, and the exports ending in `_unconditional` take no cited hypothesis. For Step 2 of
+Proposition 4.1 the paper quotes the stability theory of Chen–Kumagai–Wang (2021) and its
+extension to graphs by Malmquist (2023); the formal proof replaces them by the two
+Chen–Kim–Kumagai–Wang results below (see D1 in [CORRESPONDENCE.md](CORRESPONDENCE.md)).
 
-| Cited input (paper) | Status | Lean |
+| Cited input | Status | Lean |
 | --- | --- | --- |
 | MSC, Theorem 1.1: on-diagonal bound (Proposition 4.1, Step 1) | proved for the critical lattice kernel, the case the paper uses | `LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal`, `LatticeProb.Graph.LongRangeKernel.weightedLattice_evenKernelSup_le` |
-| CKKW, Proposition 3.1(ii): Nash inequality (Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
+| CKKW, Proposition 3.1(ii): Nash inequality (formal proof of Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangNash_holds` |
 | Kallenberg (2002), Theorems 16.10 and 16.11, and Aldous (1978): tightness and identification in `D([0, ∞), ℝ^d)` (Theorem 1.2) | proved (the sufficiency direction, for proper separable state spaces) | `LatticeProb.Cadlag.HalfLine.tendsto_of_ordered_fdd_of_optional_increment` |
-| CKKW, Theorem 4.4 with Example 4.3: Davies upper bound (Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangDavies_holds` |
+| CKKW, Theorem 4.4 with Example 4.3: Davies upper bound (formal proof of Proposition 4.1, Step 2) | proved as formulated | `LatticeProb.External.chenKimKumagaiWangDavies_holds` |
 
-The paper prints the Kallenberg reference as Theorems 14.10 and 14.11; in the second edition
-(2002) cited in its bibliography they are Theorems 16.10 (p. 313) and 16.11 (p. 314). The
+Theorems 16.10 and 16.11 of Kallenberg are on pp. 313 and 314 of the second edition (2002). The
 general weighted-graph formulations `MuruganSaloffCoste` and `MuruganSaloffCosteUniform` are not
 proved. Neither are the Ethier–Kurtz formulations `EthierKurtzRelativeCompactnessStopping` and
 `EthierKurtzConvergenceFromFdd`; the forms of Theorem 1.2 below that do not take them use the

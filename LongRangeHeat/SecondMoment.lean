@@ -4,7 +4,7 @@ import LongRange.Appendix.Kappa
 /-!
 # The second moment of the short jumps and the lattice sums of the kernel
 
-* `second_moment_eq`: the identity (2.3), `ε^d ∑_{0 < |z| ≤ 1} J(z) z_i z_j = (κ_ε / d) δ_{ij}`.
+* `second_moment_eq`: the identity (2.1), `ε^d ∑_{0 < |z| ≤ 1} J(z) z_i z_j = (κ_ε / d) δ_{ij}`.
 * `two_mul_le_kappa`, `exists_mul_abs_log_le_kappa`: `κ_ε ≥ 2d` and `κ_ε ≥ c |ln ε|`.
 * `exists_short_sum_le`, `exists_long_sum_le`: the sums `ε^d ∑_{0 < |z| ≤ 1} |z|^{1-d}` and
   `ε^d ∑_{|z| > 1} |z|^{-d-2}` are bounded by a constant `C(d)`.
@@ -42,7 +42,7 @@ theorem neg_mem_unitBallIndices {ε : ℝ} (hε : 0 < ε) (w : Site d) :
     -w ∈ unitBallIndices d ε ↔ w ∈ unitBallIndices d ε := by
   rw [mem_unitBallIndices hε, mem_unitBallIndices hε, physical_neg, radius_neg, neg_ne_zero]
 
-/-- **(2.3)** The second moments of the short jumps:
+/-- **(2.1)** The second moments of the short jumps:
 `ε^d ∑_{0 < |z| ≤ 1} J(z) z_i z_j = (κ_ε / d) δ_{ij}`. -/
 theorem second_moment_eq (hd : 1 ≤ d) {ε : ℝ} (hε : ε ∈ Ioo (0 : ℝ) 1) (i j : Fin d) :
     ε ^ d * ∑ q ∈ unitBallIndices d ε,

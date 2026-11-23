@@ -1,10 +1,10 @@
 import LongRangeHeat.MeanOperator
 
 /-!
-# The identity (2.3) and Lemma 3.1
+# The identity (2.1) and Lemma 3.1
 
 The second moments of the short jumps and the consistency of the mean operator
-`L̄ = meanGenerator ε` of (3.1) with the continuum solution `ū = continuumHeat f` of (1.4). The sum
+`L̄ = meanGenerator ε` of (3.1) with the continuum solution `ū = continuumHeat f` of (1.5). The sum
 over `z ∈ εℤ^d` with `0 < |z| ≤ 1` runs over the integer sites `q ∈ unitBallIndices d ε` with
 `z = εq`, and `∂_s ū_s(x)` is the right time derivative `derivWithin (fun r => ū(r, x)) (Ici s) s`,
 which equals `(2d)⁻¹ Δ ū_s(x)` (`LongRangeHeat.derivWithin_continuumHeat`).
@@ -17,7 +17,7 @@ open scoped ContDiff
 
 variable {d : ℕ}
 
-/-- **(2.3)** (`eq:second.moment`): for every `ε ∈ (0, 1/2)` and `1 ≤ i, j ≤ d`,
+/-- **(2.1)** (`eq:second.moment`): for every `ε ∈ (0, 1/2)` and `1 ≤ i, j ≤ d`,
 `ε^d ∑_{z ∈ εℤ^d, 0 < |z| ≤ 1} J(z) z_i z_j = (κ_ε / d) δ_{ij}`. -/
 theorem second_moment (hd : 1 ≤ d) {ε : ℝ} (hε : ε ∈ Ioo (0 : ℝ) (1 / 2)) (i j : Fin d) :
     ε ^ d * ∑ q ∈ unitBallIndices d ε,

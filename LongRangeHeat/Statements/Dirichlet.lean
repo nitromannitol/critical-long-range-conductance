@@ -17,7 +17,7 @@ open LongRange (generator kappa jumpKernel bilinForm Edge edgeAdd)
 depending only on `d` and `λ`, such that for every `ε ∈ (0, 1/2)` and every realization `a` of
 the conductances with values in `[λ, λ⁻¹]`:
 (i) for all `v₁, v₂ ∈ L²(εℤ^d)`, `L^ε v₁ ∈ L²(εℤ^d)`, the series of `⟨L^ε v₁, v₂⟩` and the
-double series (2.4) of `B_a(v₁, v₂)` converge absolutely, and `⟨L^ε v₁, v₂⟩ = -B_a(v₁, v₂)`
+double series (2.2) of `B_a(v₁, v₂)` converge absolutely, and `⟨L^ε v₁, v₂⟩ = -B_a(v₁, v₂)`
 (2.5);
 (ii) for every `v ∈ L²(εℤ^d)`, each `D_i v` lies in `L²(εℤ^d)` and
 `B_a(v, v) ≥ (c / κ_ε) ‖D v‖²`. -/

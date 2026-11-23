@@ -1,5 +1,12 @@
 # Paper source
 
+`critical-long-range-rw-v2.tex` is the source of the second arXiv version, formalized in
+`LongRangeHeat`. It requires the included `critical_rw_random_conductances.pdf` figure, and its
+bibliography is embedded. `heat-kernel-without-ECP-v2.tex` is a November 2026 draft of that
+version; the formal proof of Step 2 of Proposition 4.1 follows the route of its Step 2 (see D1 in
+[CORRESPONDENCE.md](../CORRESPONDENCE.md)).
+
+The remaining files concern the first version.
 `critical-long-range-rw.tex` is the unchanged arXiv:2604.21143v1 source, SHA-256
 `1fec0f85e16b4cfddfa9cd26884efd0b00241bf1520c7790eadf47cd4a5a1627`.
 `critical-long-range-rw-revised.tex` is the corrected companion. Both require the included

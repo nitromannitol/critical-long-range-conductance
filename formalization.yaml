@@ -16,9 +16,18 @@ sources:
   sha256: 1fec0f85e16b4cfddfa9cd26884efd0b00241bf1520c7790eadf47cd4a5a1627
   corrected_companion: paper/critical-long-range-rw-revised.tex
   license: TODO(author)
+- id: arXiv:2604.21143v2
+  type: paper
+  relationship: formalizes
+  location: paper/critical-long-range-rw-v2.tex
+  sha256: f4ff4c41b8dbe5b8000ebd10133b4267016c99786c4d3a881d93c190807fc218
+  library: LongRangeHeat
+  exports: CORRESPONDENCE.md#heat-kernel-version
+  cited_hypotheses: none in the exports ending in _unconditional and main_theorem
+  license: TODO(author)
 dependencies:
-  Lattice-Probability: 47027b49b6660ee34c323869b0c88b7eb72f1124
-  Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997
+  Lattice-Probability: 721505023bc12a20241c73449ec33339fcf4555f
+  Mathlib: 065356127b1dc0016f66b7283ce0ce2c4055aa55
 status:
   scope: 23 theorem exports and three complete definition exports, including produced unique H10 weak
     solution, its continuous representative, weak scaling obstruction, quenched invariance principle,

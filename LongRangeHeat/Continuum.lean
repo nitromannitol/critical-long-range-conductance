@@ -4,7 +4,7 @@ import LatticeProb.Analysis.HeatDuhamel
 /-!
 # The continuum solution
 
-For `f ∈ C_c^∞(ℝ^d)`, the solution `ū = continuumHeat f` of (1.4) is, at every positive time, the
+For `f ∈ C_c^∞(ℝ^d)`, the solution `ū = continuumHeat f` of (1.5) is, at every positive time, the
 convolution `Φ_t * f` of `f` with the heat kernel `Φ_t` of `(2d)⁻¹ Δ`. This file shows:
 
 * `contDiff_continuumHeat`: `ū(t, ·)` is smooth for every `t ≥ 0`;

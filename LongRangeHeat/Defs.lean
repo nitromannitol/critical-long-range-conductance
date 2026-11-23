@@ -8,19 +8,19 @@ import Mathlib.Probability.Independence.Basic
 
 This file fixes the objects of the heat-kernel version of the critical long-range paper that
 are shared by its statements. Points of `εℤ^d` are written `ε q` with an integer site `q`, as in
-`LongRange.Model`. The operator `L^ε` of (1.2) is `LongRange.generator`, the normalization `κ_ε`
-of (1.1) is `LongRange.kappa`, the jump kernel `J` is `LongRange.jumpKernel`, and the Dirichlet
-form `B_a` of (2.4) is `LongRange.bilinForm`.
+`LongRange.Model`. The operator `L^ε` of (1.3) is `LongRange.generator`, the normalization `κ_ε`
+of (1.2) is `LongRange.kappa`, the jump kernel `J` is `LongRange.jumpKernel`, and the Dirichlet
+form `B_a` of (2.2) is `LongRange.bilinForm`.
 
 * `ConductanceLaw P lam a`: the standing assumptions on the conductances (independent, with
   values in `[λ, λ⁻¹]` and mean one; not necessarily identically distributed).
-* `latticeInner`, `latticeNormSq`, `latticeNorm`: the rescaled `L²(εℤ^d)` pairing and norm (1.5).
+* `latticeInner`, `latticeNormSq`, `latticeNorm`: the rescaled `L²(εℤ^d)` pairing and norm (1.6).
 * `discreteDeriv`, `gradNormSq`: the nearest-neighbor derivative `D_i` and energy `‖Dv‖²`.
 * `meanGenerator`: the mean operator `L̄` of (3.1), every conductance replaced by `1`.
-* `IsOq P q X A`: the relation `X ≤ 𝒪_q(A)` of (1.6) and its variant `𝒪₁`.
-* `continuumHeat f t x`: the solution `ū` of (1.4), the convolution with the heat kernel of
+* `IsOq P q X A`: the relation `X ≤ 𝒪_q(A)` of (1.7) and its variant `𝒪₁`.
+* `continuumHeat f t x`: the solution `ū` of (1.5), the convolution with the heat kernel of
   `(2d)⁻¹ Δ`.
-* `latticeHeat ε a f t`: the solution `u_ε(t, ·) = e^{t L^ε} f` of (1.3), the exponential series.
+* `latticeHeat ε a f t`: the solution `u_ε(t, ·) = e^{t L^ε} f` of (1.4), the exponential series.
 -/
 
 namespace LongRangeHeat
@@ -52,11 +52,11 @@ def restrict (ε : ℝ) (f : (Fin d → ℝ) → ℝ) (q : Site d) : ℝ :=
 def latticeInner (ε : ℝ) (v₁ v₂ : Site d → ℝ) : ℝ :=
   ε ^ d * ∑' q, v₁ q * v₂ q
 
-/-- The square `ε^d ∑_{x ∈ εℤ^d} |v(x)|²` of the rescaled norm (1.5). -/
+/-- The square `ε^d ∑_{x ∈ εℤ^d} |v(x)|²` of the rescaled norm (1.6). -/
 def latticeNormSq (ε : ℝ) (v : Site d → ℝ) : ℝ :=
   ε ^ d * ∑' q, v q ^ 2
 
-/-- The rescaled norm `‖v‖_{L²(εℤ^d)}` of (1.5). -/
+/-- The rescaled norm `‖v‖_{L²(εℤ^d)}` of (1.6). -/
 def latticeNorm (ε : ℝ) (v : Site d → ℝ) : ℝ :=
   Real.sqrt (latticeNormSq ε v)
 
@@ -72,21 +72,21 @@ def discreteDeriv (ε : ℝ) (i : Fin d) (v : Site d → ℝ) (q : Site d) : ℝ
 def gradNormSq (ε : ℝ) (v : Site d → ℝ) : ℝ :=
   ∑ i, latticeNormSq ε (discreteDeriv ε i v)
 
-/-- The mean operator `L̄` of (3.1): the operator (1.2) with every conductance equal to `1`. -/
+/-- The mean operator `L̄` of (3.1): the operator (1.3) with every conductance equal to `1`. -/
 def meanGenerator (ε : ℝ) (v : Site d → ℝ) (q : Site d) : ℝ :=
   generator ε (fun _ => 1) v q
 
 /-- `X ≤ 𝒪_q(A)`: `X` is almost everywhere measurable and
-`𝔼[exp((max(X, 0) / A)^q)] ≤ 2`. For `q = 2` this is (1.6), for `q = 1` its variant. -/
+`𝔼[exp((max(X, 0) / A)^q)] ≤ 2`. For `q = 2` this is (1.7), for `q = 1` its variant. -/
 def IsOq {Ω : Type*} [MeasurableSpace Ω] (P : Measure Ω) (q : ℕ) (X : Ω → ℝ) (A : ℝ) : Prop :=
   AEMeasurable X P ∧ ∫⁻ ω, ENNReal.ofReal (Real.exp ((max (X ω) 0 / A) ^ q)) ∂P ≤ 2
 
-/-- The solution `ū` of the continuum heat equation (1.4): `ū(0, ·) = f` and, for `t > 0`,
+/-- The solution `ū` of the continuum heat equation (1.5): `ū(0, ·) = f` and, for `t > 0`,
 `ū(t, x) = ∫ Φ_t(x - y) f(y) dy` with the heat kernel `Φ_t` of `(2d)⁻¹ Δ`. -/
 def continuumHeat (f : (Fin d → ℝ) → ℝ) (t : ℝ) (x : Fin d → ℝ) : ℝ :=
   if t = 0 then f x else ∫ y, heatKernel d t (x - y) * f y
 
-/-- The solution `u_ε(t, ·) = e^{t L^ε} f` of the lattice heat equation (1.3), given by the
+/-- The solution `u_ε(t, ·) = e^{t L^ε} f` of the lattice heat equation (1.4), given by the
 exponential series `∑_n tⁿ (L^ε)ⁿ f / n!` applied to the restriction of `f` to `εℤ^d`. -/
 def latticeHeat (ε : ℝ) (a : Edge d → ℝ) (f : (Fin d → ℝ) → ℝ) (t : ℝ) (q : Site d) : ℝ :=
   ∑' n : ℕ, t ^ n / (n.factorial : ℝ) * (generator ε a)^[n] (restrict ε f) q

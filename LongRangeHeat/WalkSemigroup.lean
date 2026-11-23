@@ -162,7 +162,7 @@ theorem walkRates_q_symm (hd : 1 ≤ d) (hε : 0 < ε) (hlam : 0 < lam)
     (LongRange.walkRates hd hε hlam a ha).q x y = (LongRange.walkRates hd hε hlam a ha).q y x :=
   LongRange.walkRate_symm ε a x y
 
-/-- The bounded generator of the walk is the operator `L^ε` of (1.2). -/
+/-- The bounded generator of the walk is the operator `L^ε` of (1.3). -/
 theorem generatorOperator_walkRates_apply (hd : 1 ≤ d) (hε : 0 < ε) (hlam : 0 < lam)
     (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) (w : BoundedObservable (Site d)) (x : Site d) :
     (LongRange.walkRates hd hε hlam a ha).generatorOperator w x = LongRange.generator ε a w x := by
@@ -186,7 +186,7 @@ theorem generatorOperator_pow_apply (hd : 1 ≤ d) (hε : 0 < ε) (hlam : 0 < la
     funext x
     exact generatorOperator_walkRates_apply hd hε hlam ha _ x
 
-/-- The solution `e^{tL^ε} f` of (1.3) is the expectation of `f` at time `t` under the walk,
+/-- The solution `e^{tL^ε} f` of (1.4) is the expectation of `f` at time `t` under the walk,
 for every bounded restriction of `f` to `εℤ^d`. -/
 theorem latticeHeat_eq_integral (hd : 1 ≤ d) (hε : 0 < ε) (hlam : 0 < lam)
     (ha : ∀ e, lam ≤ a e ∧ a e ≤ lam⁻¹) {f : (Fin d → ℝ) → ℝ} {M : ℝ}

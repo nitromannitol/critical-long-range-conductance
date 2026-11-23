@@ -3,7 +3,7 @@ import LongRangeHeat.Sampling
 /-!
 # Lemma 2.2 and the bounds (2.6), (2.7)
 
-Regularity of the continuum solution `ū = continuumHeat f` of (1.4), sampled on the translates of
+Regularity of the continuum solution `ū = continuumHeat f` of (1.5), sampled on the translates of
 `εℤ^d`. Here `∂^β` is the iterated partial derivative `multiDeriv β`, `|z|` is the Euclidean norm
 `radius z`, `z · ∇ū_s(x)` is `fderiv ℝ ū_s x z` and `z · ∇²ū_s(x) z` is
 `fderiv ℝ (fderiv ℝ ū_s) x z z`.

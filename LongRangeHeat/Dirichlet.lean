@@ -4,7 +4,7 @@ import LatticeProb.Euclidean.Summability
 /-!
 # The Dirichlet form on `L²(εℤ^d)`
 
-This file proves the two properties of the Dirichlet form `B_a` of (2.4) stated in Lemma 2.1
+This file proves the two properties of the Dirichlet form `B_a` of (2.2) stated in Lemma 2.1
 (`lem:Dirichlet`) of the heat-kernel version, for conductances with values in `[λ, λ⁻¹]`.
 
 * Integration by parts: for square-summable `v₁, v₂`, the function `L^ε v₁` is square summable,

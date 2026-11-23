@@ -5,8 +5,8 @@ import LongRangeHeat.MeanOperator
 # The lattice and continuum heat equations
 
 Characterizations of the two solutions compared in Theorem 1.1. The lattice solution
-`u_ε = latticeHeat ε a f` of (1.3) is defined by the exponential series `∑ₙ tⁿ (L^ε)ⁿ f / n!`,
-and the continuum solution `ū = continuumHeat f` of (1.4) by convolution with the heat kernel of
+`u_ε = latticeHeat ε a f` of (1.4) is defined by the exponential series `∑ₙ tⁿ (L^ε)ⁿ f / n!`,
+and the continuum solution `ū = continuumHeat f` of (1.5) by convolution with the heat kernel of
 `(2d)⁻¹ Δ`. The theorems below state that the series converges, that both functions solve
 their equations with the given initial data, and that the lattice solution is the only bounded
 classical solution.
@@ -17,7 +17,7 @@ namespace LongRangeHeat.Statements
 open Set LongRange LatticeProb LatticeProb.Euclidean.Lattice
 open scoped ContDiff
 
-/-- **The lattice heat equation (1.3).** Let `d ≥ 1`, `ε > 0`, `λ > 0`, let `a` be a conductance
+/-- **The lattice heat equation (1.4).** Let `d ≥ 1`, `ε > 0`, `λ > 0`, let `a` be a conductance
 field with values in `[λ, λ⁻¹]` and let `f` be continuous with compact support. Then
 
 * the exponential series defining `u_ε(t, q)` converges at every time `t` and site `q`;
@@ -53,7 +53,7 @@ theorem lattice_heat_equation {d : ℕ} (hd : 1 ≤ d) {ε lam : ℝ} (hε : 0 <
   have hbound : ∀ p, |latticeHeat ε a f t p| ≤ C := hC t ⟨ht, le_rfl⟩
   exact summable_generator_of_bounded hd hε hlam ha ((abs_nonneg _).trans (hbound q)) hbound q
 
-/-- **The continuum heat equation (1.4).** Let `d ≥ 1` and `f ∈ C_c^∞(ℝ^d)`. Then
+/-- **The continuum heat equation (1.5).** Let `d ≥ 1` and `f ∈ C_c^∞(ℝ^d)`. Then
 `ū(0, ·) = f`; for every `t ≥ 0`, `ū(t, ·)` is smooth; for every `t > 0` and `x`,
 `∂_t ū(t, x) = (2d)⁻¹ Δ ū(t, x)`; and for every `t ≥ 0` and `x` the right time derivative exists
 and equals `(2d)⁻¹ Δ ū(t, x)`, so that the derivative `derivWithin` of Lemma 3.1 is this right

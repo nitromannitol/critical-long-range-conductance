@@ -132,15 +132,15 @@ We expect that a duality argument improves the rate to $|\ln \eps|^{-1}$; we do 
 We also note a deterministic scaling obstruction to a rate better than $|\ln \eps|^{-1}$.
 For $g \in C^\infty_c(\R^d)$, let $u^g_\eps$ and $\bar u^g$ denote the solutions of~\eqref{eq:heat.lattice} and~\eqref{eq:heat.continuum} with initial condition $g$.
 Let $f \in C^\infty_c(\R^d)$ be not identically zero, and let $f_2 := f(2 \cdot)$.
-A change of variables shows that, for the same realization of the conductances, every $\eps \in (0, \nf12)$, every $t \geq 0$ and every $x \in \eps \Z^d$,
+A change of variables shows that, for every realization of the conductances, every $\eps \in (0, \nf12)$, every $t \geq 0$ and every $x \in \eps \Z^d$,
 \begin{equation} \label{eq:scaling}
     u^{f_2}_{\eps/2} \Bigl( t, \frac{x}{2} \Bigr) = u^f_\eps \Bigl( \frac{4 \kappa_\eps}{\kappa_{\eps/2}} t, x \Bigr)
     \quad \text{and} \quad
     \bar u^{f_2} \Bigl( t, \frac{x}{2} \Bigr) = \bar u^f (4t, x)\,.
 \end{equation}
 The difference $\kappa_{\eps/2} - \kappa_\eps = \sum_{w \in \Z^d, 1/\eps < |w| \leq 2/\eps} |w|^{-d}$ converges to $|\mathbb{S}^{d-1}| \ln 2$ as $\eps \to 0$, so the two time arguments $4 \kappa_\eps t / \kappa_{\eps/2}$ and $4t$ on the right sides of~\eqref{eq:scaling} differ by the factor $1 - (\ln 2 + o(1)) |\ln \eps|^{-1}$.
-The function $\partial_t \bar u^f(4t, \cdot)$ is not identically zero for $t > 0$.
-Hence, for every $T > 0$, the left sides of~\eqref{eq:main} for $f$ at spacing $\eps$ and for $f_2$ at spacing $\eps/2$ cannot both be $o(|\ln \eps|^{-1})$ as $\eps \to 0$.
+For every $t > 0$, the function $\partial_t \bar u^f(4t, \cdot)$ is not identically zero.
+Hence, for every realization of the conductances and every $T > 0$, the left sides of~\eqref{eq:main} for $f$ at spacing $\eps$ and for $f_2$ at spacing $\eps/2$ cannot both be $o(|\ln \eps|^{-1})$ as $\eps \to 0$.
 
 Independently of the present work, \citet*[Theorem~1.1]{CGW2026} obtained a quenched rate for the resolvent equation, under the same assumptions on the conductances and in dimensions $d > 3$.
 They proved that, for every $\gamma > 0$ and every right-hand side in a dense class of functions, the difference between the resolvent of the walk rescaled by a factor $k$ and the resolvent of the limiting Brownian motion is, almost surely, at most $C (\ln k)^{-1/2 + (1+\gamma)/(2(d-2))}$ in $L^2(\R^d)$ for every sufficiently large $k$.
@@ -192,7 +192,7 @@ The jumps of length greater than $1$ contribute at most $C \kappa_\eps^{-1} \|v\
 By Hoeffding's inequality, the norm of $G$ in $L^2(\eps \Z^d)$ is at most $\cO_2(C)$, uniformly in $\eps$ (Lemma~\ref{lem:G}).
 
 The third ingredient is an energy estimate (Section~\ref{sec:energy}).
-The difference $u_\eps - \bar u$ solves the lattice heat equation with the two terms of~\eqref{eq:splitting} as a source and with zero initial condition, and we test this equation against $u_\eps - \bar u$ itself.
+The difference $u_\eps - \bar u$ solves the lattice heat equation with the two terms on the right side of~\eqref{eq:splitting} as a source and with zero initial condition, and we test this equation against $u_\eps - \bar u$ itself.
 The Dirichlet form of $\Leps$ controls $\|D(u_\eps - \bar u)\|_{L^2(\eps \Z^d)}^2$ only up to the factor $\kappa_\eps^{-1}$, so absorbing the term $\kappa_\eps^{-1} \langle G, D(u_\eps - \bar u) \rangle$ costs a square root, and this yields the rate $|\ln \eps|^{-\nf12}$.
 
 Theorem~\ref{thm:IP} follows from Theorem~\ref{thm:main} by a standard route: Aldous' criterion~\citep{Aldous1978} and the convergence of the finite-dimensional marginals.
@@ -331,7 +331,7 @@ Since we compare lattice functions in the norm~\eqref{eq:def.L2}, we need bounds
 For $s \geq 0$, we write $\bar u_s$ for the function $\bar u(s, \cdot)$ and for its restriction to $\eps \Z^d$.
 
 \begin{lemma}[Regularity of the continuum solution] \label{lem:sampling}
-Let $f \in C^\infty_c(\R^d)$, let $\bar u$ solve~\eqref{eq:heat.continuum}, and let $\beta$ be a multi-index.
+Let $f \in C^\infty_c(\R^d)$, let $\bar u$ solve~\eqref{eq:heat.continuum}, and let $\beta$ be a spatial multi-index.
 Then there exists a constant $C = C(d, f, \beta) < \infty$ such that, for every $\eps \in (0, \nf12)$, every $s \geq 0$ and every $y \in \R^d$,
 \begin{equation} \label{eq:sampling}
     \eps^d \sum_{x \in \eps \Z^d} |\partial^\beta \bar u(s, x + y)|^2 \leq C\,.
@@ -340,7 +340,7 @@ Then there exists a constant $C = C(d, f, \beta) < \infty$ such that, for every 
 
 \begin{proof}
 Let $R \geq 1$ be such that $f$ vanishes outside the ball $B(0,R)$ of radius $R$ centered at $0$.
-A ball of radius $R$ contains at most $C(R/\eps)^d$ points of a translate of $\eps \Z^d$, so every bounded function $g$ vanishing outside $B(0,R)$ satisfies, for every $y \in \R^d$,
+A ball of radius $R$ contains at most $C R^d \eps^{-d}$ points of a translate of $\eps \Z^d$, so every bounded function $g$ vanishing outside $B(0,R)$ satisfies, for every $y \in \R^d$,
 \begin{equation*}
     \eps^d \sum_{x \in \eps \Z^d} |g(x + y)|^2 \leq C \|g\|_{L^\infty(\R^d)}^2\,.
 \end{equation*}
@@ -580,8 +580,8 @@ In this section we prove Theorem~\ref{thm:IP}.
 Let $(\eps_n)_{n \geq 1}$ be a sequence in $(0, \nf12)$ converging to $0$.
 By \citet[Theorems~16.10 and~16.11]{Kallenberg2002}, the laws of the walks $X^{\eps_n}$ under $\PP^{\mathrm{ann}}_0$ converge to the law of $d^{-\nf12} W$ in $D([0, \infty), \R^d)$ if the following two conditions hold.
 \begin{enumerate}
-    \item[\textup{(i)}] The finite-dimensional marginals of the walks $X^{\eps_n}$ converge to those of $d^{-\nf12} W$.
-    \item[\textup{(ii)}] For every bounded sequence $(\tau_n)_{n \geq 1}$ of stopping times of the walks $X^{\eps_n}$ and every sequence $(h_n)_{n \geq 1}$ of positive numbers converging to $0$, the differences $X^{\eps_n}_{\tau_n + h_n} - X^{\eps_n}_{\tau_n}$ converge to $0$ in probability.
+    \item[\textup{(i)}] The finite-dimensional marginals of the walks $X^{\eps_n}$ under $\PP^{\mathrm{ann}}_0$ converge to those of $d^{-\nf12} W$.
+    \item[\textup{(ii)}] For every uniformly bounded sequence $(\tau_n)_{n \geq 1}$ of stopping times of the walks $X^{\eps_n}$ and every sequence $(h_n)_{n \geq 1}$ of positive numbers converging to $0$, the differences $X^{\eps_n}_{\tau_n + h_n} - X^{\eps_n}_{\tau_n}$ converge to $0$ in probability under $\PP^{\mathrm{ann}}_0$.
 \end{enumerate}
 Condition~(ii) is Aldous' criterion~\citep{Aldous1978}.
 We prove condition~(ii) in Proposition~\ref{prop:aldous} and condition~(i) in Proposition~\ref{prop:fdd}.
@@ -628,7 +628,7 @@ and we deduce~\eqref{eq:hk.diag}.
 Let $\Lambda := \lambda^{-1} \sum_{z \in \Z^d \setminus \{0\}} |z|^{-d-2}$, which bounds the total jump rate of $Y$ at every vertex.
 The operator $K := I + (2 \Lambda)^{-1} L$ is a Markov operator, symmetric with respect to the counting measure, whose kernel satisfies $K(x,x) \geq \nf12$ and $c |x-y|^{-d-2} \leq K(x,y) \leq C |x-y|^{-d-2}$ for $x \neq y$.
 By \citet[Theorem~1.1]{MSC2015}, applied with escape time exponent $2$ and kernel scale $r \mapsto (1+r)^2$, we have $K^{2n}(x,x) \leq C (1 + n \ln(2+n))^{-\nf{d}{2}}$ for every integer $n \geq 0$ and every $x \in \Z^d$.
-The constant $C$ depends on $K$ only through the constants in these bounds on $K$, hence only on $d$ and $\lambda$.
+The constant $C$ of~\citet{MSC2015} depends on $K$ only through the constants in these bounds on $K$, hence only on $d$ and $\lambda$.
 The Cauchy--Schwarz inequality $K^n(x,y) \leq (K^{2 \lfloor n/2 \rfloor}(x,x) K^{2 \lceil n/2 \rceil}(y,y))^{\nf12}$ extends this bound to $K^n(x,y)$.
 Since $p_t(x,y)$ is the average of $K^n(x,y)$ over a Poisson distribution of $n$ with mean $2 \Lambda t$, the bound~\eqref{eq:hk.micro.diag} follows from the concentration of this distribution.
 If $h \geq \eps$, then the time $t$ of~\eqref{eq:hk.rescaling} satisfies $t \geq 1/(\eps \kappa_\eps)$, so $\ln(2 + t) \geq c |\ln \eps| \geq c \kappa_\eps$, and~\eqref{eq:hk.rescaling} and~\eqref{eq:hk.micro.diag} give $p^\eps_h(x,y) \leq C \eps^{-d} (t \kappa_\eps)^{-\nf{d}{2}} = C h^{-\nf{d}{2}}$.
@@ -640,10 +640,10 @@ We show that, for every $t > 0$ and all distinct $x, y \in \Z^d$,
 \begin{equation} \label{eq:offdiagonal}
    p_t(x, y) \leq \frac{C t \ln(2 + |x - y|)}{|x - y|^{d+2}}\,.
 \end{equation}
-To prove this result, we rely on the general theory of \citet*{CKW2021Stability} which provides upper and lower bounds for a large class of heat kernels (and on the result of \citet{Malmquist2023}, which extends their results to functions defined on graphs). We will in particular use \citet*[Theorem~1.15, (5) implies (1)]{CKW2021Stability} and check the three conditions of (5): the Faber--Krahn inequality FK$(\phi)$, the upper bound on the decay of the long-range interaction $J_{\phi, \leq}$ and the cutoff Sobolev inequality CSJ$(\phi)$.
+To prove this result, we rely on the general theory of \citet*{CKW2021Stability} which provides upper and lower bounds for a large class of heat kernels (and on the result of \citet{Malmquist2023}, which extends their results to functions defined on graphs). We will in particular use \citet*[Theorem~1.15, (5) implies (1)]{CKW2021Stability} and check the three conditions of (5), with $\phi$ as in~\eqref{eq:hk.scale}: the Faber--Krahn inequality FK$(\phi)$, the upper bound $J_{\phi, \leq}$ on the decay of the long-range interaction and the cutoff Sobolev inequality CSJ$(\phi)$.
 
 We consider $\Z^d$ with the Euclidean distance and the counting measure, and the Dirichlet form of the walk $Y$, whose jump kernel is $\ba(\{x,y\}) |x-y|^{-d-2}$ up to the factor $\nf12$ that comes from the normalization of the Dirichlet form in these references.
-For $r > 0$, let $V(r)$ denote the number of points of $\Z^d$ in an open ball of radius $r$, which equals $1$ for $r \leq 1$ and is comparable to $r^d$ for $r > 1$.
+For $r > 0$, let $V(r)$ denote the number of points of $\Z^d$ in an open ball of radius $r$ centered at a point of $\Z^d$, which equals $1$ for $r \leq 1$ and is comparable to $r^d$ for $r > 1$.
 We use the scale function
 \begin{equation} \label{eq:hk.scale}
     \phi(r) := \frac{r^2 \ln 3}{\ln(2 + r)} \qquad \text{for } r \geq 0\,.
@@ -660,7 +660,7 @@ The following three conditions hold on $\Z^d$.
         \leq \frac{C}{\phi(r_2)}\,.
     \end{equation*}
     For $r_2 \geq 1$, the sum over $|z| \leq r_2$ is at most $C r_2^{-2} \ln(2+r_2)$, and the remaining sum is at most $C r_2^{-2}$; for $r_2 < 1$, the full sum is bounded by $C$.
-    Multiplying this pointwise bound by the square of a function in the form domain and summing over the ball in the definition gives $\mathrm{CSJ}(\phi)$.
+    Multiplying this pointwise bound by the square of a function in the form domain and summing over the ball in the definition of $\mathrm{CSJ}(\phi)$ gives this condition.
 \end{itemize}
 These conditions imply, for every $t > 0$ and all distinct $x, y \in \Z^d$,
 \begin{equation*}
@@ -751,7 +751,7 @@ Letting $h \to 0$ proves~\eqref{eq:fdd.k1}.
 
 \emph{Step~2: Several times.}
 Since $X^\eps_0 = 0 = W_0$, we may assume that $t_1 > 0$.
-By the Stone--Weierstrass theorem, the linear combinations of the products $g_1 \otimes \cdots \otimes g_k$ of functions $g_1, \ldots, g_k \in C^\infty_c(\R^d)$ are dense in the space $C_0((\R^d)^k)$ of continuous functions vanishing at infinity, so it suffices to fix such functions and show that
+By the Stone--Weierstrass theorem, the linear combinations of the products $g_1 \otimes \cdots \otimes g_k$ of functions $g_1, \ldots, g_k \in C^\infty_c(\R^d)$ are dense in the space $C_0((\R^d)^k)$ of continuous functions vanishing at infinity, so it suffices to fix $g_1, \ldots, g_k \in C^\infty_c(\R^d)$ and show that
 \begin{equation} \label{eq:fdd.k}
     \E^{\mathrm{ann}}_0 \biggl[ \prod_{j=1}^k g_j(X^\eps_{t_j}) \biggr] \to \mathbf{E} \biggl[ \prod_{j=1}^k g_j(d^{-\nf12} W_{t_j}) \biggr] \qquad \text{as } \eps \to 0\,.
 \end{equation}

@@ -174,12 +174,12 @@ This contrasts with the nearest-neighbor random conductance model, in which the 
 \subsection{Proof strategy}
 
 The proof of Theorem~\ref{thm:main} compares the lattice equation~\eqref{eq:heat.lattice} directly with its homogenized limit, without correctors.
-Let $\Lbar$ denote the operator~\eqref{eq:def.Leps} with every conductance replaced by its mean $1$; we call it the \textbf{mean operator}.
+Let $\Lbar$ denote the operator~\eqref{eq:def.Leps} with every conductance replaced by its mean $1$.
 Inserted into the lattice equation~\eqref{eq:heat.lattice}, the continuum solution $\bar u$ leaves the remainder
 \begin{equation} \label{eq:splitting}
     \partial_t \bar u - \Leps \bar u = \bigl( \partial_t \bar u - \Lbar \bar u \bigr) + \bigl( \Lbar - \Leps \bigr) \bar u\,.
 \end{equation}
-We call the first term on the right side the \textbf{deterministic term} and the second one the \textbf{random term}.
+The first term on the right side is deterministic, and the second is random.
 The proof requires three ingredients.
 
 The first is a bound on the deterministic term (Lemma~\ref{lem:mean}): a Taylor expansion of $\bar u$ shows that this term is at most $C \kappa_\eps^{-1}$ in $L^2(\eps \Z^d)$.
@@ -193,7 +193,7 @@ By Hoeffding's inequality, the norm of $G$ in $L^2(\eps \Z^d)$ is at most $\cO_2
 
 The third ingredient is an energy estimate (Section~\ref{sec:energy}).
 The difference $u_\eps - \bar u$ solves the lattice heat equation with the two terms of~\eqref{eq:splitting} as a source and with zero initial condition, and we test this equation against $u_\eps - \bar u$ itself.
-The Dirichlet form of $\Leps$ controls the nearest-neighbor energy only up to the factor $\kappa_\eps^{-1}$, so absorbing the term $\kappa_\eps^{-1} \langle G, D(u_\eps - \bar u) \rangle$ costs a square root, and this yields the rate $|\ln \eps|^{-\nf12}$.
+The Dirichlet form of $\Leps$ controls $\|D(u_\eps - \bar u)\|_{L^2(\eps \Z^d)}^2$ only up to the factor $\kappa_\eps^{-1}$, so absorbing the term $\kappa_\eps^{-1} \langle G, D(u_\eps - \bar u) \rangle$ costs a square root, and this yields the rate $|\ln \eps|^{-\nf12}$.
 
 Theorem~\ref{thm:IP} follows from Theorem~\ref{thm:main} by a standard route: Aldous' criterion~\citep{Aldous1978} and the convergence of the finite-dimensional marginals.
 We verify Aldous' criterion with an off-diagonal heat-kernel bound derived from the stability theory of \citet*{CKW2021Stability} and \citet{Malmquist2023}.
@@ -275,7 +275,7 @@ For two functions $v_1, v_2 \colon \eps \Z^d \to \R$, we write
 \begin{equation*}
     \langle v_1, v_2 \rangle := \eps^d \sum_{x \in \eps \Z^d} v_1(x) v_2(x)\,.
 \end{equation*}
-For $1 \leq i \leq d$, the discrete derivative of a function $v \colon \eps \Z^d \to \R$ in the direction $e_i$ and the \textbf{nearest-neighbor energy} of $v$ are
+For $1 \leq i \leq d$, the discrete derivative of a function $v \colon \eps \Z^d \to \R$ in the direction $e_i$ and the norm of its discrete gradient are
 \begin{equation*}
     D_i v(x) := \frac{v(x + \eps e_i) - v(x)}{\eps}
     \quad \text{and} \quad
@@ -303,7 +303,7 @@ For a realization of the conductances and $v_1, v_2 \in L^2(\eps \Z^d)$, the \te
 \begin{equation} \label{eq:def.B}
     B_\ba(v_1, v_2) := \frac{\eps^{2d}}{2 \kappa_\eps} \sum_{x \in \eps \Z^d} \sum_{z \in \eps \Z^d \setminus \{0\}} a_{x,z} J(z) \bigl( v_1(x + z) - v_1(x) \bigr) \bigl( v_2(x + z) - v_2(x) \bigr)\,.
 \end{equation}
-The next lemma records an integration by parts and a lower bound by the nearest-neighbor energy, which loses the factor $\kappa_\eps$ because it keeps only the nearest-neighbor jumps.
+The next lemma records an integration by parts and a lower bound by $\|D v\|_{L^2(\eps \Z^d)}^2$, which loses the factor $\kappa_\eps$ because it keeps only the nearest-neighbor jumps.
 
 \begin{lemma}[Properties of the Dirichlet form] \label{lem:Dirichlet}
 Let $\eps \in (0, \nf12)$.
@@ -394,13 +394,13 @@ Throughout the section, we fix $f \in C^\infty_c(\R^d)$, we let $\bar u$ solve~\
 
 \subsection{The deterministic term} \label{sec:mean}
 
-The mean operator is
+The operator $\Lbar$ is
 \begin{equation} \label{eq:def.Lbar}
     \Lbar v(x) := \frac{\eps^d}{\kappa_\eps} \sum_{z \in \eps \Z^d \setminus \{0\}} J(z) \bigl( v(x + z) - v(x) \bigr) \qquad \text{for } x \in \eps \Z^d\,.
 \end{equation}
-The next lemma shows that the continuum solution solves the lattice heat equation for the mean operator, up to an error of order $\kappa_\eps^{-1}$.
+The next lemma shows that the continuum solution solves the lattice heat equation for $\Lbar$, up to an error of order $\kappa_\eps^{-1}$.
 
-\begin{lemma}[Consistency of the mean operator] \label{lem:mean}
+\begin{lemma}[Consistency with the continuum equation] \label{lem:mean}
 There exists a constant $C = C(d, f) < \infty$ such that, for every $\eps \in (0, \nf12)$ and every $s \geq 0$,
 \begin{equation*}
     \bigl\| \partial_s \bar u_s - \Lbar \bar u_s \bigr\|_{L^2(\eps \Z^d)} \leq \frac{C}{\kappa_\eps}\,.

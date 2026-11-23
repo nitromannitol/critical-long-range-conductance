@@ -20,7 +20,7 @@ sources:
   type: paper
   relationship: formalizes
   location: paper/critical-long-range-rw-v2.tex
-  sha256: f4ff4c41b8dbe5b8000ebd10133b4267016c99786c4d3a881d93c190807fc218
+  sha256: dc1efaee9d1b9631e6a2fb63fc20ff77a133c2d6fb181429b4f915eab03d633d
   library: LongRangeHeat
   exports: CORRESPONDENCE.md#heat-kernel-version
   cited_hypotheses: none in the exports ending in _unconditional and main_theorem

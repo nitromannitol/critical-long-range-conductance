@@ -640,7 +640,7 @@ We show that, for every $t > 0$ and all distinct $x, y \in \Z^d$,
 \begin{equation} \label{eq:offdiagonal}
    p_t(x, y) \leq \frac{C t \ln(2 + |x - y|)}{|x - y|^{d+2}}\,.
 \end{equation}
-To prove this result, we rely on the general theory of \citet*{CKW2021Stability} which provides upper and lower bounds for a large class of heat kernels (and to the result \citet{Malmquist2023} which extends their results to functions defined on graphs). We will in particular use \citet*[Theorem 1.15, (5) implies (1)]{CKW2021Stability} and check the three conditions of (5): the Faber-Krahn inequality FK$(\phi)$, the upper bound on the decay of the long-range interaction $J_{\phi, \leq}$ and the cutoff Sobolev inequality CSJ$(\phi)$.
+To prove this result, we rely on the general theory of \citet*{CKW2021Stability} which provides upper and lower bounds for a large class of heat kernels (and on the result of \citet{Malmquist2023}, which extends their results to functions defined on graphs). We will in particular use \citet*[Theorem~1.15, (5) implies (1)]{CKW2021Stability} and check the three conditions of (5): the Faber--Krahn inequality FK$(\phi)$, the upper bound on the decay of the long-range interaction $J_{\phi, \leq}$ and the cutoff Sobolev inequality CSJ$(\phi)$.
 
 We consider $\Z^d$ with the Euclidean distance and the counting measure, and the Dirichlet form of the walk $Y$, whose jump kernel is $\ba(\{x,y\}) |x-y|^{-d-2}$ up to the factor $\nf12$ that comes from the normalization of the Dirichlet form in these references.
 For $r > 0$, let $V(r)$ denote the number of points of $\Z^d$ in an open ball of radius $r$, which equals $1$ for $r \leq 1$ and is comparable to $r^d$ for $r > 1$.
@@ -651,7 +651,7 @@ We use the scale function
 This function is continuous and increasing, it satisfies $\phi(0) = 0$ and $\phi(1) = 1$, and the ratio $\phi(r_1)/\phi(r_2)$ lies between $(r_1/r_2)^{\nf32}$ and $(r_1/r_2)^2$ for all $r_1 \geq r_2 > 0$.
 The following three conditions hold on $\Z^d$.
 \begin{itemize}
-    \item \emph{Faber-Krahn inequality FK$(\phi)$.} By \citet*[Proposition 7.6]{CKW2021Stability}, it is enough to prove the on-diagonal bound $p_t(x,x) \leq C / V(\phi^{-1}(t))$ for every $t > 0$ and every $x \in \Z^d$. This is implied by~\eqref{eq:hk.micro.diag} and the inequality $V(\phi^{-1}(t)) \leq C (1 + t \ln(2+t))^{\nf{d}{2}}$ for every $t > 0$.
+    \item \emph{Faber--Krahn inequality FK$(\phi)$.} By \citet*[Proposition~7.6]{CKW2021Stability}, it is enough to prove the on-diagonal bound $p_t(x,x) \leq C / V(\phi^{-1}(t))$ for every $t > 0$ and every $x \in \Z^d$. This is implied by~\eqref{eq:hk.micro.diag} and the inequality $V(\phi^{-1}(t)) \leq C (1 + t \ln(2+t))^{\nf{d}{2}}$ for every $t > 0$.
     \item \emph{Upper bound $J_{\phi,\le}$ on the jump kernel.} The bound $\ba(\{x,y\}) \leq \lambda^{-1}$ gives $\ba(\{x,y\}) |x-y|^{-d-2} \leq C / (V(|x-y|) \phi(|x-y|))$ for all distinct $x, y \in \Z^d$.
     \item \emph{Cutoff Sobolev inequality $\mathrm{CSJ}(\phi)$.} For $x_0 \in \Z^d$ and $r_1 \geq r_2 > 0$, the cutoff function $\chi(x) := \max(0, 1 - \max(0, |x - x_0| - r_1) / r_2)$ has finite support and satisfies $|\chi(x) - \chi(y)| \leq \min(1, |x-y|/r_2)$, so, for every $x \in \Z^d$,
     \begin{equation*}

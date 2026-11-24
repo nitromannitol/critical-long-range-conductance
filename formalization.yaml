@@ -29,17 +29,21 @@ dependencies:
   Lattice-Probability: 721505023bc12a20241c73449ec33339fcf4555f
   Mathlib: 065356127b1dc0016f66b7283ce0ce2c4055aa55
 status:
-  scope: 23 theorem exports and three complete definition exports, including produced unique H10 weak
-    solution, its continuous representative, weak scaling obstruction, quenched invariance principle,
-    uniform heat-kernel bounds and norm/kernel characterizations.
+  scope: The April version (LongRange.Statements) has 23 theorem exports and three complete definition
+    exports, including produced unique H10 weak solution, its continuous representative, weak scaling
+    obstruction, quenched invariance principle, uniform heat-kernel bounds and norm/kernel
+    characterizations. The heat-kernel version (LongRangeHeat.Statements) states Theorems 1.1 and 1.2
+    and Propositions 4.1-4.3 with no cited hypothesis, and the other results of that version.
   production_placeholder_tokens: 0
-  standalone_build: 'passed: 9099 jobs, fresh project and Lattice-Probability build directories, zero
-    warnings or errors'
-  public_axiom_audit: 'passed: all 26 public exports, only propext, Classical.choice and Quot.sound'
-  comparator: 'passed in clean release checkout: quantitative homogenization and both quenched invariance
-    principle formulations; dependency comparison, NanoDa and Lean kernel replay'
-  ci: 'Build: main pushes, pull requests and manual dispatch. Independent comparators: manual dispatch.
-    Current hosted results are linked from README badges.'
+  standalone_build: 'lake build LongRange LongRangeHeat from a fresh checkout, zero warnings or errors
+    (the build workflow)'
+  public_axiom_audit: 'scripts/check_axioms.py checks all 75 public exports (26 of LongRange.Statements,
+    49 of LongRangeHeat.Statements): only propext, Classical.choice and Quot.sound'
+  comparator: 'four pairs (LongRangeAudit/): quantitative homogenization and both quenched invariance
+    principle formulations of the April version, and the heat-equation homogenization and annealed
+    invariance principle of the heat-kernel version; dependency comparison, NanoDa and Lean kernel replay'
+  ci: 'Build and export axiom audit: main pushes, pull requests and manual dispatch. Independent
+    comparators: manual dispatch. Current hosted results are linked from README badges.'
   allowed_kernel_axioms:
   - propext
   - Classical.choice
@@ -123,9 +127,55 @@ exports:
 - declaration: LongRange.Statements.weak_scaling_obstruction
   kind: theorem
   module: LongRange.Statements.WeakScalingObstruction
+heat_exports:
+- declaration: LongRangeHeat.Statements.main_theorem
+  kind: theorem
+  module: LongRangeHeat.Statements.MainTheorem
+  paper: Theorem 1.1
+  cited_hypotheses: none
+- declaration: LongRangeHeat.Statements.annealed_invariance_principle_unconditional
+  kind: theorem
+  module: LongRangeHeat.Statements.InvariancePrincipleUnconditional
+  paper: Theorem 1.2
+  cited_hypotheses: none
+- declaration: LongRangeHeat.Statements.unscaled_invariance_principle_unconditional
+  kind: theorem
+  module: LongRangeHeat.Statements.UnscaledInvarianceUnconditional
+  paper: Theorem 1.2, unscaled form
+  cited_hypotheses: none
+- declaration: LongRangeHeat.Statements.heat_kernel_bounds_unconditional
+  kind: theorem
+  module: LongRangeHeat.Statements.HeatKernelBoundsUnconditional
+  paper: Proposition 4.1
+  cited_hypotheses: none
+- declaration: LongRangeHeat.Statements.aldous_condition_unconditional
+  kind: theorem
+  module: LongRangeHeat.Statements.AldousUnconditional
+  paper: Proposition 4.2
+  cited_hypotheses: none
+- declaration: LongRangeHeat.Statements.fdd_convergence_unconditional
+  kind: theorem
+  module: LongRangeHeat.Statements.FddUnconditional
+  paper: Proposition 4.3
+  cited_hypotheses: none
+heat_cited_inputs:
+  status: All four are proved; CITED_INPUTS.md#heat-kernel-version lists them and the hypotheses of every
+    heat export.
+  proved:
+  - Murugan-Saloff-Coste Theorem 1.1, for the critical lattice kernel (LatticeProb.Graph.LongRangeKernel.weightedLattice_critical_diagonal)
+  - Chen-Kim-Kumagai-Wang Proposition 3.1(ii) (LatticeProb.External.chenKimKumagaiWangNash_holds)
+  - Chen-Kim-Kumagai-Wang Theorem 4.4 with Example 4.3 (LatticeProb.External.chenKimKumagaiWangDavies_holds)
+  - Kallenberg Theorems 16.10 and 16.11 and Aldous, the sufficiency direction (LatticeProb.Cadlag.HalfLine.tendsto_of_ordered_fdd_of_optional_increment)
 cited_inputs:
   namespace: LatticeProb.External
-  status: Explicit assumptions, not proved outside results
+  status: Explicit hypotheses of the exports of the April version, as released. Five are proved
+    (listed under proved); the other eleven are not.
+  proved:
+  - GilbargTrudingerSupEstimate
+  - GilbargTrudingerHolderExtension
+  - GilbargTrudingerWeakHomogeneousUniqueness
+  - ChenKimKumagaiWangNash
+  - ChenKimKumagaiWangDavies
   propositions:
   - BillingsleySkorokhodPolish
   - ChenKimKumagaiWangDavies

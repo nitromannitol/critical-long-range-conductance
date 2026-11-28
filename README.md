@@ -9,11 +9,14 @@ A Lean 4 formalization of the paper
 > [*Quantitative homogenization for the critical long-range random conductance model*](https://arxiv.org/abs/2604.21143),
 > arXiv:2604.21143.
 
-The library `LongRangeHeat` formalizes the second arXiv version. Every labelled theorem, lemma and
-proposition of that version is proved, with no `sorry` and only the standard axioms, and its main
-theorems take no hypothesis beyond the setting of the paper. The library `LongRange` formalizes the
-first arXiv version, which has different main theorems; they take cited results from the
-literature as explicit hypotheses, listed under [What is assumed](#what-is-assumed-first-version).
+The paper studies a random walk on `ℤᵈ` with random conductances and long jumps, at the critical
+jump exponent where the walk is superdiffusive by a logarithmic factor. It proves that solutions of
+the rescaled heat equation of the walk are within order `|ln ε|^(−1/2)` of those of a
+constant-coefficient heat equation, and an annealed invariance principle. Every labelled result of
+the second arXiv version is proved in Lean, with no `sorry`, only the standard axioms and no
+hypothesis beyond the setting of the paper. The first arXiv version, whose main theorems differ, is
+formalized too; its theorems take results from the literature as hypotheses, listed under
+[What is assumed](#what-is-assumed-first-version).
 
 ## The paper
 
@@ -116,39 +119,43 @@ theorem exports and three definitions in all.
 
 ## What is assumed (first version)
 
-The second version assumes nothing: the results it quotes from other works are proved in the
-library. The exports of the first version take 16 cited propositions as explicit hypotheses, each a
-`Prop` in the namespace `LatticeProb.External`.
-[`CITED_INPUTS.md`](CITED_INPUTS.md) links each to its exact Lean statement.
+This section concerns the first version only; the second version assumes nothing. The exports of
+the first version take 16 cited propositions as explicit hypotheses, each a `Prop` in the namespace
+`LatticeProb.External`. [`CITED_INPUTS.md`](CITED_INPUTS.md) links each to its exact Lean
+statement. Each bullet says which of the two main theorems of the first version take it.
 
 - Existence of a classical solution of the Dirichlet problem; GT, Theorem 6.14.
-  `GilbargTrudingerExistence`.
+  `GilbargTrudingerExistence`. Theorems 1.1 and 1.2.
 - Regularity up to the boundary of solutions of the Dirichlet problem; GT, Theorem 6.19.
-  `GilbargTrudingerBoundaryRegularity`.
-- The global Schauder estimate; GT, Theorem 6.6. `GilbargTrudingerSchauderEstimate`.
+  `GilbargTrudingerBoundaryRegularity`. Theorems 1.1 and 1.2.
+- The global Schauder estimate; GT, Theorem 6.6. `GilbargTrudingerSchauderEstimate`. Theorems 1.1
+  and 1.2.
 - The supremum estimate of the maximum principle; GT, Theorem 3.7. `GilbargTrudingerSupEstimate`.
+  Theorems 1.1 and 1.2. Proved in Lattice-Probability.
 - Extension of Hölder functions from a domain; GT, Lemma 6.37. `GilbargTrudingerHolderExtension`.
+  Theorems 1.1 and 1.2. Proved in Lattice-Probability.
 - Approximation in the Sobolev space with zero boundary values; GT, Section 7.5.
-  `GilbargTrudingerZeroBoundaryApproximation`.
+  `GilbargTrudingerZeroBoundaryApproximation`. Theorem 1.1.
 - Uniqueness of weak solutions of the homogeneous problem; GT, Corollary 8.2.
-  `GilbargTrudingerWeakHomogeneousUniqueness`.
+  `GilbargTrudingerWeakHomogeneousUniqueness`. Theorem 1.1. Proved in Lattice-Probability.
 - The discrete on-diagonal heat-kernel bound; MSC, Theorem 1.1, estimate (10). `MuruganSaloffCoste`.
+  Theorem 1.2.
 - The same bound with the dependence of the constant traced through the proof; MSC, Theorem 1.1.
-  `MuruganSaloffCosteUniform`.
+  `MuruganSaloffCosteUniform`. Other exports only.
 - Ultracontractivity implies a Nash inequality; CKKW, Proposition 3.1(ii).
-  `ChenKimKumagaiWangNash`.
+  `ChenKimKumagaiWangNash`. Theorem 1.2. Proved in this repository.
 - The Davies upper bound for the heat kernel; CKKW, Theorem 4.4 with Example 4.3.
-  `ChenKimKumagaiWangDavies`.
+  `ChenKimKumagaiWangDavies`. Theorem 1.2. Proved in this repository.
 - Convergence of semigroups from convergence of generators; EK, Chapter 1, Theorem 6.1,
-  (c) implies (a). `EthierKurtzTrotterKato`.
+  (c) implies (a). `EthierKurtzTrotterKato`. Theorem 1.2.
 - A criterion for relative compactness in Skorokhod space; EK, Chapter 3, Theorem 8.6, (b) implies
-  (a). `EthierKurtzRelativeCompactness`.
+  (a). `EthierKurtzRelativeCompactness`. Theorem 1.2.
 - The stopping-time criterion for relative compactness; EK, Chapter 3, Theorem 8.6, (c) implies (a),
-  and Remark 8.7(b). `EthierKurtzRelativeCompactnessStopping`.
+  and Remark 8.7(b). `EthierKurtzRelativeCompactnessStopping`. Other exports only.
 - Convergence in law from relative compactness and convergence of finite-dimensional laws; EK,
-  Chapter 3, Theorem 7.8(b). `EthierKurtzConvergenceFromFdd`.
+  Chapter 3, Theorem 7.8(b). `EthierKurtzConvergenceFromFdd`. Theorem 1.2.
 - The Skorokhod space on a finite horizon is Polish; Billingsley, Theorems 12.1 and 12.2.
-  `BillingsleySkorokhodPolish`.
+  `BillingsleySkorokhodPolish`. Other exports only.
 
 GT is Gilbarg–Trudinger, *Elliptic Partial Differential Equations of Second Order* (Springer, 2001
 reprint). MSC is Murugan–Saloff-Coste, *Anomalous threshold behavior of long range random walks*,
@@ -157,13 +164,8 @@ symmetric Markov semigroups*, J. Funct. Anal. 281 (2021), 109074. EK is Ethier�
 Processes: Characterization and Convergence* (Wiley, 1986). Billingsley is *Convergence of
 Probability Measures*, second edition (Wiley, 1999).
 
-Theorem 1.1 of the first version takes the seven Gilbarg–Trudinger inputs. Theorem 1.2 takes
-eleven: five Gilbarg–Trudinger inputs, `EthierKurtzTrotterKato`, `EthierKurtzRelativeCompactness`,
-`EthierKurtzConvergenceFromFdd`, `MuruganSaloffCoste` and the two Chen–Kim–Kumagai–Wang inputs.
-Five of the sixteen are proved: `GilbargTrudingerSupEstimate`, `GilbargTrudingerHolderExtension` and
-`GilbargTrudingerWeakHomogeneousUniqueness` in Lattice-Probability, and the two
-Chen–Kim–Kumagai–Wang inputs in this repository. The first-version exports still take them as
-hypotheses, as released.
+So Theorem 1.1 of the first version takes seven inputs and Theorem 1.2 takes eleven. Five of the
+sixteen are proved, as marked, but the first-version exports take them as hypotheses, as released.
 
 ## Corrections
 
@@ -194,9 +196,9 @@ abstract and the statements of the main theorems, and lists its changes at its s
   the critical lattice kernel, the case the paper uses. The Kallenberg–Aldous criterion for
   convergence in `D([0, ∞), ℝᵈ)` is proved in its sufficiency direction, which is the direction
   Theorem 1.2 uses.
-- **Other forms.** Propositions 4.1 to 4.3 and Theorem 1.2 of the second version also have earlier
-  forms that take cited hypotheses, kept unchanged; [`CITED_INPUTS.md`](CITED_INPUTS.md#heat-kernel-version)
-  lists them. The forms ending in `_unconditional` take none.
+- **Other forms.** Propositions 4.1 to 4.3 and Theorem 1.2 of the second version also have forms that
+  take cited results as hypotheses; [`CITED_INPUTS.md`](CITED_INPUTS.md#heat-kernel-version) lists
+  them. The forms ending in `_unconditional`, used in the tables above, take none.
 - **Generator series.** The statements of Lemmas 2.1 and 3.1 and Proposition 3.2 use the pointwise
   series defining the generator without asserting that it converges; see
   [`CORRESPONDENCE.md`](CORRESPONDENCE.md#generator-series-in-the-statements).
@@ -217,10 +219,11 @@ abstract and the statements of the main theorems, and lists its changes at its s
   [leanprover/comparator](https://github.com/leanprover/comparator) compares the dependency closures,
   checks the axioms, and replays the proofs in the Lean kernel and the independent nanoda kernel. See
   [`LongRangeAudit/README.md`](LongRangeAudit/README.md).
-- **Continuous integration.** The **CI** workflow ([`build.yml`](.github/workflows/build.yml)) builds
-  both libraries on every push to `main`, rejects warnings and runs the axiom check. The **Comparator
-  audit** workflow ([`comparator.yml`](.github/workflows/comparator.yml)) runs the four pairs and is
-  started manually.
+- **Continuous integration.** The build workflow ([`build.yml`](.github/workflows/build.yml), the
+  **CI** badge) builds both libraries on every push to `main` and every pull request, rejects
+  warnings and runs the axiom check. The comparator workflow
+  ([`comparator.yml`](.github/workflows/comparator.yml), the **Comparator audit** badge) runs the
+  four pairs and is started manually.
 
 `LongRange/`, `LongRangeHeat/` and their root modules contain 559 Lean files with 87,404 lines, built
 on mathlib and Lattice-Probability.
@@ -258,6 +261,11 @@ CITED_INPUTS.md                      the cited propositions and the exports that
 NOTICE                               the copied code
 ```
 
+## How this was built
+
+The Lean code was written with AI assistance, using models from Anthropic (Claude) and OpenAI (GPT),
+under the direction of the authors. Every proof is checked by the Lean kernel.
+
 ## Copied code
 
 Two modules under `LongRange/HeatKernel/` contain code copied from Leonardo Bonanno's
@@ -266,10 +274,6 @@ the complexification of real square-summable sequence operators. Each file names
 modules and lists its changes in its header; [`NOTICE`](NOTICE) gives the details.
 `LongRange/Support` contains 135 modules from Lattice-Probability revision
 `47027b49b6660ee34c323869b0c88b7eb72f1124`.
-
-## How this was built
-
-The Lean code was written with AI coding agents under the direction of the authors.
 
 ## Paper and citation
 
